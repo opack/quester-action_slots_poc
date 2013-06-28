@@ -1,0 +1,20 @@
+- Dans le donjon, placer les portes aléatoirement sur le mur
+- Bug : L'animation de l'attaque du joueur est bizarre : la seconde frame semble disparaître, et le personnage est tout petit.
+- Refactoring général
+	- Les Controleurs sont stateless (et singleton). Les données sont dans les data.
+		- Les WorldElementActor pointent vers l'instance du contrôleur correspondant.
+		- Les WorldElementActor contiennent des données (qui sont passées au contrôleur quand c'est nécessaire).
+		- Le contrôleur est le cerveau, l'actor est le corps, et le data est l'âme.
+- Utiliser l'AssetManager au lieu de Assets (https://code.google.com/p/libgdx/wiki/AssetManager, http://www.badlogicgames.com/forum/viewtopic.php?f=11&t=3497&p=17103&hilit=assetmanager#p17103)
+- Utiliser les skins pour éviter les multiples (et redondants) new TextureRegionDrawable
+- Village
+- Objets dans les donjons : coffres
+- Loots après la mort d'un ennemi
+- Lorsque le joueur meurt : fin !
+- Lorsque le joueur se déplace ou attaque, recentrer automatiquemet la carte sur lui.
+- Options :
+	- Recentrage auto
+	- Vitesse de déplacement
+- Lorsqu'une salle est affichée, centrer la caméra sur le joueur : retirer la rustine isFirstDisplay et trouver la vraie solution à ce problème bizarre
+- Carte du monde (et donjons) : créer des paysages plus complexes (chemins, zones de terre, cours d'eau...)
+
