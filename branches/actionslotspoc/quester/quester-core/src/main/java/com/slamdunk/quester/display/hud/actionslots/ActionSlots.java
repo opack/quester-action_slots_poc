@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.slamdunk.quester.display.actors.ActionSlotActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.ai.QuesterActions;
+import com.slamdunk.quester.logic.controlers.ActionSlotControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
 
@@ -98,7 +99,7 @@ public class ActionSlots {
 			public boolean drag (Source source, Payload payload, float x, float y, int pointer) {
 				Image targetImage = target.getImage();
 				if (targetImage != null) {
-					if (target.getControler().canAcceptDrop(payload)) {
+					if (target.getControler().canAcceptDrop(dragActor.getControler().getData().action)) {
 						targetImage.setColor(Color.GREEN);
 					} else {
 						targetImage.setColor(Color.RED);
@@ -109,9 +110,10 @@ public class ActionSlots {
 
 			public void drop (Source source, Payload payload, float x, float y, int pointer) {
 				WorldElementControler controler = target.getControler();
-				if (controler.canAcceptDrop(payload)) {
+				ActionSlotControler slotControler = dragActor.getControler();
+				if (controler.canAcceptDrop(slotControler.getData().action)) {
 					// On laisse le contrôleur gérer l'action
-					target.getControler().receiveDrop(dragActor.getControler());
+					target.getControler().receiveDrop(slotControler);
 					// Et on met à jour les slots
 					fillActionSlots();
 				} else {
@@ -149,8 +151,6 @@ public class ActionSlots {
 			if (arrivalSlot.getControler().getData().action == QuesterActions.NONE) {
 				// Récupère le dernier upcomingSlot
 				ActionSlotActor upcomingSlot = upcomingSlots.get(upcomingSlots.size() - 1);
-				System.out.println("ActionSlots.fillActionSlots() AVANT");
-				printSlotActions(upcomingSlots);
 				// Affecte ses données au slot d'arrivée vide
 				upcomingSlot.affectTo(arrivalSlot);
 				// Fait avancer tous les upcomings d'un cran
@@ -170,22 +170,10 @@ public class ActionSlots {
 			curUpcoming = upcomingSlots.get(curIdx);
 			previousUpcoming = upcomingSlots.get(curIdx - 1);
 			
-			System.out.println("ActionSlots.shiftUpcomings() DEB");
 			previousUpcoming.affectTo(curUpcoming);
-			System.out.println("ActionSlots.shiftUpcomings() FIN");
 		}
 		// Remplit le slot vide, qui est forcément le premier
 		ActionSlotsHelper.fillActionSlot(upcomingSlots.get(0));
-		
-		System.out.println("ActionSlots.fillActionSlots() APRES");
-		printSlotActions(upcomingSlots);
-		System.out.println("ActionSlots.shiftUpcomings() --------------");
-	}
-
-	private void printSlotActions(List<ActionSlotActor> upcomingSlots2) {
-		for (ActionSlotActor slot : upcomingSlots) {
-				System.out.println("ActionSlots.printSlotActions() " + slot.getControler().getData().action);
-		}
 	}
 
 	public boolean isDragging() {

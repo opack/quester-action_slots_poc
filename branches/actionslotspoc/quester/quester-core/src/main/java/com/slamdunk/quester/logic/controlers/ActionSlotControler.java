@@ -1,6 +1,5 @@
 package com.slamdunk.quester.logic.controlers;
 
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.model.data.ActionSlotData;
 
@@ -16,12 +15,12 @@ public class ActionSlotControler extends WorldElementControler {
 	}
 	
 	@Override
-	public boolean canAcceptDrop(Payload payload) {
+	public boolean canAcceptDrop(QuesterActions action) {
 		// On peut toujours mettre une action dans un ActionSlot enregistré comme target
 		// quelle que soit l'action, si ce slot est vide.
 		// Les slots d'arrivée ne seront pas enregistrés en tant que target donc pas de
 		// soucis.
-		return getData().action == QuesterActions.NONE;
+		return action == QuesterActions.NONE;
 	}
 	
 	@Override

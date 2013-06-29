@@ -6,6 +6,11 @@ public interface Damageable {
 	 * Retourne le nombre de points de vie restants
 	 */
 	int getHealth();
+	
+	/**
+	 * Guérit
+	 */
+	void heal(int amount);
 
 	/**
 	 * Raccourci vers getHP() == 0

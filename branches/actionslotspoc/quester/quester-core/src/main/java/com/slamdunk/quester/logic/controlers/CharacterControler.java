@@ -2,6 +2,7 @@ package com.slamdunk.quester.logic.controlers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.badlogic.gdx.audio.Sound;
 import com.slamdunk.quester.display.actors.CharacterActor;
@@ -9,10 +10,11 @@ import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.ai.AI;
 import com.slamdunk.quester.logic.ai.AIAction;
 import com.slamdunk.quester.logic.ai.AttackAction;
-import com.slamdunk.quester.logic.ai.CharacterAI;
 import com.slamdunk.quester.logic.ai.EndTurnAction;
+import com.slamdunk.quester.logic.ai.HealAction;
 import com.slamdunk.quester.logic.ai.MoveAction;
 import com.slamdunk.quester.logic.ai.MoveNearAction;
+import com.slamdunk.quester.logic.ai.ProtectAction;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.map.AStar;
@@ -53,12 +55,17 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	 */
 	private AStar pathfinder;
 	
+	/**
+	 * Réduction de dégâts que le joueur a joué
+	 */
+	private int damageReduction;
+	
 	public CharacterControler(CharacterData data, CharacterActor body, AI ai) {
 		super(data, body);
 		listeners = new ArrayList<CharacterListener>();
 		
 		if (ai == null) {
-			this.ai = new CharacterAI();
+			this.ai = new AI();
 		} else {
 			this.ai = ai;
 		}
@@ -138,6 +145,11 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		return null;
 	}
 	
+	@Override
+	public void heal(int amount) {
+		setHealth(characterData.health + amount);
+	}
+	
 	/**
 	 * Retourne true si other est sur une case voisine
 	 * @param actor
@@ -166,20 +178,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	
 	public boolean isShowDestination() {
 		return isShowDestination;
-	}
-	
-	/**
-	 * Approche le personnage de la cible puis l'attaque.
-	 */
-	public boolean prepareAttack(WorldElementControler target) {
-		// Approche de la cible
-		if (!prepareMoveNear(target.getActor())) {
-			return false;
-		}
-		
-		// Attaque
-		ai.addAction(new AttackAction(this, (Damageable)target));
-		return true;
 	}
 	
 	/**
@@ -255,14 +253,33 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	
 	@Override
 	public void receiveDamage(int damage) {
-		// TODO Retirer la valeur d'armure éventuellement
-		characterData.health -= damage;
-		
-		// Si un déplacement était en cours, il est interrompu
-		stopMove();
-		
-		if (isDead()) {
-			die();
+		damage = Math.max(0, damage - damageReduction);
+		setHealth(characterData.health - damage);
+	}
+	
+	@Override
+	public void receiveDrop(ActionSlotControler dropped) {
+		PlayerControler player = GameControler.instance.getPlayer();
+		switch (dropped.getData().action) {
+		case ATTACK:
+			player.ai.clearActions();
+			player.ai.addAction(new AttackAction(player, this));
+			player.ai.addAction(new EndTurnAction(player));
+		break;
+		case END_TURN:
+			player.ai.clearActions();
+			player.ai.addAction(new EndTurnAction(player));
+		break;
+		case HEAL:
+			player.ai.clearActions();
+			player.ai.addAction(new HealAction(player, 3));
+			player.ai.addAction(new EndTurnAction(player));
+		break;
+		case PROTECT:
+			player.ai.clearActions();
+			player.ai.addAction(new ProtectAction(player, 3));
+			player.ai.addAction(new EndTurnAction(player));
+		break;
 		}
 	}
 	
@@ -290,20 +307,10 @@ public class CharacterControler extends WorldElementControler implements Damagea
 
 	public void setPlaying(boolean isPlaying) {
 		this.isPlaying = isPlaying;
-		
-		// Si c'est au tour de ce personnage de jouer, alors
-		// un nouveau tour d'attente a passé.
+		// Quand c'est à son tour de jouer, le joueur perd la protection qu'il avait jouée
+		// à son tour
 		if (isPlaying) {
-			characterData.waitTurns--;
-			// S'il ne reste pluzs d'attente, on effectue la
-			// prochaine action
-			if (characterData.waitTurns <= 0) {
-				characterData.waitTurns = characterData.actFrequency;
-				this.isPlaying = true;
-			} else {
-				ai.setNextAction(new EndTurnAction(this));
-				this.isPlaying = false;
-			}
+			damageReduction = 0;
 		}
 	}
 
@@ -323,5 +330,9 @@ public class CharacterControler extends WorldElementControler implements Damagea
 				actor.getWorldX(), actor.getWorldY(), 
 				x, y);
 		return path != null && !path.isEmpty();
+	}
+
+	public void protect(int damageReduction) {
+		this.damageReduction = damageReduction;
 	}
 }

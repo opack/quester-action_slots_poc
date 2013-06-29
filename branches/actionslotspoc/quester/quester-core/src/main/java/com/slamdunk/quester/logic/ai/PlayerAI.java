@@ -1,7 +1,13 @@
 package com.slamdunk.quester.logic.ai;
 
 
-public class PlayerAI extends CharacterAI {
+public class PlayerAI extends AI {
+	
+	@Override
+	public void init() {
+		super.init();
+		addAction(new ThinkAction(controler));
+	}
 	
 	@Override
 	public void think() {

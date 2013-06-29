@@ -27,15 +27,6 @@ public class CharacterData extends ObstacleData {
 	 * Distance à laquelle l'arme peut attaquer
 	 */
 	public int weaponRange;
-	/**
-	 * Nombre de tours pendant lesquels le personnage ne joue pas.
-	 */
-	public int waitTurns;
-	/**
-	 * Fréquence à laquelle le personnage joue : 1 fois tous les
-	 * actFrequency tours.
-	 */
-	public int actFrequency;
 	
 	public CharacterData(MapElements element, int hp, int attack) {
 		super(element);
