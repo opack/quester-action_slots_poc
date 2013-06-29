@@ -1,11 +1,13 @@
 package com.slamdunk.quester.logic.controlers;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.slamdunk.quester.display.actors.PlayerActor;
+import com.slamdunk.quester.logic.ai.AttackAction;
 import com.slamdunk.quester.logic.ai.CrossPathAction;
+import com.slamdunk.quester.logic.ai.EndTurnAction;
 import com.slamdunk.quester.logic.ai.EnterCastleAction;
 import com.slamdunk.quester.logic.ai.PlayerAI;
+import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.utils.Assets;
 
@@ -16,8 +18,12 @@ public class PlayerControler extends CharacterControler {
 	}
 	
 	@Override
-	public boolean canAcceptDrop(Payload payload) {
-		return true;
+	public boolean canAcceptDrop(QuesterActions action) {
+		return action == QuesterActions.CHEST
+		|| action == QuesterActions.END_TURN
+		|| action == QuesterActions.HEAL
+		|| action == QuesterActions.PROTECT
+		|| action == QuesterActions.TECHSPE;
 	}
 	
 	/**
@@ -55,5 +61,22 @@ public class PlayerControler extends CharacterControler {
 	@Override
 	public Sound getStepSound() {
 		return Assets.stepsSound;
+	}
+	
+	@Override
+	public void receiveDrop(ActionSlotControler dropped) {
+		switch (dropped.getData().action) {
+		case TECHSPE:
+			ai.clearActions();
+			for (CharacterControler character : GameControler.instance.getScreen().getMap().getCharacters()) {
+				if (character.isHostile()) {
+					ai.addAction(new AttackAction(this, character));
+				}
+			}
+			ai.addAction(new EndTurnAction(this));
+		break;
+		default:
+			super.receiveDrop(dropped);
+		}
 	}
 }

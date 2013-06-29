@@ -3,6 +3,8 @@ package com.slamdunk.quester.display.screens;
 import static com.slamdunk.quester.Quester.screenHeight;
 import static com.slamdunk.quester.Quester.screenWidth;
 
+import java.util.List;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -14,6 +16,7 @@ import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.display.camera.MouseScrollZoomProcessor;
 import com.slamdunk.quester.display.camera.TouchGestureListener;
 import com.slamdunk.quester.display.hud.HUDRenderer;
+import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.map.ActorMap;
 import com.slamdunk.quester.display.map.MapRenderer;
 import com.slamdunk.quester.display.messagebox.MessageBox;
@@ -163,7 +166,12 @@ public class GameScreen implements Screen {
 	 	mapRenderer.getMap().addCharacter(playerControler);
         mapRenderer.createCharacters(area);
         
-        // Mise à jour du pad et de la minimap
+        // Mise à jour du HUD
+        ActionSlots actionSlots = hudRenderer.getActionSlots();
+        List<CharacterControler> characters = mapRenderer.getMap().getCharacters();
+        for (CharacterControler character : characters) {
+        	actionSlots.addTarget(character.getActor());
+        }
         hudRenderer.update(display.regionX, display.regionY);
         
         // Centrage de la caméra sur le joueur

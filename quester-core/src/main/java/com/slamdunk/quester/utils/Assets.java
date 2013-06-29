@@ -112,6 +112,7 @@ public class Assets {
 	public static Sound biteSound;
 	public static Sound dieSound;
 	public static Sound punchSound;
+	public static Sound drinkSound;
 	
 	// Musique de fond, instanciée à la demande
 	public static float musicVolume;
@@ -274,6 +275,7 @@ public class Assets {
 		biteSound = loadSound("rabite/bite.ogg");
 		dieSound = loadSound("rabite/die.ogg");
 		punchSound = loadSound("player/punch.ogg");
+		drinkSound = loadSound("player/drink.ogg");
 		
 		// Musiques
 		musicVolume = Config.asFloat("sounds.music.volume", 0.5f);

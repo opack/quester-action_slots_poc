@@ -22,72 +22,21 @@ import com.slamdunk.quester.model.map.MapArea;
 import com.slamdunk.quester.utils.Assets;
 
 public class HUDRenderer extends Stage {
-	private Label lblAtt;
-	private Label lblHp;
-	private MiniMap minimap;
 	private ActionSlots actionSlots;
-	private MenuButton menu;
-	private Stage mapStage;
 	/**
 	 * Vecteur utilisé pour accélérer le traitement de la méthode hit
 	 */
 	private Vector2 hitTestPos;
+	private Label lblAtt;
+	private Label lblHp;
+	private Stage mapStage;
+	private MenuButton menu;
+	private MiniMap minimap;
 	
 	public HUDRenderer() {
 		hitTestPos = new Vector2();
 	}
 	
-	public void init(Stage mapStage) {
-		this.mapStage = mapStage;
-		
-		actionSlots = new ActionSlots();
-		actionSlots.addTarget(GameControler.instance.getScreen().getPlayerActor());
-		
-		Table table = new Table();
-//		table.debug();
-		table.add(createUpTable()).align(Align.left);
-		table.row();
-		table.add().expand();
-//DBG		table.add(createRightTable()).expand().align(Align.bottom | Align.right);
-		table.row();
-		table.add(createBottomTable()).colspan(2).align(Align.center);
-		table.pack();
-		table.setFillParent(true);
-		addActor(table);
-		
-		actionSlots.fillActionSlots();
-	}
-	
-//	private Table createRightTable() {
-//		// Création des images qui pourront être dnd
-//		ActionSlotActor upcomingSlot1 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor upcomingSlot2 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor upcomingSlot3 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor upcomingSlot4 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor arrivalSlot1 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor arrivalSlot2 = ActionSlotsHelper.createEmptySlot();
-//		
-//		// Ajout au gestionnaire de dnd
-//		actionSlots.addUpcomingSlots(upcomingSlot1, upcomingSlot2, upcomingSlot3, upcomingSlot4);
-//		actionSlots.addArrivalSlots(arrivalSlot1, arrivalSlot2);
-//		
-//		// Ajout à la table pour les organiser joliment
-//		Table right = new Table();
-//		right.add(upcomingSlot1).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(upcomingSlot2).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(upcomingSlot3).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(upcomingSlot4).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(arrivalSlot1).size(64, 64).padBottom(5);
-//		right.row();
-//		right.add(arrivalSlot2).size(64, 64).padBottom(5);
-//		right.row();
-//		return right;
-//	}
-
 	private Table createBottomTable() {
 	// Création des images qui pourront être dnd
 		ActionSlotActor upcomingSlot1 = ActionSlotsHelper.createEmptySlot();
@@ -130,6 +79,36 @@ public class HUDRenderer extends Stage {
 		bottom.pack();
 		return bottom;
 	}
+	
+//	private Table createRightTable() {
+//		// Création des images qui pourront être dnd
+//		ActionSlotActor upcomingSlot1 = ActionSlotsHelper.createEmptySlot();
+//		ActionSlotActor upcomingSlot2 = ActionSlotsHelper.createEmptySlot();
+//		ActionSlotActor upcomingSlot3 = ActionSlotsHelper.createEmptySlot();
+//		ActionSlotActor upcomingSlot4 = ActionSlotsHelper.createEmptySlot();
+//		ActionSlotActor arrivalSlot1 = ActionSlotsHelper.createEmptySlot();
+//		ActionSlotActor arrivalSlot2 = ActionSlotsHelper.createEmptySlot();
+//		
+//		// Ajout au gestionnaire de dnd
+//		actionSlots.addUpcomingSlots(upcomingSlot1, upcomingSlot2, upcomingSlot3, upcomingSlot4);
+//		actionSlots.addArrivalSlots(arrivalSlot1, arrivalSlot2);
+//		
+//		// Ajout à la table pour les organiser joliment
+//		Table right = new Table();
+//		right.add(upcomingSlot1).size(32, 32).padBottom(5);
+//		right.row();
+//		right.add(upcomingSlot2).size(32, 32).padBottom(5);
+//		right.row();
+//		right.add(upcomingSlot3).size(32, 32).padBottom(5);
+//		right.row();
+//		right.add(upcomingSlot4).size(32, 32).padBottom(5);
+//		right.row();
+//		right.add(arrivalSlot1).size(64, 64).padBottom(5);
+//		right.row();
+//		right.add(arrivalSlot2).size(64, 64).padBottom(5);
+//		right.row();
+//		return right;
+//	}
 
 	private Table createUpTable() {
 		// Création du bouton d'affichage de la minimap
@@ -161,6 +140,64 @@ public class HUDRenderer extends Stage {
 		return up;
 	}
 
+	public ActionSlots getActionSlots() {
+		return actionSlots;
+	}
+
+	public void getToggleMinimapVisibility() {
+		if (minimap != null) {
+			minimap.setVisible(!minimap.isVisible());
+		}
+	}
+	
+	@Override
+	public Actor hit(float stageX, float stageY, boolean touchable) {
+		Actor hit = super.hit(stageX, stageY, touchable);
+		
+		// Si on est en plein drag'n'drop, et qu'aucun acteur n'est aux coordonnées indiquées,
+		// on récupère l'acteur à ces coordonnées sur le Stage de la map. Ainsi on peut faire
+		// un drag'n'drop depuis le Stage du hud vers le Stage de la map.
+		if (hit == null && actionSlots.isDragging()) {
+			hitTestPos.x = stageX;
+			hitTestPos.y = stageY;
+			Vector2 screenCoords = stageToScreenCoordinates(hitTestPos);
+			Vector2 stageCoords = mapStage.screenToStageCoordinates(screenCoords);
+			hit = mapStage.hit(stageCoords.x, stageCoords.y, touchable);
+		}
+		return hit;
+	}
+
+	public void init(Stage mapStage) {
+		this.mapStage = mapStage;
+		
+		actionSlots = new ActionSlots();
+		
+		Table table = new Table();
+//		table.debug();
+		table.add(createUpTable()).align(Align.left);
+		table.row();
+		table.add().expand();
+//DBG		table.add(createRightTable()).expand().align(Align.bottom | Align.right);
+		table.row();
+		table.add(createBottomTable()).colspan(2).align(Align.center);
+		table.pack();
+		table.setFillParent(true);
+		addActor(table);
+		
+		actionSlots.fillActionSlots();
+	}
+	
+	public void render(float delta) {
+		// Mise à jour éventuelle du menu
+		menu.act(delta);
+		actionSlots.act(delta);
+		
+		// Dessin du HUD
+		draw();
+		
+//		Table.drawDebug(this);
+	}
+
 	public void setMiniMap(int worldWidth, int worldHeight, int miniMapImageWidth, int miniMapImageHeight) {
 		minimap = new MiniMap(worldWidth, worldHeight);
 		minimap.init(miniMapImageWidth, miniMapImageHeight);
@@ -181,11 +218,11 @@ public class HUDRenderer extends Stage {
 		minimap = dungeonminimap;
 		addActor(minimap);
 	}
-
+	
 	public void update() {
 		update(-1, -1);
 	}
-	
+
 	public void update(int currentAreaX, int currentAreaY) {
 		// Mise à jour de la minimap
 		if (minimap != null
@@ -198,39 +235,5 @@ public class HUDRenderer extends Stage {
 		CharacterData playerData = GameControler.instance.getPlayer().getData();
 		lblHp.setText(String.valueOf(playerData.health));
 		lblAtt.setText(String.valueOf(playerData.attack));
-	}
-
-	public void getToggleMinimapVisibility() {
-		if (minimap != null) {
-			minimap.setVisible(!minimap.isVisible());
-		}
-	}
-	
-	public void render(float delta) {
-		// Mise à jour éventuelle du menu
-		menu.act(delta);
-		actionSlots.act(delta);
-		
-		// Dessin du HUD
-		draw();
-		
-//		Table.drawDebug(this);
-	}
-	
-	@Override
-	public Actor hit(float stageX, float stageY, boolean touchable) {
-		Actor hit = super.hit(stageX, stageY, touchable);
-		
-		// Si on est en plein drag'n'drop, et qu'aucun acteur n'est aux coordonnées indiquées,
-		// on récupère l'acteur à ces coordonnées sur le Stage de la map. Ainsi on peut faire
-		// un drag'n'drop depuis le Stage du hud vers le Stage de la map.
-		if (hit == null && actionSlots.isDragging()) {
-			hitTestPos.x = stageX;
-			hitTestPos.y = stageY;
-			Vector2 screenCoords = stageToScreenCoordinates(hitTestPos);
-			Vector2 stageCoords = mapStage.screenToStageCoordinates(screenCoords);
-			hit = mapStage.hit(stageCoords.x, stageCoords.y, touchable);
-		}
-		return hit;
 	}
 }

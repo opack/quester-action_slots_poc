@@ -85,18 +85,18 @@ public class WorldBuilder extends DungeonBuilder{
 	protected void fillRoom(MapArea area) {
 		// Plus on s'éloigne du village de départ, plus les châteaux sont vastes.
 		double percentage = (double)area.getDistance() / maxDistance;
-		int difficulty = 0;
-		if (percentage < 0.1) {
-			difficulty = 0;
-		} else if (percentage < 0.25) {
-			difficulty = 1;
-		} else if (percentage < 0.5) {
-			difficulty = 2;
-		} else if (percentage < 0.75) {
-			difficulty = 3;
-		} else {
-			difficulty = 4;
-		}
+		int difficulty = 2;
+//DBG		if (percentage < 0.1) {
+//			difficulty = 0;
+//		} else if (percentage < 0.25) {
+//			difficulty = 1;
+//		} else if (percentage < 0.5) {
+//			difficulty = 2;
+//		} else if (percentage < 0.75) {
+//			difficulty = 3;
+//		} else {
+//			difficulty = 4;
+//		}
 		final String castleDifficultyProperty = "castle.difficulty" + difficulty;
 		int castleMinSize = Config.asInt(castleDifficultyProperty + ".castleMinSize", 1);
 		int castleMaxSize = Config.asInt(castleDifficultyProperty + ".castleMaxSize", 1);

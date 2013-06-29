@@ -38,7 +38,6 @@ public class GameControler implements CharacterListener {
 	 */
 	public void createPlayerControler(int hp, int att) {
 		CharacterData data = new CharacterData(PLAYER, hp, att);
-		data.actFrequency = 1;
 		data.speed = 2;
 		
 		player = new PlayerControler(data, null);

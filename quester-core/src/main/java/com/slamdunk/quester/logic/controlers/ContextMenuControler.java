@@ -3,7 +3,6 @@ package com.slamdunk.quester.logic.controlers;
 import static com.slamdunk.quester.logic.ai.QuesterActions.ATTACK;
 import static com.slamdunk.quester.logic.ai.QuesterActions.CROSS_PATH;
 import static com.slamdunk.quester.logic.ai.QuesterActions.MOVE;
-import static com.slamdunk.quester.logic.ai.QuesterActions.PLACE_TORCH;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,7 +105,7 @@ public class ContextMenuControler extends WorldElementControler {
 				// TODO Mettre l'image grisée adéquate
 				menuItemsActors.add(new ContextMenuActor(Assets.menu_torch_disabled, QuesterActions.NONE));
 			} else {
-				menuItemsActors.add(new ContextMenuActor(Assets.menu_torch, PLACE_TORCH));
+				//DBGmenuItemsActors.add(new ContextMenuActor(Assets.menu_torch, PLACE_TORCH));
 			}
 		}
 		// On peut se déplacer si la zone est parcourable
@@ -196,7 +195,7 @@ public class ContextMenuControler extends WorldElementControler {
     	switch (action) {
 	    	case ATTACK:
 	    		player.ai.clearActions();
-				player.prepareAttack(targetControler);
+				//DBGplayer.prepareAttack(targetControler);
 				break;
 	    	case CROSS_PATH:
 	    		player.ai.clearActions();

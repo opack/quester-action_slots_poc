@@ -23,12 +23,12 @@ public class AttackAction implements AIAction {
 	public void act() {
 		WorldElementControler targetControler = ((WorldElementControler)target);
 		
-		// Avant d'attaquer, on s'assure que la cible visée est toujours à portée.
-		if (!GameControler.instance.getScreen().getMap().isWithinRangeOf(attacker.getActor(), targetControler.getActor(), attacker.getData().weaponRange)) {
-			attacker.prepareThink();
-			attacker.getAI().setNextAction(new EndTurnAction(attacker));
-			return;
-		}
+//DBG		// Avant d'attaquer, on s'assure que la cible visée est toujours à portée.
+//		if (!GameControler.instance.getScreen().getMap().isWithinRangeOf(attacker.getActor(), targetControler.getActor(), attacker.getData().weaponRange)) {
+//			attacker.prepareThink();
+//			attacker.getAI().setNextAction(new EndTurnAction(attacker));
+//			return;
+//		}
 		
 		// Lance l'animation de l'attaque
 		attacker.getActor().setCurrentAction(ATTACK, targetControler.getActor().getWorldX());
@@ -41,7 +41,8 @@ public class AttackAction implements AIAction {
 		
 		// L'action est consommée : réalisation de la prochaine action
 		attacker.getAI().nextAction();
-		attacker.getAI().setNextActions(new WaitCompletionAction(attacker), new EndTurnAction(attacker));
+//DBG		attacker.getAI().setNextActions(new WaitCompletionAction(attacker), new EndTurnAction(attacker));
+		attacker.getAI().setNextAction(new WaitCompletionAction(attacker));
 	}
 
 	@Override
