@@ -6,11 +6,15 @@ import static com.slamdunk.quester.Quester.screenWidth;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.slamdunk.quester.display.actors.ActionSlotActor;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
@@ -30,7 +34,7 @@ public class HUDRenderer extends Stage {
 	private Label lblAtt;
 	private Label lblHp;
 	private Stage mapStage;
-	private MenuButton menu;
+//	private MenuButton menu;
 	private MiniMap minimap;
 	
 	public HUDRenderer() {
@@ -112,7 +116,18 @@ public class HUDRenderer extends Stage {
 
 	private Table createUpTable() {
 		// Création du bouton d'affichage de la minimap
-		menu = new MenuButton();
+//DBG		menu = new MenuButton();
+		ButtonStyle mapBtnStyle = new ButtonStyle();
+		mapBtnStyle.up = new TextureRegionDrawable(Assets.map);
+		mapBtnStyle.down = new TextureRegionDrawable(Assets.map);
+		mapBtnStyle.pressedOffsetY = 1.0f;
+		Button displayMap = new Button(mapBtnStyle);
+		displayMap.addListener(new ClickListener(){
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				GameControler.instance.getScreen().getHUDRenderer().getToggleMinimapVisibility();
+			};
+		});
 		
 		// Création des statistiques
 		LabelStyle style = new LabelStyle();
@@ -131,12 +146,12 @@ public class HUDRenderer extends Stage {
 		
 		// Création de la table englobante
 		Table up = new Table();
-		up.add(menu.getMenuBtn()).size(64, 64);
+		up.add(displayMap).size(64, 64);
 		up.add(stats).align(Align.bottom | Align.left);
 		up.pack();
 		
 		// Préparation du menu
-		menu.prepareMenu();
+//DBG		menu.prepareMenu();
 		return up;
 	}
 
@@ -189,7 +204,7 @@ public class HUDRenderer extends Stage {
 	
 	public void render(float delta) {
 		// Mise à jour éventuelle du menu
-		menu.act(delta);
+//DBG		menu.act(delta);
 		actionSlots.act(delta);
 		
 		// Dessin du HUD

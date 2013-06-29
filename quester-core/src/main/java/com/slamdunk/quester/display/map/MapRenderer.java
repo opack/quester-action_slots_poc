@@ -15,12 +15,14 @@ import com.slamdunk.quester.display.actors.CastleActor;
 import com.slamdunk.quester.display.actors.ClipActor;
 import com.slamdunk.quester.display.actors.EntranceDoorActor;
 import com.slamdunk.quester.display.actors.ExitDoorActor;
+import com.slamdunk.quester.display.actors.FogActor;
 import com.slamdunk.quester.display.actors.GroundActor;
 import com.slamdunk.quester.display.actors.PathToAreaActor;
 import com.slamdunk.quester.display.actors.RabiteActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.controlers.CastleControler;
 import com.slamdunk.quester.logic.controlers.DungeonDoorControler;
+import com.slamdunk.quester.logic.controlers.FogControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.PathToAreaControler;
 import com.slamdunk.quester.logic.controlers.RabiteControler;
@@ -133,10 +135,10 @@ public class MapRenderer {
 					(PathData)data, 
 					new ExitDoorActor());
 				break;
-		 	case PATH_MARKER:
-		 		controler = new WorldElementControler(
+		 	case FOG:
+	 			controler = new FogControler(
 					data, 
-					new GroundActor(Assets.pathMarker));
+					new FogActor());
 				break;
 	 		case GRASS:
 	 			controler = new WorldElementControler(
@@ -148,16 +150,26 @@ public class MapRenderer {
 					data, 
 					new GroundActor(Assets.ground));
 				break;
+	 		case PATH_MARKER:
+		 		controler = new WorldElementControler(
+					data, 
+					new GroundActor(Assets.pathMarker));
+				break;
 			case PATH_TO_REGION:
 				controler = createPathToArea((PathData)data);
 				break;
 			case RABITE:
+				RabiteActor rabiteActor = new RabiteActor();
 				RabiteControler rabite = new RabiteControler(
 					(CharacterData)data, 
-					new RabiteActor());
+					rabiteActor);
 				rabite.addListener(GameControler.instance);
         		rabite.getData().name = "Rabite" + rabite.getId();
         		rabite.setPathfinder(map.getPathfinder());
+        		// Tant qu'il n'est pas découvert, le rabite est invisible et inactif
+        		rabite.setEnabled(false);
+        		rabiteActor.setVisible(false);
+        		
         		map.addCharacter(rabite);
         		controler = rabite;
         		break;
