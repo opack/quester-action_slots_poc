@@ -2,7 +2,6 @@ package com.slamdunk.quester.logic.controlers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.badlogic.gdx.audio.Sound;
 import com.slamdunk.quester.display.actors.CharacterActor;
@@ -290,6 +289,16 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	}
 	
 	@Override
+	public void setEnabled(boolean enabled) {
+		boolean prevEnableState = this.enabled;
+		super.setEnabled(enabled);
+		// Quand un personnage est activé ou désactivé, on réinitialise son IA
+		if (prevEnableState != this.enabled) {
+			ai.init();
+		}
+	}
+	
+	@Override
 	public void setHealth(int value) {
 		int oldValue = characterData.health;
 		characterData.health = value;
@@ -307,6 +316,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 
 	public void setPlaying(boolean isPlaying) {
 		this.isPlaying = isPlaying;
+		
 		// Quand c'est à son tour de jouer, le joueur perd la protection qu'il avait jouée
 		// à son tour
 		if (isPlaying) {

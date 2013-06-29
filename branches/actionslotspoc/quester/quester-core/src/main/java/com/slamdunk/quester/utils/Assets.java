@@ -42,6 +42,7 @@ public class Assets {
 	public static TextureRegion wall;
 	public static TextureRegion ground;
 	public static TextureRegion grass;
+	public static TextureRegion fog;
 	public static TextureRegion entranceDoor;
 	public static TextureRegion exitDoor;
 	public static TextureRegion commonDoor;
@@ -151,6 +152,7 @@ public class Assets {
 		wall = loadTexture("wall.png");
 		ground = loadTexture("ground.png");
 		grass = loadTexture("grass.png");
+		fog = loadTexture("fog.png");
 		entranceDoor = loadTexture("browndoor_in_0.png");
 		exitDoor = loadTexture("browndoor_out_3.png");
 		commonDoor = loadTexture("darkdoor_in_0.png");

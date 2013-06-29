@@ -1,5 +1,6 @@
 package com.slamdunk.quester.model.map;
 
+import static com.slamdunk.quester.model.data.WorldElementData.FOG_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.GROUND_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.WALL_DATA;
 import static com.slamdunk.quester.model.map.Borders.BOTTOM;
@@ -175,6 +176,9 @@ public class DungeonBuilder extends MapBuilder {
    		 		) {
    		 			area.setObjectAt(col, row, WALL_DATA);
 //   		 			pathfinder.setWalkable(col, row, false);
+   		 		} else {
+   		 			// Et du brouillard sur l'intérieur
+   		 			area.setFogAt(col, row, FOG_DATA);
    		 		}
    		 	}
         }

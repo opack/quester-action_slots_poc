@@ -11,12 +11,15 @@ public class WorldElementControler implements Comparable<WorldElementControler>,
 	protected WorldElementActor actor;
 	
 	protected WorldElementData data;
+	protected boolean enabled;
+	
 	private final int id;
 	
 	public WorldElementControler(WorldElementData data) {
 		id = WORLD_ELEMENTS_COUNT++;
 		data.playRank = id;
 		setData(data);
+		enabled = true;
 	}
 	
 	public WorldElementControler(WorldElementData data, WorldElementActor actor) {
@@ -68,6 +71,10 @@ public class WorldElementControler implements Comparable<WorldElementControler>,
 	public int hashCode() {
 		return id;
 	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
 	
 	@Override
 	public void receiveDrop(ActionSlotControler dropped) {
@@ -80,5 +87,9 @@ public class WorldElementControler implements Comparable<WorldElementControler>,
 
 	public void setData(WorldElementData data) {
 		this.data = data;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }
