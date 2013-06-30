@@ -36,6 +36,7 @@ public class HUDRenderer extends Stage {
 	private Stage mapStage;
 //	private MenuButton menu;
 	private MiniMap minimap;
+	private Table actionSlotsTable;
 	
 	public HUDRenderer() {
 		hitTestPos = new Vector2();
@@ -65,23 +66,23 @@ public class HUDRenderer extends Stage {
 //		actionSlots.addArrivalSlots(arrivalSlot1, arrivalSlot2);
 				
 		// Création de la table englobante
-		Table bottom = new Table();
-		bottom.align(Align.center);
-		bottom.add(stockSlot1).size(64, 64).padRight(5);
-		bottom.add(stockSlot2).size(64, 64).padRight(5);
-		bottom.add(stockSlot3).size(64, 64).padRight(5);
-		bottom.add(stockSlot4).size(64, 64).padRight(5);
-		bottom.add(stockSlot5).size(64, 64).padRight(5);
-		bottom.row().padBottom(5).padTop(5);
-		bottom.add(upcomingSlot1).size(32, 32).padRight(5);
-		bottom.add(upcomingSlot2).size(32, 32).padRight(5);
-		bottom.add(upcomingSlot3).size(32, 32).padRight(5);
-		bottom.add(upcomingSlot4).size(32, 32).padRight(5);
-		bottom.add(upcomingSlot5).size(32, 32).padRight(5);
+		actionSlotsTable = new Table();
+		actionSlotsTable.align(Align.center);
+		actionSlotsTable.add(stockSlot1).size(64, 64).padRight(5);
+		actionSlotsTable.add(stockSlot2).size(64, 64).padRight(5);
+		actionSlotsTable.add(stockSlot3).size(64, 64).padRight(5);
+		actionSlotsTable.add(stockSlot4).size(64, 64).padRight(5);
+		actionSlotsTable.add(stockSlot5).size(64, 64).padRight(5);
+		actionSlotsTable.row().padBottom(5).padTop(5);
+		actionSlotsTable.add(upcomingSlot1).size(32, 32).padRight(5);
+		actionSlotsTable.add(upcomingSlot2).size(32, 32).padRight(5);
+		actionSlotsTable.add(upcomingSlot3).size(32, 32).padRight(5);
+		actionSlotsTable.add(upcomingSlot4).size(32, 32).padRight(5);
+		actionSlotsTable.add(upcomingSlot5).size(32, 32).padRight(5);
 //		bottom.add(arrivalSlot1).size(64, 64).padRight(5);
 //		bottom.add(arrivalSlot2).size(64, 64).padRight(5);
-		bottom.pack();
-		return bottom;
+		actionSlotsTable.pack();
+		return actionSlotsTable;
 	}
 	
 //	private Table createRightTable() {
@@ -125,7 +126,7 @@ public class HUDRenderer extends Stage {
 		displayMap.addListener(new ClickListener(){
 			@Override
 			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getScreen().getHUDRenderer().getToggleMinimapVisibility();
+				GameControler.instance.getScreen().getHUDRenderer().toggleMinimapVisibility();
 			};
 		});
 		
@@ -159,7 +160,7 @@ public class HUDRenderer extends Stage {
 		return actionSlots;
 	}
 
-	public void getToggleMinimapVisibility() {
+	public void toggleMinimapVisibility() {
 		if (minimap != null) {
 			minimap.setVisible(!minimap.isVisible());
 		}
@@ -213,6 +214,12 @@ public class HUDRenderer extends Stage {
 //		Table.drawDebug(this);
 	}
 
+	public void setActionSlotsVisibility(boolean isVisible) {
+		if (actionSlotsTable != null) {
+			actionSlotsTable.setVisible(isVisible);
+		}
+	}
+	
 	public void setMiniMap(int worldWidth, int worldHeight, int miniMapImageWidth, int miniMapImageHeight) {
 		minimap = new MiniMap(worldWidth, worldHeight);
 		minimap.init(miniMapImageWidth, miniMapImageHeight);

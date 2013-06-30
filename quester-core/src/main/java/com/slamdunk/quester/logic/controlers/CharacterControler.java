@@ -14,6 +14,7 @@ import com.slamdunk.quester.logic.ai.HealAction;
 import com.slamdunk.quester.logic.ai.MoveAction;
 import com.slamdunk.quester.logic.ai.MoveNearAction;
 import com.slamdunk.quester.logic.ai.ProtectAction;
+import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.points.Point;
@@ -80,6 +81,11 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	
 	@Override
 	public void act(float delta) {
+		// Si le personnage est inactif, sa prochaine action est de finir son tour
+		if (!isEnabled()) {
+			ai.setNextAction(new EndTurnAction());
+		}
+		// Exécution de la prochaine action
 		AIAction action = ai.getNextAction();
 		action.act();
 		super.act(delta);
@@ -295,11 +301,16 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	
 	@Override
 	public void setEnabled(boolean enabled) {
-		boolean prevEnableState = this.enabled;
+//		boolean prevEnableState = this.enabled;
 		super.setEnabled(enabled);
-		// Quand un personnage est activé ou désactivé, on réinitialise son IA
-		if (prevEnableState != this.enabled) {
-			ai.init();
+//		 Quand un personnage est activé ou désactivé, on réinitialise son IA
+//		if (prevEnableState != this.enabled) {
+//			ai.init();
+//		}
+		// Quand un personnage passe à l'état inactif, on modifie l'action courante
+		// de son Actor en conséquence
+		if (!enabled) {
+			actor.setCurrentAction(QuesterActions.NONE, 0);
 		}
 	}
 

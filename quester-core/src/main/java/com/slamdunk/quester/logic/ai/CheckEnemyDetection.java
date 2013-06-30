@@ -12,6 +12,9 @@ public class CheckEnemyDetection extends AbstractAIAction {
 		CharacterControler character = ai.controler;
 		boolean isInEnemySight = false;
 		for (CharacterControler curCharacter : GameControler.instance.getCharacters()) {
+			if (curCharacter == character) {
+				continue;
+			}
 			if (curCharacter.isInSight(character)) {
 				// Si le personnage entre dans la zone d'un autre personnage, alors il est activé.
 				curCharacter.setEnabled(true);
