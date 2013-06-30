@@ -69,8 +69,8 @@ public class PlayerControler extends CharacterControler {
 		case TECHSPE:
 			ai.clearActions();
 			for (CharacterControler character : GameControler.instance.getCharacters()) {
-				// Attaque tous les personnages visibles et hostiles
-				if (character.isEnabled() && character.isHostile()) {
+				// Attaque tous les personnages hostiles
+				if (character.isHostile()) {
 					ai.addAction(new AttackAction(character));
 				}
 			}

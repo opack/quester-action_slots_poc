@@ -122,6 +122,11 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		}
 	}
 	
+	@Override
+	public CharacterActor getActor() {
+		return (CharacterActor)super.getActor();
+	}
+	
 	public AI getAI() {
 		return ai;
 	}

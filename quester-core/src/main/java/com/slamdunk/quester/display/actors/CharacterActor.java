@@ -1,20 +1,33 @@
 package com.slamdunk.quester.display.actors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Scaling;
 import com.slamdunk.quester.display.Clip;
+import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
+import com.slamdunk.quester.display.hud.actionslots.SlotData;
 import com.slamdunk.quester.display.map.ActorMap;
+import com.slamdunk.quester.logic.ai.AIAction;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
+import com.slamdunk.quester.model.map.MapElements;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
 
 public class CharacterActor extends WorldElementActor{
 	protected CharacterControler characterControler;
+	protected boolean isDisplayingStats;
+	private List<Image> nextActions;
+	private Table futureActions;
 	
 	protected CharacterActor(TextureRegion texture) {
 		super(texture);
@@ -28,14 +41,91 @@ public class CharacterActor extends WorldElementActor{
 			float offsetY = map.getCellHeight() - size; // En haut
 			getImage().setPosition(offsetX, offsetY);
 		}
+		
+		addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	                return true;
+	        }
+	        
+	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        	for (CharacterControler character : GameControler.instance.getCharacters()) {
+	        		if (character.getData().element != MapElements.PLAYER) {
+	        			character.getActor().switchSpecifics();
+	        		}
+	        	}
+	        }
+		});
+		isDisplayingStats = true;
+		
+		createFutureActionsImages();
+		futureActions.setVisible(false);
 	}
 	
+	private void createFutureActionsImages() {
+		nextActions = new ArrayList<Image>();
+		ActorMap map = GameControler.instance.getScreen().getMap();
+		final float width = map.getCellWidth() * 0.2f;
+		final float height = map.getCellHeight() * 0.2f;
+		futureActions = new Table();
+//		futureActions.debug();
+		futureActions.add().expand();
+		futureActions.row();
+		futureActions.add().expandX();
+		futureActions.add(createFutureActionImage()).size(width, height);
+		futureActions.add(createFutureActionImage()).size(width, height);
+		futureActions.add(createFutureActionImage()).size(width, height);
+		futureActions.add().expandX();
+		futureActions.pack();
+		futureActions.setFillParent(true);
+		addActor(futureActions);
+	}
+
+	private Image createFutureActionImage() {
+		Image image = new Image(Assets.action_attack);
+		image.setScaling(Scaling.stretch);
+		nextActions.add(image);
+		return image;
+	}
+
+	protected void switchSpecifics() {
+		isDisplayingStats = !isDisplayingStats;
+		futureActions.setVisible(!isDisplayingStats);
+	}
+
 	@Override
 	public void drawSpecifics(SpriteBatch batch) {
 		// Met à jour l'animation du personnage
 		drawClip(batch);
 		
-		// Mesures
+		if (isDisplayingStats) {
+			drawStats(batch);
+		} else {
+			drawFutureActions(batch);
+		}
+//		Table.drawDebug(getStage());
+	}
+	
+	private void drawFutureActions(SpriteBatch batch) {
+		List<AIAction> actions = characterControler.getAI().getActions();
+		final int countActions = actions.size();
+		final int countImages = nextActions.size();
+		for (int cur = 0; cur < Math.min(countActions, countImages); cur++) {
+			// Récupération de l'action
+			AIAction action = actions.get(cur);
+			// Récupération de l'image
+			SlotData data = ActionSlotsHelper.SLOT_DATAS.get(action.getAction());
+			// Affectation de l'image
+			nextActions.get(cur).setDrawable(data.drawable);
+		}
+		if (countActions < countImages) {
+			for (int cur = countActions; cur < countImages; cur++) {
+				nextActions.get(cur).setVisible(false);
+			}
+		}
+	}
+
+	private void drawStats(SpriteBatch batch) {
+	// Mesures
 		int picSize = Assets.heart.getTexture().getWidth();
 		
 		String att = String.valueOf(characterControler.getData().attack);
@@ -80,7 +170,7 @@ public class CharacterActor extends WorldElementActor{
 			offsetAttX + picSize + 1,
 			offsetAttTextY);
 	}
-	
+
 	public List<Point> findPathTo(WorldElementActor to) {
 		return GameControler.instance.getScreen().getMap().findPath(getWorldX(), getWorldY(), to.getWorldX(), to.getWorldY());
 	}

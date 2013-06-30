@@ -22,10 +22,6 @@ public class CheckEnemyDetection extends AbstractAIAction {
 				if (curCharacter.isHostile()) {
 					isInEnemySight = true;
 				}
-			} else {
-				// Si le personnage n'est pas / plus dans la zone de perception de l'autre perso,
-				// alors ce-dernier est désactivé
-				curCharacter.setEnabled(false);
 			}
 		}
 		

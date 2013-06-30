@@ -137,7 +137,7 @@ public class MapRenderer {
 					new ExitDoorActor());
 				break;
 	 		case GRASS:
-	 			controler = new WorldElementControler(
+	 			controler = new GroundControler(
 					data, 
 					new GroundActor(Assets.grass));
 				break;
@@ -160,11 +160,12 @@ public class MapRenderer {
 	 			// Si c'est le dernier marker, on met une image spéciale
 	 			// Si ce n'est pas le dernier marker, on met une image normale
 	 			PathMarkerActor actor = null;
-	 			if (isLastMarker) {
-	 				actor = new PathMarkerActor(Assets.menu_move);
-	 			} else {
+//	 			if (isLastMarker) {
+//	 				actor = new PathMarkerActor(Assets.menu_move);
+//	 			} else {
 	 				actor = new PathMarkerActor(Assets.pathMarker);
-	 			}
+//	 			}
+	 			GameControler.instance.getScreen().getHUDRenderer().getActionSlots().addPathMarker(actor);
 		 		controler = new PathMarkerControler(
 					data, 
 					actor,
@@ -332,6 +333,9 @@ private PathToAreaControler createPathToArea(PathData data) {
 	}
 
 	public void showPath(List<Point> path) {
+		if (path == null || path.isEmpty()) {
+			return;
+		}
 		MapLayer overlayLayer = map.getLayer(MapLevels.OVERLAY);
 		for (Point pos : path) {
 			createActor(pos.getX(), pos.getY(), PATH_MARKER_DATA, overlayLayer);
