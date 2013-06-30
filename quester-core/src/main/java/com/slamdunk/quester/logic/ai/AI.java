@@ -25,6 +25,7 @@ public class AI {
 	 */
 	public void addAction(AIAction action) {
 		actions.add(action);
+		action.setAI(this);
 	}
 
 	/**
@@ -72,7 +73,10 @@ public class AI {
 	 * Définit la prochaine action à effectuer.
 	 */
 	public void setNextAction(AIAction action) {
-		actions.add(0, action);
+		if (action != null) {
+			actions.add(0, action);
+			action.setAI(this);
+		}
 	}
 
 	/**

@@ -30,10 +30,6 @@ public enum MapElements {
 	 */
 	EMPTY,
 	/**
-	 * Brouillard
-	 */
-	FOG,
-	/**
 	 * Herbe
 	 */
 	GRASS,

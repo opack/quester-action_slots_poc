@@ -15,15 +15,16 @@ import com.slamdunk.quester.display.actors.CastleActor;
 import com.slamdunk.quester.display.actors.ClipActor;
 import com.slamdunk.quester.display.actors.EntranceDoorActor;
 import com.slamdunk.quester.display.actors.ExitDoorActor;
-import com.slamdunk.quester.display.actors.FogActor;
 import com.slamdunk.quester.display.actors.GroundActor;
+import com.slamdunk.quester.display.actors.PathMarkerActor;
 import com.slamdunk.quester.display.actors.PathToAreaActor;
 import com.slamdunk.quester.display.actors.RabiteActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.controlers.CastleControler;
 import com.slamdunk.quester.logic.controlers.DungeonDoorControler;
-import com.slamdunk.quester.logic.controlers.FogControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.GroundControler;
+import com.slamdunk.quester.logic.controlers.PathMarkerControler;
 import com.slamdunk.quester.logic.controlers.PathToAreaControler;
 import com.slamdunk.quester.logic.controlers.RabiteControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
@@ -135,25 +136,39 @@ public class MapRenderer {
 					(PathData)data, 
 					new ExitDoorActor());
 				break;
-		 	case FOG:
-	 			controler = new FogControler(
-					data, 
-					new FogActor());
-				break;
 	 		case GRASS:
 	 			controler = new WorldElementControler(
 					data, 
 					new GroundActor(Assets.grass));
 				break;
 	 		case GROUND:
-	 			controler = new WorldElementControler(
+	 			controler = new GroundControler(
 					data, 
 					new GroundActor(Assets.ground));
 				break;
 	 		case PATH_MARKER:
-		 		controler = new WorldElementControler(
+	 			boolean isLastMarker = false;
+	 			List<Point> path = GameControler.instance.getPlayer().getPath();
+	 			if (path != null && !path.isEmpty()) {
+	 				Point lastPos = path.get(path.size() - 1);
+	 				if (lastPos != null
+	 				&& lastPos.getX() == col
+	 				&& lastPos.getY() == row) {
+	 					isLastMarker = true;
+	 				}
+	 			}
+	 			// Si c'est le dernier marker, on met une image spéciale
+	 			// Si ce n'est pas le dernier marker, on met une image normale
+	 			PathMarkerActor actor = null;
+	 			if (isLastMarker) {
+	 				actor = new PathMarkerActor(Assets.menu_move);
+	 			} else {
+	 				actor = new PathMarkerActor(Assets.pathMarker);
+	 			}
+		 		controler = new PathMarkerControler(
 					data, 
-					new GroundActor(Assets.pathMarker));
+					actor,
+					isLastMarker);
 				break;
 			case PATH_TO_REGION:
 				controler = createPathToArea((PathData)data);
@@ -165,10 +180,8 @@ public class MapRenderer {
 					rabiteActor);
 				rabite.addListener(GameControler.instance);
         		rabite.getData().name = "Rabite" + rabite.getId();
-        		rabite.setPathfinder(map.getPathfinder());
         		// Tant qu'il n'est pas découvert, le rabite est invisible et inactif
         		rabite.setEnabled(false);
-        		rabiteActor.setVisible(false);
         		
         		map.addCharacter(rabite);
         		controler = rabite;

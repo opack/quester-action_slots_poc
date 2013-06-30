@@ -38,18 +38,18 @@ public class PlayerControler extends CharacterControler {
 		}
 		
 		// On entre dans le une fois que le déplacement est fini
-		ai.addAction(new CrossPathAction(this, path));
+		ai.addAction(new CrossPathAction(path));
 		return true;
 	}
 	
 	public boolean enterCastle(CastleControler castle) {
 		// On se déplace sur le château
-		if (!prepareMoveOver(castle.getActor().getWorldX(), castle.getActor().getWorldY())) {
+		if (!prepareMoveOver(castle.actor.getWorldX(), castle.actor.getWorldY())) {
 			return false;
 		}
 		
 		// On entre dans le donjon une fois que le déplacement est fini
-		ai.addAction(new EnterCastleAction(this, castle));
+		ai.addAction(new EnterCastleAction(castle));
 		return true;		
 	}
 		
@@ -68,13 +68,13 @@ public class PlayerControler extends CharacterControler {
 		switch (dropped.getData().action) {
 		case TECHSPE:
 			ai.clearActions();
-			for (CharacterControler character : GameControler.instance.getScreen().getMap().getCharacters()) {
+			for (CharacterControler character : GameControler.instance.getCharacters()) {
 				// Attaque tous les personnages visibles et hostiles
 				if (character.isEnabled() && character.isHostile()) {
-					ai.addAction(new AttackAction(this, character));
+					ai.addAction(new AttackAction(character));
 				}
 			}
-			ai.addAction(new EndTurnAction(this));
+			ai.addAction(new EndTurnAction());
 		break;
 		default:
 			super.receiveDrop(dropped);

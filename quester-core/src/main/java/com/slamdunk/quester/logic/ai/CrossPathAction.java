@@ -1,17 +1,14 @@
 package com.slamdunk.quester.logic.ai;
 
 import com.slamdunk.quester.logic.controlers.PathToAreaControler;
-import com.slamdunk.quester.logic.controlers.PlayerControler;
 
 /**
  * Traverse le chemin indiqué.
  */
-public class CrossPathAction implements AIAction {
-	private PlayerControler player;
+public class CrossPathAction extends AbstractAIAction {
 	private PathToAreaControler path;
 	
-	public CrossPathAction(PlayerControler player, PathToAreaControler path) {
-		this.player = player;
+	public CrossPathAction(PathToAreaControler path) {
 		this.path = path;
 	}
 	
@@ -21,7 +18,7 @@ public class CrossPathAction implements AIAction {
 		path.open();
 
 		// L'action est consommée : réalisation de la prochaine action
-		player.getAI().nextAction();
+		ai.nextAction();
 	}
 
 	@Override

@@ -9,7 +9,6 @@ public class RabiteControler extends CharacterControler {
 
 	public RabiteControler(CharacterData data, RabiteActor body) {
 		super(data, body, new RabiteAI());
-		setPathfinder(GameControler.instance.getScreen().getMap().getPathfinder());
 	}
 
 	@Override

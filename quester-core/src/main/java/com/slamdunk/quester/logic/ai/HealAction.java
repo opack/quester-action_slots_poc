@@ -7,7 +7,7 @@ import com.slamdunk.quester.utils.Assets;
  * Arrête le tour du personnage en cours et le prépare à penser
  * de nouveau.
  */
-public class HealAction implements AIAction {
+public class HealAction extends AbstractAIAction {
 	private CharacterControler character;
 	private int hpGained;
 	
@@ -19,7 +19,7 @@ public class HealAction implements AIAction {
 	public void act() {
 		Assets.playSound(Assets.drinkSound);
 		character.heal(hpGained);
-		character.getAI().nextAction();
+		ai.nextAction();
 	}
 
 	@Override

@@ -1,38 +1,23 @@
 package com.slamdunk.quester.logic.ai;
 
-import com.slamdunk.quester.display.map.ActorMap;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.CharacterListener;
-import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.utils.Assets;
 
 /**
  * Déplace le contrôleur vers les coordonnées spécifiées.
  */
-public class MoveAction implements AIAction {
-	private CharacterControler character;
+public class MoveAction extends AbstractAIAction {
 	private int destinationX;
 	private int destinationY;
-	private boolean ignoreArrivalWalkability;
 	
-	public MoveAction(CharacterControler character, int destinationX, int destinationY) {
-		this(character, destinationX, destinationY, false);
-	}
-	
-	public MoveAction(CharacterControler character, int destinationX, int destinationY, boolean ignoreArrivalWalkability) {
-		this.character = character;
+	public MoveAction(int destinationX, int destinationY) {
 		this.destinationX = destinationX;
 		this.destinationY = destinationY;
-		this.ignoreArrivalWalkability = ignoreArrivalWalkability;
 	}
 
 	public void act() {
-		// Avant de bouger, on s'assure que la case visée est toujours disponible.
-		if (!ignoreArrivalWalkability
-		&& !GameControler.instance.getScreen().getMap().isEmpty(ActorMap.LAYERS_OBSTACLES, destinationX, destinationY)) {
-			character.prepareThink();
-			return;
-		}
+		CharacterControler character = ai.controler;
 		
 		// Fait un bruit de pas
 		Assets.playSound(character.getStepSound());
@@ -47,9 +32,10 @@ public class MoveAction implements AIAction {
 			listener.onCharacterMoved(character, oldX, oldY);
 		}
 		
+		// Si on est entré dans la zone de perception d'un ennemi, le déplacement est interrompu.
+		ai.nextAction();
 		// On attend la fin du mouvement puis on termine le tour.
-		character.getAI().nextAction();
-		character.getAI().setNextActions(new WaitCompletionAction(character), new EndTurnAction(character));
+		ai.setNextActions(new WaitCompletionAction(), new CheckEnemyDetection(), new EndTurnAction());
 	}
 
 	@Override

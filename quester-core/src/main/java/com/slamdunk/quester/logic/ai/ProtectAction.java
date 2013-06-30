@@ -1,13 +1,12 @@
 package com.slamdunk.quester.logic.ai;
 
 import com.slamdunk.quester.logic.controlers.CharacterControler;
-import com.slamdunk.quester.utils.Assets;
 
 /**
  * Arrête le tour du personnage en cours et le prépare à penser
  * de nouveau.
  */
-public class ProtectAction implements AIAction {
+public class ProtectAction extends AbstractAIAction {
 	private CharacterControler character;
 	private int damageReduction;
 	
@@ -18,7 +17,7 @@ public class ProtectAction implements AIAction {
 	
 	public void act() {
 		character.protect(damageReduction);
-		character.getAI().nextAction();
+		ai.nextAction();
 	}
 
 	@Override

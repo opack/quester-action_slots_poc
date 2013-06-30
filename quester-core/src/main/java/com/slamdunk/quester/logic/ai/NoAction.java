@@ -2,16 +2,11 @@ package com.slamdunk.quester.logic.ai;
 
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 
-public class NoAction implements AIAction {
-	private CharacterControler controler;
-	
-	public NoAction(CharacterControler controler) {
-		this.controler = controler;
-	}
-	
+public class NoAction extends AbstractAIAction {
 	@Override
 	public void act() {
-		controler.prepareThink();
+		CharacterControler character = ai.controler;
+		character.prepareThink();
 	}
 
 	@Override

@@ -16,17 +16,33 @@ import com.slamdunk.quester.logic.ai.MoveNearAction;
 import com.slamdunk.quester.logic.ai.ProtectAction;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.WorldElementData;
-import com.slamdunk.quester.model.map.AStar;
 import com.slamdunk.quester.model.points.Point;
 
 public class CharacterControler extends WorldElementControler implements Damageable {
 
+	private static int[][] NEIGHBORS = new int[][]{
+		new int[]{-1, -1},
+		new int[]{0, -1},
+		new int[]{+1, -1},
+		new int[]{-1, 0},
+		new int[]{0, 0},
+		new int[]{+1, 0},
+		new int[]{-1, +1},
+		new int[]{0, +1},
+		new int[]{+1, +1},
+	};
+	
 	/**
 	 * Objet choissant les actions à effectuer
 	 */
 	protected AI ai;
 	
 	protected CharacterData characterData;
+	
+	/**
+	 * Réduction de dégâts que le joueur a joué
+	 */
+	private int damageReduction;
 	
 	/**
 	 * Indique si ce Character est dans son tour de jeu
@@ -48,16 +64,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	 * Chemin que va suivre le personnage
 	 */
 	private List<Point> path;
-	
-	/**
-	 * Objet à utiliser pour trouver un chemin entre 2 points.
-	 */
-	private AStar pathfinder;
-	
-	/**
-	 * Réduction de dégâts que le joueur a joué
-	 */
-	private int damageReduction;
 	
 	public CharacterControler(CharacterData data, CharacterActor body, AI ai) {
 		super(data, body);
@@ -136,10 +142,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		return path;
 	}
 	
-	public AStar getPathfinder() {
-		return pathfinder;
-	}
-	
 	public Sound getStepSound() {
 		return null;
 	}
@@ -147,19 +149,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	@Override
 	public void heal(int amount) {
 		setHealth(characterData.health + amount);
-	}
-	
-	/**
-	 * Retourne true si other est sur une case voisine
-	 * @param actor
-	 * @param target
-	 * @return
-	 */
-	public boolean isAround(WorldElementActor other) {
-		// A côté s'ils sont sur le même X et avec 1 seule case d'écart en Y...
-		return actor.getWorldX() == other.getWorldX() && Math.abs(actor.getWorldY() - other.getWorldY()) == 1
-		// ... ou sur le même Y et avec une seule case d'écart en X
-		|| actor.getWorldY() == other.getWorldY() && Math.abs(actor.getWorldX() - other.getWorldX()) == 1;
 	}
 	
 	@Override
@@ -171,6 +160,26 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		return false;
 	}
 
+	/**
+	 * Renvoie truc si le CharacterControler passé en paramètre est dans la zone de perception
+	 * de ce perso. C'est notamment ici qu'on pourra dire que si le CharacterControler a un sort
+	 * d'invisibilité, alors il ne sera pas visible.
+	 */
+	public boolean isInSight(CharacterControler character) {
+		// Par défaut, un personnage est visible s'il est dans une case autour
+		final int myX = actor.getWorldX();
+		final int myY = actor.getWorldY();
+		final int hisX = character.actor.getWorldX();
+		final int hisY = character.actor.getWorldY();
+		for (int[] neighbor : NEIGHBORS) {
+			if (myX + neighbor[0] == hisX
+			&& myY + neighbor[1] == hisY) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean isPlaying() {
 		return isPlaying;
 	}
@@ -178,56 +187,48 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public boolean isShowDestination() {
 		return isShowDestination;
 	}
-	
+
 	/**
 	 * Déplace le personnage jusqu'à ce qu'il soit autour des coordonnées indiquées,
 	 * en placant à chaque fois une torche.
 	 */
 	private boolean prepareMove(int x, int y, boolean stopNear, boolean ignoreArrivalWalkability) {
-		if (pathfinder == null) {
-			return false;
-		}
-		
 		// Calcule le chemin qu'il faut emprunter
-		final List<Point> walkPath = pathfinder.findPath(
-				actor.getWorldX(), actor.getWorldY(), 
-				x, y,
-				true);
+		updatePath(x, y, ignoreArrivalWalkability);
 		
 		// S'il n'y a pas de chemin, on ne fait rien
-		if (walkPath == null) {
+		if (path == null) {
 			return false;
 		}
 		
 		// Comme on veut se déplacer "près" de la position, on retire le dernier point
 		if (stopNear) {
-			walkPath.remove(walkPath.size() - 1);
+			path.remove(path.size() - 1);
 		}
 		
-		// Pour aller jusqu'à ce point, on doit prendre chaque position et s'assurer qu'elle
-		// est éclairée puis s'y déplacer
-		for (Point pos : walkPath) {
-			ai.addAction(new MoveAction(this, pos.getX(), pos.getY(), ignoreArrivalWalkability));
-		}
+		prepareMoveAlongPath();
 		return true;
 	}
 
+	public void prepareMoveAlongPath() {
+		for (Point pos : path) {
+			ai.addAction(new MoveAction(pos.getX(), pos.getY()));
+		}
+	}
+	
 	public boolean prepareMoveNear(WorldElementActor target) {
 		// Calcule le chemin qu'il faut emprunter
-		final List<Point> walkPath = pathfinder.findPath(
-				actor.getWorldX(), actor.getWorldY(), 
-				target.getWorldX(), target.getWorldY(),
-				true);
+		updatePath(target.getWorldX(), target.getWorldY(), true);
 		
 		// S'il n'y a pas de chemin, on ne fait rien
-		if (walkPath == null) {
+		if (path == null) {
 			return false;
 		}
 		
-		ai.addAction(new MoveNearAction(this, target));
+		ai.addAction(new MoveNearAction(target));
 		return true;
 	}
-	
+
 	public boolean prepareMoveOver(int x, int y) {
 		return prepareMove(x, y, false, true);
 	}
@@ -238,7 +239,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public boolean prepareMoveTo(int x, int y) {
 		return prepareMove(x, y, false, false);
 	}
-
+	
 	/**
 	 * Annule toutes les actions en cours et prépare le think()
 	 */
@@ -248,6 +249,10 @@ public class CharacterControler extends WorldElementControler implements Damagea
 			GameControler.instance.getScreen().getMapRenderer().clearPath();
 		}
 		ai.init();
+	}
+	
+	public void protect(int damageReduction) {
+		this.damageReduction = damageReduction;
 	}
 	
 	@Override
@@ -262,22 +267,22 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		switch (dropped.getData().action) {
 		case ATTACK:
 			player.ai.clearActions();
-			player.ai.addAction(new AttackAction(player, this));
-			player.ai.addAction(new EndTurnAction(player));
+			player.ai.addAction(new AttackAction(this));
+			player.ai.addAction(new EndTurnAction());
 		break;
 		case END_TURN:
 			player.ai.clearActions();
-			player.ai.addAction(new EndTurnAction(player));
+			player.ai.addAction(new EndTurnAction());
 		break;
 		case HEAL:
 			player.ai.clearActions();
 			player.ai.addAction(new HealAction(player, 3));
-			player.ai.addAction(new EndTurnAction(player));
+			player.ai.addAction(new EndTurnAction());
 		break;
 		case PROTECT:
 			player.ai.clearActions();
 			player.ai.addAction(new ProtectAction(player, 3));
-			player.ai.addAction(new EndTurnAction(player));
+			player.ai.addAction(new EndTurnAction());
 		break;
 		}
 	}
@@ -297,7 +302,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 			ai.init();
 		}
 	}
-	
+
 	@Override
 	public void setHealth(int value) {
 		int oldValue = characterData.health;
@@ -310,10 +315,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		}
 	}
 	
-	public void setPathfinder(AStar pathfinder) {
-		this.pathfinder = pathfinder;
-	}
-
 	public void setPlaying(boolean isPlaying) {
 		this.isPlaying = isPlaying;
 		
@@ -327,7 +328,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public void setShowDestination(boolean isShowDestination) {
 		this.isShowDestination = isShowDestination;
 	}
-	
+
 	/**
 	 * Arrête le déplacement en cours
 	 */
@@ -335,14 +336,11 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		prepareThink();
 	}
 
-	protected boolean updatePath(int x, int y) {
+	public boolean updatePath(int x, int y, boolean ignoreArrivalWalkability) {
 		path = GameControler.instance.getScreen().getMap().findPath(
 				actor.getWorldX(), actor.getWorldY(), 
-				x, y);
+				x, y,
+				ignoreArrivalWalkability);
 		return path != null && !path.isEmpty();
-	}
-
-	public void protect(int damageReduction) {
-		this.damageReduction = damageReduction;
 	}
 }

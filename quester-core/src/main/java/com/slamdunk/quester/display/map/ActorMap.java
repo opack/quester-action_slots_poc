@@ -124,8 +124,8 @@ public class ActorMap extends Group {
 	}
 	
 
-	public List<Point> findPath(int fromX, int fromY, int toX, int toY, boolean ignoreArrivalLit) {
-		return pathfinder.findPath(fromX, fromY, toX, toY, ignoreArrivalLit);
+	public List<Point> findPath(int fromX, int fromY, int toX, int toY, boolean ignoreArrivalWalkability) {
+		return pathfinder.findPath(fromX, fromY, toX, toY, ignoreArrivalWalkability);
 	}
 	
 	/**

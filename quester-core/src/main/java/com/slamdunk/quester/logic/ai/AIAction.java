@@ -10,4 +10,14 @@ public interface AIAction {
 	 * Retourne l'action associée
 	 */
 	QuesterActions getAction();
+	
+	/**
+	 * Retourne l'AI contenant cette action
+	 */
+	AI getAI();
+	
+	/**
+	 * Définit l'AI contenant cette action
+	 */
+	void setAI(AI ai);
 }

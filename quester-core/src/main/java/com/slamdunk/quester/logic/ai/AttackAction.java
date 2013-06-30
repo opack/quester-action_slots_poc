@@ -4,19 +4,16 @@ import static com.slamdunk.quester.logic.ai.QuesterActions.ATTACK;
 
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.Damageable;
-import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
 
 /**
  * Fait attaquer la cible target par l'attacker, fournis lors de la création
  * de l'action. 
  */
-public class AttackAction implements AIAction {
-	private CharacterControler attacker;
+public class AttackAction extends AbstractAIAction {
 	private Damageable target;
 	
-	public AttackAction(CharacterControler attacker, Damageable target) {
-		this.attacker = attacker;
+	public AttackAction(Damageable target) {
 		this.target = target;
 	}
 	
@@ -30,6 +27,8 @@ public class AttackAction implements AIAction {
 //			return;
 //		}
 		
+		CharacterControler attacker = ai.controler;
+		
 		// Lance l'animation de l'attaque
 		attacker.getActor().setCurrentAction(ATTACK, targetControler.getActor().getWorldX());
 		
@@ -40,9 +39,9 @@ public class AttackAction implements AIAction {
 		target.receiveDamage(attacker.getData().attack);
 		
 		// L'action est consommée : réalisation de la prochaine action
-		attacker.getAI().nextAction();
+		ai.nextAction();
 //DBG		attacker.getAI().setNextActions(new WaitCompletionAction(attacker), new EndTurnAction(attacker));
-		attacker.getAI().setNextAction(new WaitCompletionAction(attacker));
+		ai.setNextAction(new WaitCompletionAction());
 	}
 
 	@Override

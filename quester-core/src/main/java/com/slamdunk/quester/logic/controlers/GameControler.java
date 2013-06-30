@@ -93,6 +93,10 @@ public class GameControler implements CharacterListener {
 	public Point getCurrentArea() {
 		return currentArea;
 	}
+	
+	public List<CharacterControler> getCharacters() {
+		return characters;
+	}
 
 	public CharacterControler getCurrentCharacter() {
 		return characters.get(curCharacterPlaying);
@@ -192,7 +196,6 @@ public class GameControler implements CharacterListener {
 		this.screen = screen;
 		this.characters = screen.getMap().getCharacters();
 		updateHasMoreEnemies();
-		GameControler.instance.getPlayer().setPathfinder(screen.getMap().getPathfinder());
 	}
 	
 	public void updateHasMoreEnemies() {

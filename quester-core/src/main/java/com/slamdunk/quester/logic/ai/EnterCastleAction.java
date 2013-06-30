@@ -2,18 +2,15 @@ package com.slamdunk.quester.logic.ai;
 
 import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.logic.controlers.CastleControler;
-import com.slamdunk.quester.logic.controlers.PlayerControler;
 import com.slamdunk.quester.model.data.CastleData;
 
 /**
  * Fait entrer le joueur dans le château indiqué.
  */
-public class EnterCastleAction implements AIAction {
-	private PlayerControler player;
+public class EnterCastleAction extends AbstractAIAction {
 	private CastleControler castle;
 	
-	public EnterCastleAction(PlayerControler player, CastleControler castle) {
-		this.player = player;
+	public EnterCastleAction(CastleControler castle) {
 		this.castle = castle;
 	}
 	
@@ -26,7 +23,7 @@ public class EnterCastleAction implements AIAction {
 			castleData.difficulty);
 		
 		// L'action est consommée : réalisation de la prochaine action
-		player.getAI().nextAction();
+		ai.nextAction();
 	}
 	
 

@@ -1,18 +1,10 @@
 package com.slamdunk.quester.logic.ai;
 
-import com.slamdunk.quester.logic.controlers.CharacterControler;
-
-public class ThinkAction implements AIAction {
-	private CharacterControler controler;
-	
-	public ThinkAction(CharacterControler controler) {
-		this.controler = controler;
-	}
-	
+public class ThinkAction extends AbstractAIAction {
 	@Override
 	public void act() {
-		controler.getAI().think();
-		controler.getAI().nextAction();
+		ai.think();
+		ai.nextAction();
 	}
 
 	@Override

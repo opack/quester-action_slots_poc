@@ -141,8 +141,6 @@ public class GameScreen implements Screen {
 		player = new PlayerActor();
 		player.setControler(GameControler.instance.getPlayer());
 		player.setPositionInWorld(position.getX(), position.getY());
-		
-		GameControler.instance.getPlayer().setPathfinder(mapRenderer.getMap().getPathfinder());
 	}
 	
 	/**
