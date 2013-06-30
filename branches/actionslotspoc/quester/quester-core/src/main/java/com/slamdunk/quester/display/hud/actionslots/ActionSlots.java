@@ -3,14 +3,13 @@ package com.slamdunk.quester.display.hud.actionslots;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Payload;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Source;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop.Target;
 import com.slamdunk.quester.display.actors.ActionSlotActor;
+import com.slamdunk.quester.display.actors.PathMarkerActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.ActionSlotControler;
@@ -18,21 +17,24 @@ import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
 
 public class ActionSlots {
-	private final List<ActionSlotActor> arrivalSlots;
+	
 	private final float cellHeight;
 	private final float cellWidth;
 	private final ActionSlotActor dragActor;
 	
 	private final DragAndDrop dragAndDrop;
 
+	private final List<ActionSlotActor> arrivalSlots;
 	private final List<ActionSlotActor> stockSlots;
-
 	private final List<ActionSlotActor> upcomingSlots;
+	
+	private final List<Target> pathMarkers;
 
 	public ActionSlots() {
 		upcomingSlots = new ArrayList<ActionSlotActor>();
 		arrivalSlots = new ArrayList<ActionSlotActor>();
 		stockSlots = new ArrayList<ActionSlotActor>();
+		pathMarkers = new ArrayList<Target>();
 		
 		cellWidth = GameControler.instance.getScreen().getMap().getCellWidth();
 		cellHeight = GameControler.instance.getScreen().getMap().getCellHeight();
@@ -60,6 +62,10 @@ public class ActionSlots {
 	public void addSource(final ActionSlotActor source) {
 		dragAndDrop.addSource(new Source(source) {
 			public Payload dragStart (InputEvent event, float x, float y, int pointer) {
+				if (source.getControler().getData().action == QuesterActions.NONE) {
+					return null;
+				}
+				
 				Payload payload = new Payload();
 				payload.setObject(source.getControler());
 
@@ -94,26 +100,19 @@ public class ActionSlots {
 		}
 	}
 
-	public void addTarget(final WorldElementActor target) {
-		dragAndDrop.addTarget(new Target(target) {
+	public Target addTarget(final WorldElementActor actor) {
+		Target target = new Target(actor) {
 			public boolean drag (Source source, Payload payload, float x, float y, int pointer) {
-				Image targetImage = target.getImage();
-				if (targetImage != null) {
-					if (target.getControler().canAcceptDrop(dragActor.getControler().getData().action)) {
-						targetImage.setColor(Color.GREEN);
-					} else {
-						targetImage.setColor(Color.RED);
-					}
-				}
+				actor.getControler().onDropHoverEnter(dragActor.getControler().getData().action);
 				return true;
 			}
 
 			public void drop (Source source, Payload payload, float x, float y, int pointer) {
-				WorldElementControler controler = target.getControler();
+				WorldElementControler controler = actor.getControler();
 				ActionSlotControler slotControler = dragActor.getControler();
 				if (controler.canAcceptDrop(slotControler.getData().action)) {
 					// On laisse le contrôleur gérer l'action
-					target.getControler().receiveDrop(slotControler);
+					actor.getControler().receiveDrop(slotControler);
 					// Et on met à jour les slots
 					fillActionSlots();
 				} else {
@@ -123,12 +122,11 @@ public class ActionSlots {
 			}
 
 			public void reset (Source source, Payload payload) {
-				Image targetImage = target.getImage();
-				if (targetImage != null) {
-					targetImage.setColor(Color.WHITE);
-				}
+				actor.getControler().onDropHoverLeave(dragActor.getControler().getData().action);
 			}
-		});
+		};
+		dragAndDrop.addTarget(target);
+		return target;
 	}
 	
 	public void addUpcomingSlots(ActionSlotActor... slots) {
@@ -178,5 +176,17 @@ public class ActionSlots {
 
 	public boolean isDragging() {
 		return dragAndDrop.isDragging();
+	}
+
+	public void addPathMarker(PathMarkerActor actor) {
+		Target target = addTarget(actor);
+		pathMarkers.add(target);
+	}
+	
+	public void clearPathMarkers() {
+		for (Target target : pathMarkers) {
+			dragAndDrop.removeTarget(target);
+		}
+		pathMarkers.clear();
 	}
 }

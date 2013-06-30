@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.slamdunk.quester.display.actors.ActionSlotActor;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.ActionSlotControler;
@@ -31,6 +32,12 @@ public class ActionSlotsHelper {
 				QuesterActions.ATTACK, 
 				Config.asFloat("action.appearRate.attack", 1),
 				Assets.action_attack));
+		SLOT_DATAS.put(
+			QuesterActions.MOVE,
+			new SlotData(
+				QuesterActions.MOVE, 
+				Config.asFloat("action.appearRate.move", 0),
+				Assets.menu_move));
 		SLOT_DATAS.put(
 			QuesterActions.PROTECT,
 			new SlotData(
@@ -90,9 +97,13 @@ public class ActionSlotsHelper {
 	}
 	
 	public static ActionSlotActor createEmptySlot() {
-		ActionSlotData data = new ActionSlotData(QuesterActions.NONE);
+		return createSlot(QuesterActions.NONE, Assets.action_none);
+	}
+	
+	public static ActionSlotActor createSlot(QuesterActions action, TextureRegion texture) {
+		ActionSlotData data = new ActionSlotData(action);
 		ActionSlotControler slotControler = new ActionSlotControler(data);
-		ActionSlotActor slotActor = new ActionSlotActor(Assets.action_none);
+		ActionSlotActor slotActor = new ActionSlotActor(texture);
 		
 		slotActor.setControler(slotControler);		
 		slotControler.setActor(slotActor);

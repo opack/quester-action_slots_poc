@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Align;
@@ -20,6 +20,7 @@ import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
 import com.slamdunk.quester.display.hud.minimap.DungeonMiniMap;
 import com.slamdunk.quester.display.hud.minimap.MiniMap;
+import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.map.MapArea;
@@ -44,6 +45,9 @@ public class HUDRenderer extends Stage {
 	
 	private Table createBottomTable() {
 	// Création des images qui pourront être dnd
+		ActionSlotActor moveSlot = ActionSlotsHelper.createSlot(QuesterActions.MOVE, Assets.menu_move);
+		ActionSlotActor endTurnSlot = ActionSlotsHelper.createSlot(QuesterActions.END_TURN, Assets.action_endturn);
+		
 		ActionSlotActor upcomingSlot1 = ActionSlotsHelper.createEmptySlot();
 		ActionSlotActor upcomingSlot2 = ActionSlotsHelper.createEmptySlot();
 		ActionSlotActor upcomingSlot3 = ActionSlotsHelper.createEmptySlot();
@@ -60,25 +64,31 @@ public class HUDRenderer extends Stage {
 		ActionSlotActor stockSlot4 = ActionSlotsHelper.createEmptySlot();
 		ActionSlotActor stockSlot5 = ActionSlotsHelper.createEmptySlot();
 		// Ajout au gestionnaire de dnd
+		actionSlots.addSource(moveSlot);
+		actionSlots.addSource(endTurnSlot);
 		actionSlots.addUpcomingSlots(upcomingSlot1, upcomingSlot2, upcomingSlot3, upcomingSlot4, upcomingSlot5);
 		actionSlots.addStockSlots(stockSlot1, stockSlot2, stockSlot3, stockSlot4, stockSlot5);
 		actionSlots.addArrivalSlots(stockSlot1, stockSlot2, stockSlot3, stockSlot4, stockSlot5);
 //		actionSlots.addArrivalSlots(arrivalSlot1, arrivalSlot2);
-				
+		
 		// Création de la table englobante
 		actionSlotsTable = new Table();
 		actionSlotsTable.align(Align.center);
+		actionSlotsTable.add(moveSlot).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot1).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot2).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot3).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot4).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot5).size(64, 64).padRight(5);
+		actionSlotsTable.add(endTurnSlot).size(64, 64).padRight(5);
 		actionSlotsTable.row().padBottom(5).padTop(5);
+		actionSlotsTable.add().expandX();
 		actionSlotsTable.add(upcomingSlot1).size(32, 32).padRight(5);
 		actionSlotsTable.add(upcomingSlot2).size(32, 32).padRight(5);
 		actionSlotsTable.add(upcomingSlot3).size(32, 32).padRight(5);
 		actionSlotsTable.add(upcomingSlot4).size(32, 32).padRight(5);
 		actionSlotsTable.add(upcomingSlot5).size(32, 32).padRight(5);
+		actionSlotsTable.add().expandX();
 //		bottom.add(arrivalSlot1).size(64, 64).padRight(5);
 //		bottom.add(arrivalSlot2).size(64, 64).padRight(5);
 		actionSlotsTable.pack();

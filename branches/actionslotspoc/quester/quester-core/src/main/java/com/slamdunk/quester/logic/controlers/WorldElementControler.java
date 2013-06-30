@@ -1,5 +1,7 @@
 package com.slamdunk.quester.logic.controlers;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.display.hud.actionslots.DropReceiver;
 import com.slamdunk.quester.logic.ai.QuesterActions;
@@ -74,6 +76,26 @@ public class WorldElementControler implements Comparable<WorldElementControler>,
 
 	public boolean isEnabled() {
 		return enabled;
+	}
+	
+	@Override
+	public void onDropHoverEnter(QuesterActions action) {
+		Image targetImage = actor.getImage();
+		if (targetImage != null) {
+			if (canAcceptDrop(action)) {
+				targetImage.setColor(Color.GREEN);
+			} else {
+				targetImage.setColor(Color.RED);
+			}
+		}
+	}
+	
+	@Override
+	public void onDropHoverLeave(QuesterActions action) {
+		Image targetImage = actor.getImage();
+		if (targetImage != null) {
+			targetImage.setColor(Color.WHITE);
+		}
 	}
 	
 	@Override

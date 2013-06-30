@@ -11,9 +11,10 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.SnapshotArray;
 import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
-import com.slamdunk.quester.display.camera.MouseScrollZoomProcessor;
 import com.slamdunk.quester.display.camera.TouchGestureListener;
 import com.slamdunk.quester.display.hud.HUDRenderer;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
@@ -25,6 +26,7 @@ import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.model.map.MapArea;
 import com.slamdunk.quester.model.map.MapBuilder;
+import com.slamdunk.quester.model.map.MapLevels;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
 
@@ -77,8 +79,8 @@ public class GameScreen implements Screen {
 		currentRoom = new Point(entrance.getX(), entrance.getY());
 		
 		// Création des renderers
-		mapRenderer = new MapRenderer(builder.getAreaWidth(), builder.getAreaHeight(), worldCellWidth, worldCellHeight);
 		hudRenderer = new HUDRenderer();
+		mapRenderer = new MapRenderer(builder.getAreaWidth(), builder.getAreaHeight(), worldCellWidth, worldCellHeight);
 		
 		// DBG Affichage du donjon en texte
 		builder.printMap();
@@ -87,7 +89,7 @@ public class GameScreen implements Screen {
  		inputMultiplexer = new InputMultiplexer();
  		inputMultiplexer.addProcessor(hudRenderer);
  		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
- 		inputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
+ 		//DBGinputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
  		enableInputListeners(true);
 		
 		// DBG Rustine pour réussir à centrer sur le joueur lors de l'affichage
@@ -109,18 +111,18 @@ public class GameScreen implements Screen {
 			0);
 	}
 
-	/**
-	 * Centre la caméra sur le joueur
-	 * @param element
-	 */
-	public void centerCameraOn(WorldElementActor actor) {
-		// On n'utilise pas actor.centerCameraOnSelf() car on veut
-		// un déplacement immédiat de la caméra et non pas progressif.
-		mapRenderer.getCamera().position.set(
-			actor.getX() + actor.getWidth() / 2, 
-			actor.getY() + actor.getHeight() / 2, 
-			0);
-	}
+//DBG	/**
+//	 * Centre la caméra sur le joueur
+//	 * @param element
+//	 */
+//	public void centerCameraOn(WorldElementActor actor) {
+//		// On n'utilise pas actor.centerCameraOnSelf() car on veut
+//		// un déplacement immédiat de la caméra et non pas progressif.
+//		mapRenderer.getCamera().position.set(
+//			actor.getX() + actor.getWidth() / 2, 
+//			actor.getY() + actor.getHeight() / 2, 
+//			0);
+//	}
 	
 	/**
 	 * Crée le HUD
@@ -170,6 +172,12 @@ public class GameScreen implements Screen {
         for (CharacterControler character : characters) {
         	actionSlots.addTarget(character.getActor());
         }
+        SnapshotArray<Actor> groundActors = GameControler.instance.getScreen().getMap().getLayer(MapLevels.GROUND).getChildren();
+        for (Actor actor : groundActors.items) {
+        	if (actor != null) {
+        		actionSlots.addTarget((WorldElementActor)actor);
+        	}
+		}
         hudRenderer.update(display.regionX, display.regionY);
         
         // Centrage de la caméra sur le joueur

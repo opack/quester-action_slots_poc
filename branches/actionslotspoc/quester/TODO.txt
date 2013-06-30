@@ -1,3 +1,8 @@
+- Mobs : ajouter l'action "déplacement"
+- Au début du tour :
+	- Recharger les boutons fin de tour et move
+	- Ajouter 2 actions dans le stock
+- Gérer l'échange entre 2 actions dans le stock.
 - Zones de perception :
 	- chaque mob a une zone de perception : tout autour de lui, dans une direction jusqu'au mur...
 	- la zone est affichée pendant un appui long sur le mob.

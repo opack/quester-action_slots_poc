@@ -34,6 +34,10 @@ public class AI {
 	public void clearActions() {
 		actions.clear();
 	}
+	
+	public List<AIAction> getActions() {
+		return actions;
+	}
 
 	public CharacterControler getControler() {
 		return controler;
