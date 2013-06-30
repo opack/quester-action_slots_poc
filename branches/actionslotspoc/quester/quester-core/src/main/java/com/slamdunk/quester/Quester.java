@@ -101,6 +101,7 @@ public class Quester extends Game {
 			
 			// Le joueur est créé : création du hud
 			worldMapScreen.initHud(Config.asInt("minimap.width", (int)(screenWidth * 0.8)), Config.asInt("minimap.height", (int)(screenWidth * 0.8)));
+			worldMapScreen.getHUDRenderer().setActionSlotsVisibility(false);
 			
 			// Affichage de la carte
 	        Point entranceRoom = builder.getEntranceRoom();
