@@ -11,24 +11,24 @@ import com.slamdunk.quester.utils.Assets;
 /**
  * Déplace le contrôleur vers les coordonnées spécifiées.
  */
-public class MoveNearAction implements AIAction {
-	private CharacterControler character;
+public class MoveNearAction extends AbstractAIAction {
 	private WorldElementActor destination;
 	
-	public MoveNearAction(CharacterControler character, WorldElementActor destination) {
-		this.character = character;
+	public MoveNearAction(WorldElementActor destination) {
 		this.destination = destination;
 	}
 
 	public void act() {
+		CharacterControler character = ai.controler;
+		
 		// Met à jour le chemin menant près de la destination
-		final List<Point> walkPath = character.getPathfinder().findPath(
-			character.getActor().getWorldX(), character.getActor().getWorldY(), 
+		character.updatePath(
 			destination.getWorldX(), destination.getWorldY(),
 			true);
+		final List<Point> walkPath = character.getPath();
 		if (walkPath == null) {
 			// Pas de chemin ? Fin de l'action
-			character.getAI().nextAction();
+			ai.nextAction();
 			return;
 		}
 		
@@ -54,11 +54,11 @@ public class MoveNearAction implements AIAction {
 		
 		// Si c'était la dernière position, alors on peut finir cette action
 		if (walkPath.isEmpty()) {
-			character.getAI().nextAction();
+			ai.nextAction();
 		}
 		
 		// On attend la fin du mouvement puis on termine le tour.
-		character.getAI().setNextActions(new WaitCompletionAction(character), new EndTurnAction(character));
+		ai.setNextActions(new WaitCompletionAction(), new EndTurnAction());
 	}
 
 	@Override

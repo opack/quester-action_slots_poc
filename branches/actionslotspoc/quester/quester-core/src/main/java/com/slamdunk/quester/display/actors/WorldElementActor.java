@@ -98,7 +98,13 @@ public class WorldElementActor extends Group {
 		clip.drawArea.x = getX();
 		clip.drawArea.y = getY();
 		clip.flipH = isLookingLeft;
-		clip.play(stateTime, batch);
+		if (controler.isEnabled()) {
+			clip.play(stateTime, batch);
+		} else {
+			// Si le personnage n'est pas activé, on ne l'anime pas.
+			// TODO : L'idéal serait d'afficher une image de lui dormant, ou de jouer une animation de lui qui dort
+			clip.play(0, batch);
+		}
 	}
 
 	/**

@@ -42,7 +42,6 @@ public class Assets {
 	public static TextureRegion wall;
 	public static TextureRegion ground;
 	public static TextureRegion grass;
-	public static TextureRegion fog;
 	public static TextureRegion entranceDoor;
 	public static TextureRegion exitDoor;
 	public static TextureRegion commonDoor;
@@ -110,6 +109,7 @@ public class Assets {
 	public static Sound[] swordSounds;
 	public static Sound[] doorOpenSounds;
 	public static Sound stepsSound;
+	public static Sound bumpSound;
 	public static Sound biteSound;
 	public static Sound dieSound;
 	public static Sound punchSound;
@@ -152,7 +152,6 @@ public class Assets {
 		wall = loadTexture("wall.png");
 		ground = loadTexture("ground.png");
 		grass = loadTexture("grass.png");
-		fog = loadTexture("fog.png");
 		entranceDoor = loadTexture("browndoor_in_0.png");
 		exitDoor = loadTexture("browndoor_out_3.png");
 		commonDoor = loadTexture("darkdoor_in_0.png");
@@ -274,6 +273,7 @@ public class Assets {
 			loadSound("door/door_open-04.ogg")
 		};
 		stepsSound = loadSound("steps.ogg");
+		bumpSound = loadSound("player/bump.ogg");
 		biteSound = loadSound("rabite/bite.ogg");
 		dieSound = loadSound("rabite/die.ogg");
 		punchSound = loadSound("player/punch.ogg");

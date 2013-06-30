@@ -6,7 +6,7 @@ public class PlayerAI extends AI {
 	@Override
 	public void init() {
 		super.init();
-		addAction(new ThinkAction(controler));
+		addAction(new ThinkAction());
 	}
 	
 	@Override
