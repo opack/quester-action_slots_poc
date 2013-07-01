@@ -26,6 +26,10 @@ public class CheckEnemyDetection extends AbstractAIAction {
 		}
 		
 		if (isInEnemySight) {
+			// Si le joueur a été détecté, alors il ne peut plus se déplacer à ce tour
+			character.getData().movesLeft = 0;
+			GameControler.instance.updateHUD();
+			
 			ai.clearActions();
 			ai.setNextActions(new PlaySoundAction(Assets.bumpSound));
 		} else {
