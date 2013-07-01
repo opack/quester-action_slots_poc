@@ -1,8 +1,6 @@
+- HUDRenderer : le rendre commun à tous les écrans, donc le sortir du GameScreen et le gérer dans Quester et le passer à la création du GameScreen. 
 - A régler : lors des déplacements, updatePath est appelée 2 fois. Supprimer l'appel de prepareMove
 - Mobs : ajouter l'action "déplacement"
-- Au début du tour :
-	- Recharger les boutons fin de tour et move
-	- Ajouter 2 actions dans le stock
 - Gérer l'échange entre 2 actions dans le stock.
 - Zones de perception :
 	- chaque mob a une zone de perception : tout autour de lui, dans une direction jusqu'au mur...
