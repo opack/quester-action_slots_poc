@@ -2,24 +2,26 @@ package com.slamdunk.quester.logic.controlers;
 
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.ai.QuesterActions;
+import com.slamdunk.quester.model.data.PathMarkerData;
 import com.slamdunk.quester.model.data.WorldElementData;
 
 public class PathMarkerControler extends WorldElementControler {
-	private boolean isValidationMarker;
-
-	public PathMarkerControler(WorldElementData data, boolean isValidationMarker) {
+	public PathMarkerControler(WorldElementData data) {
 		super(data);
-		this.isValidationMarker = isValidationMarker;
 		
 	}
-	public PathMarkerControler(WorldElementData data, WorldElementActor actor, boolean isValidationMarker) {
+	public PathMarkerControler(WorldElementData data, WorldElementActor actor) {
 		super(data, actor);
-		this.isValidationMarker = isValidationMarker;
 	}
 	
 	@Override
 	public boolean canAcceptDrop(QuesterActions action) {
 		return action == QuesterActions.MOVE;
+	}
+	
+	@Override
+	public PathMarkerData getData() {
+		return (PathMarkerData)super.getData();
 	}
 	
 	@Override
@@ -34,7 +36,7 @@ public class PathMarkerControler extends WorldElementControler {
 	
 	public void moveAlongPath() {
 		// Si le joueur clique sur le dernier marker, alors on valide le déplacement
-		if (isValidationMarker) {
+		if (getData().isLastMarker) {
 			GameControler.instance.getPlayer().prepareMoveAlongPath();
 		}
 		// Suppression du chemin affiché

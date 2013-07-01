@@ -27,6 +27,18 @@ public class CharacterData extends ObstacleData {
 	 * Distance à laquelle l'arme peut attaquer
 	 */
 	public int weaponRange;
+	/**
+	 * Distance que le joueur peut parcourir au maximum
+	 */
+	public int walkDistance;
+	/**
+	 * Nombre de déplacements restants
+	 */
+	public int movesLeft;
+	/**
+	 * Indique si les déplacement dépendent de movesLeft
+	 */
+	public boolean isFreeMove;
 	
 	public CharacterData(MapElements element, int hp, int attack) {
 		super(element);
@@ -41,7 +53,9 @@ public class CharacterData extends ObstacleData {
 		weaponRange = 1;
 		// Ordre de jeu par défaut : 1er
 		playRank = 0;
-		// Si aucune AI, on en crée une par défaut
+		// Par défaut, le personnage ne peut pas se déplacer
+		walkDistance = 0;
+		movesLeft = 0;
 	}
 	
 	@Override

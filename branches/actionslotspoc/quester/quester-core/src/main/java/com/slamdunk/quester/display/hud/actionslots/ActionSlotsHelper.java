@@ -15,10 +15,6 @@ import com.slamdunk.quester.utils.Assets;
 import com.slamdunk.quester.utils.Config;
 
 public class ActionSlotsHelper {
-	public static final SlotData EMPTY_SLOT = new SlotData(
-		QuesterActions.NONE, 
-		0,
-		Assets.action_none);
 	public static final Map<QuesterActions, SlotData> SLOT_DATAS;
 	private static final float APPEAR_RATE_TOTAL = Config.asFloat("action.appearRate.total", 6f);
 	private static final List<QuesterActions> NEXT_ACTIONS;
@@ -32,6 +28,12 @@ public class ActionSlotsHelper {
 				QuesterActions.ATTACK, 
 				Config.asFloat("action.appearRate.attack", 1),
 				Assets.action_attack));
+		SLOT_DATAS.put(
+			QuesterActions.NONE,
+			new SlotData(
+				QuesterActions.NONE, 
+				0,
+				Assets.action_none));
 		SLOT_DATAS.put(
 			QuesterActions.MOVE,
 			new SlotData(

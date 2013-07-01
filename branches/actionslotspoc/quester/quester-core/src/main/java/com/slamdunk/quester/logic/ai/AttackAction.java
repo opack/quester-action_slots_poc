@@ -40,7 +40,6 @@ public class AttackAction extends AbstractAIAction {
 		
 		// L'action est consommée : réalisation de la prochaine action
 		ai.nextAction();
-//DBG		attacker.getAI().setNextActions(new WaitCompletionAction(attacker), new EndTurnAction(attacker));
 		ai.setNextAction(new WaitCompletionAction());
 	}
 

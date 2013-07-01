@@ -9,6 +9,7 @@ import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.ai.AI;
 import com.slamdunk.quester.logic.ai.AIAction;
 import com.slamdunk.quester.logic.ai.AttackAction;
+import com.slamdunk.quester.logic.ai.CheckEnemyDetection;
 import com.slamdunk.quester.logic.ai.EndTurnAction;
 import com.slamdunk.quester.logic.ai.HealAction;
 import com.slamdunk.quester.logic.ai.MoveAction;
@@ -224,6 +225,10 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public void prepareMoveAlongPath() {
 		for (Point pos : path) {
 			ai.addAction(new MoveAction(pos.getX(), pos.getY()));
+			ai.addAction(new CheckEnemyDetection());
+			if (!characterData.isFreeMove) {
+				characterData.movesLeft--;
+			}
 		}
 	}
 	
@@ -237,6 +242,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		}
 		
 		ai.addAction(new MoveNearAction(target));
+		ai.addAction(new CheckEnemyDetection());
 		return true;
 	}
 
@@ -279,7 +285,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		case ATTACK:
 			player.ai.clearActions();
 			player.ai.addAction(new AttackAction(this));
-			player.ai.addAction(new EndTurnAction());
 		break;
 		case END_TURN:
 			player.ai.clearActions();
@@ -288,12 +293,10 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		case HEAL:
 			player.ai.clearActions();
 			player.ai.addAction(new HealAction(player, 3));
-			player.ai.addAction(new EndTurnAction());
 		break;
 		case PROTECT:
 			player.ai.clearActions();
 			player.ai.addAction(new ProtectAction(player, 3));
-			player.ai.addAction(new EndTurnAction());
 		break;
 		}
 	}
@@ -306,12 +309,12 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	
 	@Override
 	public void setEnabled(boolean enabled) {
-//		boolean prevEnableState = this.enabled;
+		boolean prevEnableState = this.enabled;
 		super.setEnabled(enabled);
-//		 Quand un personnage est activé ou désactivé, on réinitialise son IA
-//		if (prevEnableState != this.enabled) {
-//			ai.init();
-//		}
+		// Quand un personnage est activé, on réinitialise son IA
+		if (prevEnableState != enabled && enabled) {
+			ai.init();
+		}
 		// Quand un personnage passe à l'état inactif, on modifie l'action courante
 		// de son Actor en conséquence
 		if (!enabled) {
@@ -331,14 +334,19 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		}
 	}
 	
-	public void setPlaying(boolean isPlaying) {
+	/**
+	 * Retourne true si la valeur a changé
+	 */
+	public boolean setPlaying(boolean isPlaying) {
+		boolean statusChanged = this.isPlaying != isPlaying;
 		this.isPlaying = isPlaying;
 		
 		// Quand c'est à son tour de jouer, le joueur perd la protection qu'il avait jouée
 		// à son tour
-		if (isPlaying) {
+		if (statusChanged && isPlaying) {
 			damageReduction = 0;
 		}
+		return statusChanged;
 	}
 
 	public void setShowDestination(boolean isShowDestination) {

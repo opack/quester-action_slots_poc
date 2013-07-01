@@ -74,7 +74,7 @@ public class ActionSlots {
 				dragActor.setSize(cellWidth, cellHeight);
 				payload.setDragActor(dragActor);
 				// On modifie l'image source pour afficher un slot vide
-				ActionSlotsHelper.setSlotData(ActionSlotsHelper.EMPTY_SLOT, source);
+				ActionSlotsHelper.setSlotData(ActionSlotsHelper.SLOT_DATAS.get(QuesterActions.NONE), source);
 
 				return payload;
 			}
@@ -113,8 +113,6 @@ public class ActionSlots {
 				if (controler.canAcceptDrop(slotControler.getData().action)) {
 					// On laisse le contrôleur gérer l'action
 					actor.getControler().receiveDrop(slotControler);
-					// Et on met à jour les slots
-					fillActionSlots();
 				} else {
 					// Si le chargement a été refusé, on replace l'action d'origine dans le slot
 					ActionSlotsHelper.copySlot((ActionSlotActor)dragAndDrop.getDragActor(), (ActionSlotActor)source.getActor());
@@ -135,24 +133,29 @@ public class ActionSlots {
 		}
 	}
 	
-	public void fillActionSlots() {
-		// Remplit chaque upcomingSlot
+	/**
+	 * Remplit les upcoming slots vides, puis les slots d'arrivée.
+	 */
+	public void fillArrivalSlots(int nbSlotsToFill) {
+		// Remplit chaque upcomingSlot vide
 		for (ActionSlotActor slot : upcomingSlots) {
 			if (slot.getControler().getData().action == QuesterActions.NONE) {
 				ActionSlotsHelper.fillActionSlot(slot);
 			}
 		}
-		
 		// Fait descendre les actions pour remplir les arrivalSlots, en commençant par le dernier
-		for (int curArrivalSlot = arrivalSlots.size() - 1; curArrivalSlot >= 0; curArrivalSlot --) {
-			ActionSlotActor arrivalSlot = arrivalSlots.get(curArrivalSlot);
-			if (arrivalSlot.getControler().getData().action == QuesterActions.NONE) {
-				// Récupère le dernier upcomingSlot
-				ActionSlotActor upcomingSlot = upcomingSlots.get(upcomingSlots.size() - 1);
-				// Affecte ses données au slot d'arrivée vide
-				upcomingSlot.affectTo(arrivalSlot);
-				// Fait avancer tous les upcomings d'un cran
-				shiftUpcomings();
+		if (nbSlotsToFill > 0) {
+			for (int curArrivalSlot = arrivalSlots.size() - 1; curArrivalSlot >= 0; curArrivalSlot --) {
+				ActionSlotActor arrivalSlot = arrivalSlots.get(curArrivalSlot);
+				if (arrivalSlot.getControler().getData().action == QuesterActions.NONE) {
+					// Récupère le dernier upcomingSlot
+					ActionSlotActor upcomingSlot = upcomingSlots.get(upcomingSlots.size() - 1);
+					// Affecte ses données au slot d'arrivée vide
+					upcomingSlot.affectTo(arrivalSlot, nbSlotsToFill - 1);
+					// Fait avancer tous les upcomings d'un cran
+					shiftUpcomings();
+					break;
+				}
 			}
 		}
 	}
@@ -168,7 +171,7 @@ public class ActionSlots {
 			curUpcoming = upcomingSlots.get(curIdx);
 			previousUpcoming = upcomingSlots.get(curIdx - 1);
 			
-			previousUpcoming.affectTo(curUpcoming);
+			previousUpcoming.affectTo(curUpcoming, 0);
 		}
 		// Remplit le slot vide, qui est forcément le premier
 		ActionSlotsHelper.fillActionSlot(upcomingSlots.get(0));

@@ -31,6 +31,12 @@ public class WorldScreen extends GameScreen implements CharacterListener {
 		// veut parfois lui proposer de choisir un évènement
 		GameControler.instance.getPlayer().addListener(this);
 	}
+	
+	@Override
+	public void displayWorld(DisplayData display) {
+		super.displayWorld(display);
+		GameControler.instance.getPlayer().getData().isFreeMove = true;
+	}
 
 	@Override
 	public void onActionPointsChanged(int oldValue, int newValue) {

@@ -35,7 +35,7 @@ public class MoveAction extends AbstractAIAction {
 		// Si on est entré dans la zone de perception d'un ennemi, le déplacement est interrompu.
 		ai.nextAction();
 		// On attend la fin du mouvement puis on termine le tour.
-		ai.setNextActions(new WaitCompletionAction(), new CheckEnemyDetection(), new EndTurnAction());
+		ai.setNextActions(new WaitCompletionAction());
 	}
 
 	@Override

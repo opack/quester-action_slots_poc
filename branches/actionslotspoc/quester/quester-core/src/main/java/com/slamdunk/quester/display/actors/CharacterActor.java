@@ -109,17 +109,22 @@ public class CharacterActor extends WorldElementActor{
 		List<AIAction> actions = characterControler.getAI().getActions();
 		final int countActions = actions.size();
 		final int countImages = nextActions.size();
-		for (int cur = 0; cur < Math.min(countActions, countImages); cur++) {
+		int curImage = 0;
+		for (int curAction = 0; curAction < countActions && curImage < countImages; curAction++) {
 			// Récupération de l'action
-			AIAction action = actions.get(cur);
-			// Récupération de l'image
+			AIAction action = actions.get(curAction);
+			// Récupération des données de l'action
 			SlotData data = ActionSlotsHelper.SLOT_DATAS.get(action.getAction());
-			// Affectation de l'image
-			nextActions.get(cur).setDrawable(data.drawable);
+			if (data != null) {
+				// Affectation de l'image
+				nextActions.get(curImage).setDrawable(data.drawable);
+				nextActions.get(curImage).setVisible(true);
+				curImage++;
+			}
 		}
-		if (countActions < countImages) {
-			for (int cur = countActions; cur < countImages; cur++) {
-				nextActions.get(cur).setVisible(false);
+		if (curImage < countImages - 1) {
+			for (; curImage < countImages; curImage++) {
+				nextActions.get(curImage).setVisible(false);
 			}
 		}
 	}

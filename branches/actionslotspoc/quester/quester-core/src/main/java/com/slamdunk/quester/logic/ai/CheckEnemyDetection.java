@@ -27,7 +27,7 @@ public class CheckEnemyDetection extends AbstractAIAction {
 		
 		if (isInEnemySight) {
 			ai.clearActions();
-			ai.setNextActions(new PlaySoundAction(Assets.bumpSound), new EndTurnAction());
+			ai.setNextActions(new PlaySoundAction(Assets.bumpSound));
 		} else {
 			ai.nextAction();
 		}

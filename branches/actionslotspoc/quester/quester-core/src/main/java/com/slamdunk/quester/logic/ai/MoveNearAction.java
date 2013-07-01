@@ -58,7 +58,7 @@ public class MoveNearAction extends AbstractAIAction {
 		}
 		
 		// On attend la fin du mouvement puis on termine le tour.
-		ai.setNextActions(new WaitCompletionAction(), new EndTurnAction());
+		ai.setNextActions(new WaitCompletionAction());
 	}
 
 	@Override

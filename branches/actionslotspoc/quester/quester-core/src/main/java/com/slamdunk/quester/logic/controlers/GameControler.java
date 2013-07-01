@@ -38,7 +38,8 @@ public class GameControler implements CharacterListener {
 	 */
 	public void createPlayerControler(int hp, int att) {
 		CharacterData data = new CharacterData(PLAYER, hp, att);
-		data.speed = 2;
+		data.speed = 4;
+		data.walkDistance = 3;
 		
 		player = new PlayerControler(data, null);
 		player.addListener(this);
@@ -135,8 +136,7 @@ public class GameControler implements CharacterListener {
 	
 	@Override
 	public void onAttackPointsChanged(int oldValue, int newValue) {
-		// TODO Auto-generated method stub
-		
+		screen.updateHUD(currentArea);
 	}
 
 	@Override
@@ -181,6 +181,7 @@ public class GameControler implements CharacterListener {
 
 	@Override
 	public void onCharacterMoved(CharacterControler character, int oldX, int oldY) {
+		screen.updateHUD(currentArea);
 	}
 
 	@Override
