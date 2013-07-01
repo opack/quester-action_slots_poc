@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import com.slamdunk.quester.model.points.PointManager;
 import com.slamdunk.quester.model.points.Point;
+import com.slamdunk.quester.model.points.PointManager;
 
 /**
  * This class is a pathfinder which uses AStar algorithm.

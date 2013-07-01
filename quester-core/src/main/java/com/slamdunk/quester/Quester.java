@@ -4,8 +4,12 @@ import static com.slamdunk.quester.model.data.WorldElementData.GRASS_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.GROUND_DATA;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.MathUtils;
+import com.slamdunk.quester.display.hud.HUDRenderer;
+import com.slamdunk.quester.display.messagebox.MessageBox;
+import com.slamdunk.quester.display.messagebox.MessageBoxFactory;
 import com.slamdunk.quester.display.screens.DisplayData;
 import com.slamdunk.quester.display.screens.DungeonScreen;
 import com.slamdunk.quester.display.screens.WorldScreen;
@@ -26,6 +30,7 @@ public class Quester extends Game {
 	/**
 	 * Ecrans du jeu
 	 */
+	private HUDRenderer hudRenderer;
 	private WorldScreen worldMapScreen;
 	private DungeonScreen dungeonScreen;
 	
@@ -44,6 +49,9 @@ public class Quester extends Game {
 		
 		// Création d'un joueur
 		GameControler.instance.createPlayerControler(150, 3);
+		
+		// Création du HUD
+		hudRenderer = new HUDRenderer();
 		
 		// Arrivée sur la carte du monde
 		enterWorldMap();
@@ -65,6 +73,7 @@ public class Quester extends Game {
 		if (dungeonScreen != null) {
 			dungeonScreen.dispose();
 		}
+		hudRenderer.dispose();
 		Assets.dispose();
 	}
 
@@ -87,7 +96,7 @@ public class Quester extends Game {
 			MapBuilder builder = new WorldBuilder(Config.asInt("world.width", 11), Config.asInt("world.height", 11));
 			builder.createAreas(Config.asInt("world.areaWidth", 11), Config.asInt("world.areaHeight", 11), GRASS_DATA);
 			builder.placeMainEntrances();
-			worldMapScreen = new WorldScreen(builder, Config.asInt("map.cellWidth", 96), Config.asInt("map.cellHeight", 96));
+			worldMapScreen = new WorldScreen(hudRenderer, builder, Config.asInt("map.cellWidth", 96), Config.asInt("map.cellHeight", 96));
 			GameControler.instance.setScreen(worldMapScreen);
 			
 			// Choix de la musique de fond
@@ -114,7 +123,7 @@ public class Quester extends Game {
 		GameControler.instance.setScreen(worldMapScreen);
 		GameControler.instance.setCurrentArea(worldMapScreen.getCurrentArea().getX(), worldMapScreen.getCurrentArea().getY());
 		GameControler.instance.getPlayer().setActor(worldMapScreen.getPlayerActor());
-		worldMapScreen.updateHUD(GameControler.instance.getCurrentArea());
+		updateHUD(GameControler.instance.getCurrentArea());
 		setScreen(worldMapScreen);
 	}
 	
@@ -131,7 +140,7 @@ public class Quester extends Game {
 		MapBuilder builder = new DungeonBuilder(dungeonWidth, dungeonHeight, difficulty);
 		builder.createAreas(roomWidth, roomHeight, GROUND_DATA);
 		builder.placeMainEntrances();
-		dungeonScreen = new DungeonScreen(builder, 96, 96);
+		dungeonScreen = new DungeonScreen(hudRenderer, builder, 96, 96);
 		GameControler.instance.setScreen(dungeonScreen);
 		
 		// Choix de la musique de fond
@@ -153,8 +162,43 @@ public class Quester extends Game {
         data.playerY = entrancePosition.getY();
         GameControler.instance.displayWorld(data);
         
-        dungeonScreen.updateHUD(data.regionX, data.regionY);
+        updateHUD(data.regionX, data.regionY);
         
 		setScreen(dungeonScreen);
+	}
+	
+	@Override
+	public void render() {
+		super.render();
+		hudRenderer.render(Gdx.graphics.getDeltaTime());
+	}
+
+	/**
+	 * Affiche un message à l'utilisateur
+	 * @param message
+	 */
+	public void showMessage(String message) {
+		MessageBox msg = MessageBoxFactory.createSimpleMessage(message, hudRenderer);
+		msg.show();
+	}
+
+	/**
+	 * Met à jour le HUD.
+	 * @param currentArea
+	 */
+	public void updateHUD(int currentAreaX, int currentAreaY) {
+		hudRenderer.update(currentAreaX, currentAreaY);
+	}
+
+	/**
+	 * Met à jour le HUD.
+	 * @param currentArea
+	 */
+	public void updateHUD(Point currentArea) {
+		updateHUD(currentArea.getX(), currentArea.getY());
+	}
+
+	public HUDRenderer getHUDRenderer() {
+		return hudRenderer;
 	}
 }

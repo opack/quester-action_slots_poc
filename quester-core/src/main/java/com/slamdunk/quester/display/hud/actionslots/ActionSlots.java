@@ -13,13 +13,13 @@ import com.slamdunk.quester.display.actors.PathMarkerActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.ActionSlotControler;
-import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
+import com.slamdunk.quester.utils.Config;
 
 public class ActionSlots {
 	
-	private final float cellHeight;
-	private final float cellWidth;
+	private final float dragActorHeight;
+	private final float dragActorWidth;
 	private final ActionSlotActor dragActor;
 	
 	private final DragAndDrop dragAndDrop;
@@ -36,10 +36,10 @@ public class ActionSlots {
 		stockSlots = new ArrayList<ActionSlotActor>();
 		pathMarkers = new ArrayList<Target>();
 		
-		cellWidth = GameControler.instance.getScreen().getMap().getCellWidth();
-		cellHeight = GameControler.instance.getScreen().getMap().getCellHeight();
+		dragActorWidth = Config.asFloat("dragActor.width", 96);
+		dragActorHeight = Config.asFloat("dragActor.height", 96);
 		dragAndDrop = new DragAndDrop();
-		dragAndDrop.setDragActorPosition(- cellWidth / 2, cellHeight / 2);
+		dragAndDrop.setDragActorPosition(- dragActorWidth / 2, dragActorHeight / 2);
 		
 		// On crée l'acteur qui nous servira pendant les drags. Inutile d'en créer un différent
 		// à chaque fois, on réutilisera le même.
@@ -71,7 +71,7 @@ public class ActionSlots {
 
 				// On crée un dragActor correspondant à ce que contient la source
 				ActionSlotsHelper.copySlot(source, dragActor);
-				dragActor.setSize(cellWidth, cellHeight);
+				dragActor.setSize(dragActorWidth, dragActorHeight);
 				payload.setDragActor(dragActor);
 				// On modifie l'image source pour afficher un slot vide
 				ActionSlotsHelper.setSlotData(ActionSlotsHelper.SLOT_DATAS.get(QuesterActions.NONE), source);

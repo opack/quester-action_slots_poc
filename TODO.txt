@@ -1,16 +1,15 @@
-- HUDRenderer : le rendre commun à tous les écrans, donc le sortir du GameScreen et le gérer dans Quester et le passer à la création du GameScreen. 
-- A régler : lors des déplacements, updatePath est appelée 2 fois. Supprimer l'appel de prepareMove
+- Faire un nettoyage du code : retirer le code commenter et les DBG
+- Sur la carte du monde, désactiver le bouton fin de tour et la possibilité de jouer une action. La seule action possible avec les actions est l'échange ou la construction d'actions doublées/combos.
 - Mobs : ajouter l'action "déplacement"
 - Gérer l'échange entre 2 actions dans le stock.
-- Zones de perception :
-	- chaque mob a une zone de perception : tout autour de lui, dans une direction jusqu'au mur...
-	- la zone est affichée pendant un appui long sur le mob.
-	- si le joueur pénètre dans la zone, son déplacement en cours s'interrompt.
-		- il pourra, à son prochain tour, se déplacer d'une case dans cette zone, car c'est à la fin d'un déplacement qu'on regarde s'il est dans une zone de perception pour éventuellement arrêter le déplacement.
-		- tant qu'il est dans la zone, le monstre est actif : à son tour, il joue donc les actions prévues dans sa séquence.
+- Zones de perception : la zone est affichée pendant un appui long sur le mob.
 - Dans le donjon, placer les portes aléatoirement sur le mur
 - Bug : L'animation de l'attaque du joueur est bizarre : la seconde frame semble disparaître, et le personnage est tout petit.
 - Refactoring général
+	- Remettre tout dans le même Stage : vu qu'on n'a plus de zoom, plus besoin de 2 caméras et donc 2 stages séparés.
+		- Cela permettra en plus de bien centrer la zone de jeu dans l'écran
+	- HUDRenderer : Nettoyer la gestion du HUD
+	- CharacterControler : lors des déplacements, updatePath est appelée 2 fois. Supprimer l'appel de prepareMove
 	- Les Controleurs sont stateless (et singleton). Les données sont dans les data.
 		- Les WorldElementActor pointent vers l'instance du contrôleur correspondant.
 		- Les WorldElementActor contiennent des données (qui sont passées au contrôleur quand c'est nécessaire).
@@ -22,7 +21,7 @@
 - Loots après la mort d'un ennemi
 - Lorsque le joueur meurt : fin !
 - Lorsque le joueur se déplace ou attaque, recentrer automatiquemet la carte sur lui.
-- Options :
+- Menu d'options :
 	- Recentrage auto
 	- Vitesse de déplacement
 - Lorsqu'une salle est affichée, centrer la caméra sur le joueur : retirer la rustine isFirstDisplay et trouver la vraie solution à ce problème bizarre

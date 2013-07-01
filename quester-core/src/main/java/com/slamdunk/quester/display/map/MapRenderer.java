@@ -9,6 +9,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.Clip;
 import com.slamdunk.quester.display.actors.CastleActor;
 import com.slamdunk.quester.display.actors.ClipActor;
@@ -162,7 +163,7 @@ public class MapRenderer {
 		 				actor = new PathMarkerActor(Assets.pathMarkerDisabled);
 		 			}
 	 			}
-	 			GameControler.instance.getScreen().getHUDRenderer().getActionSlots().addPathMarker(actor);
+	 			Quester.getInstance().getHUDRenderer().getActionSlots().addPathMarker(actor);
 		 		controler = new PathMarkerControler(
 					data, 
 					actor);

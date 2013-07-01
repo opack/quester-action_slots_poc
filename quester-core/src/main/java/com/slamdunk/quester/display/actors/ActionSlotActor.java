@@ -5,10 +5,10 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
 import com.slamdunk.quester.display.hud.actionslots.SlotData;
 import com.slamdunk.quester.logic.controlers.ActionSlotControler;
-import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.utils.Config;
 
 public class ActionSlotActor extends WorldElementActor {
@@ -60,7 +60,7 @@ public class ActionSlotActor extends WorldElementActor {
 			sequence.addAction(new Action(){
 				@Override
 				public boolean act(float delta) {
-					GameControler.instance.getScreen().getHUDRenderer().getActionSlots().fillArrivalSlots(nbSlotsToFill);
+					Quester.getInstance().getHUDRenderer().getActionSlots().fillArrivalSlots(nbSlotsToFill);
 					return true;
 				}
 			});
