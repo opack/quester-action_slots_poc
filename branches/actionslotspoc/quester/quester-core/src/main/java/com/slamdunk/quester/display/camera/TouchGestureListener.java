@@ -1,7 +1,5 @@
 package com.slamdunk.quester.display.camera;
 
-import static com.slamdunk.quester.Quester.screenWidth;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;

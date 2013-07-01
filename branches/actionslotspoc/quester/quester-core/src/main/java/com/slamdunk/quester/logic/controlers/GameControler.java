@@ -59,7 +59,7 @@ public class GameControler implements CharacterListener {
 		
 		// Débute le jeu avec le premier joueur
 		initCharacterOrder();
-		screen.updateHUD(currentArea);
+		Quester.getInstance().updateHUD(currentArea);
         characters.get(curCharacterPlaying).setPlaying(true);
 	}
 	
@@ -131,12 +131,12 @@ public class GameControler implements CharacterListener {
 
 	@Override
 	public void onActionPointsChanged(int oldValue, int newValue) {
-		screen.updateHUD(currentArea);
+		Quester.getInstance().updateHUD(currentArea);
 	}
 	
 	@Override
 	public void onAttackPointsChanged(int oldValue, int newValue) {
-		screen.updateHUD(currentArea);
+		Quester.getInstance().updateHUD(currentArea);
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class GameControler implements CharacterListener {
 		
 		// Si c'est le joueur qui est mort, le jeu s'achève
 		if (deadCharacterData.element == PLAYER) {
-			screen.showMessage("Bouh ! T'es mort !");
+			Quester.getInstance().showMessage("Bouh ! T'es mort !");
 		}
 		
 		// Détermine s'il reste des ennemis.
@@ -181,7 +181,7 @@ public class GameControler implements CharacterListener {
 
 	@Override
 	public void onCharacterMoved(CharacterControler character, int oldX, int oldY) {
-		screen.updateHUD(currentArea);
+		Quester.getInstance().updateHUD(currentArea);
 	}
 
 	@Override
@@ -213,6 +213,6 @@ public class GameControler implements CharacterListener {
 	 * Mise à jour du pad et de la minimap
 	 */
 	public void updateHUD() {
- 		screen.updateHUD(currentArea);
+		Quester.getInstance().updateHUD(currentArea);
 	}
 }

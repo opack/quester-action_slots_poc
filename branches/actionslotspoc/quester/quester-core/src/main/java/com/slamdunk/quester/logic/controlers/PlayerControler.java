@@ -1,6 +1,7 @@
 package com.slamdunk.quester.logic.controlers;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
+import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.logic.ai.AttackAction;
 import com.slamdunk.quester.logic.ai.CrossPathAction;
@@ -91,7 +92,7 @@ public class PlayerControler extends CharacterControler {
 		// Remplissage des actions en début de tour, et réinitialisation du compteur
 		// de pas
 		if (statusChanged && isPlaying) {
-			GameControler.instance.getScreen().getHUDRenderer().refillActionSlots();
+			Quester.getInstance().getHUDRenderer().refillActionSlots();
 			characterData.movesLeft = characterData.walkDistance;
 		}
 		return statusChanged;

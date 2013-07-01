@@ -2,6 +2,7 @@ package com.slamdunk.quester.display.screens;
 
 import static com.slamdunk.quester.model.map.MapElements.PLAYER;
 
+import com.slamdunk.quester.display.hud.HUDRenderer;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.CharacterListener;
 import com.slamdunk.quester.logic.controlers.GameControler;
@@ -10,8 +11,8 @@ import com.slamdunk.quester.model.points.Point;
 
 public class WorldScreen extends GameScreen implements CharacterListener {
 
-	public WorldScreen(MapBuilder builder, int worldCellWidth, int worldCellHeight) {
-		super(builder, worldCellWidth, worldCellHeight);
+	public WorldScreen(HUDRenderer hudRenderer, MapBuilder builder, int worldCellWidth, int worldCellHeight) {
+		super(hudRenderer, builder, worldCellWidth, worldCellHeight);
 	}
 	
 	/**

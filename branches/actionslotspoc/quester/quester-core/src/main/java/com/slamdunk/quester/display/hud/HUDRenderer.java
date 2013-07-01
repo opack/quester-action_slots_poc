@@ -28,7 +28,6 @@ import com.slamdunk.quester.utils.Assets;
 
 public class HUDRenderer extends Stage {
 	private ActionSlots actionSlots;
-	private Table actionSlotsTable;
 	private Button endTurnBtn;
 	/**
 	 * Vecteur utilisé pour accélérer le traitement de la méthode hit
@@ -69,86 +68,55 @@ public class HUDRenderer extends Stage {
 //		actionSlots.addArrivalSlots(arrivalSlot1, arrivalSlot2);
 		
 		// Création de la table englobante
-		actionSlotsTable = new Table();
-		actionSlotsTable.align(Align.center);
-		actionSlotsTable.add().expandX();
-		actionSlotsTable.add(stockSlot1).size(64, 64).padRight(5);
-		actionSlotsTable.add(stockSlot2).size(64, 64).padRight(5);
-		actionSlotsTable.add(stockSlot3).size(64, 64).padRight(5);
-		actionSlotsTable.add(stockSlot4).size(64, 64).padRight(5);
-		actionSlotsTable.add(stockSlot5).size(64, 64).padRight(5);
-		actionSlotsTable.add().expandX();
-		actionSlotsTable.row().padBottom(5).padTop(5);
-		actionSlotsTable.add().expandX();
-		actionSlotsTable.add(upcomingSlot1).size(32, 32).padRight(5);
-		actionSlotsTable.add(upcomingSlot2).size(32, 32).padRight(5);
-		actionSlotsTable.add(upcomingSlot3).size(32, 32).padRight(5);
-		actionSlotsTable.add(upcomingSlot4).size(32, 32).padRight(5);
-		actionSlotsTable.add(upcomingSlot5).size(32, 32).padRight(5);
-		actionSlotsTable.add().expandX();
+		Table bottom = new Table();
+//		bottom.debug();
+		bottom.add().expandX();
+		bottom.add(stockSlot1).size(64, 64).padRight(5);
+		bottom.add(stockSlot2).size(64, 64).padRight(5);
+		bottom.add(stockSlot3).size(64, 64).padRight(5);
+		bottom.add(stockSlot4).size(64, 64).padRight(5);
+		bottom.add(stockSlot5).size(64, 64).padRight(5);
+		bottom.add().expandX();
+		bottom.row().padBottom(5).padTop(5);
+		bottom.add().expandX();
+		bottom.add(upcomingSlot1).size(32, 32).padRight(5);
+		bottom.add(upcomingSlot2).size(32, 32).padRight(5);
+		bottom.add(upcomingSlot3).size(32, 32).padRight(5);
+		bottom.add(upcomingSlot4).size(32, 32).padRight(5);
+		bottom.add(upcomingSlot5).size(32, 32).padRight(5);
+		bottom.add().expandX();
 //		bottom.add(arrivalSlot1).size(64, 64).padRight(5);
 //		bottom.add(arrivalSlot2).size(64, 64).padRight(5);
-		actionSlotsTable.pack();
-		return actionSlotsTable;
+		bottom.pack();
+		return bottom;
 	}
 	
-	private Table createUpTable() {
-		// Création du bouton d'affichage de la minimap
-//DBG		menu = new MenuButton();
-		ButtonStyle mapBtnStyle = new ButtonStyle();
-		mapBtnStyle.up = new TextureRegionDrawable(Assets.map);
-		mapBtnStyle.down = new TextureRegionDrawable(Assets.map);
-		mapBtnStyle.pressedOffsetY = 1.0f;
-		Button displayMap = new Button(mapBtnStyle);
-		displayMap.addListener(new ClickListener(){
-			@Override
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getScreen().getHUDRenderer().toggleMinimapVisibility();
-			};
-		});
+	private void createLayout() {
+		if (actionSlots != null) {
+			return;
+		}
 		
-		ButtonStyle endturnBtnStyle = new ButtonStyle();
-		endturnBtnStyle.up = new TextureRegionDrawable(Assets.action_endturn);
-		endturnBtnStyle.down = new TextureRegionDrawable(Assets.action_endturn);
-		endturnBtnStyle.disabled = new TextureRegionDrawable(Assets.action_endturn_disabled);
-		endturnBtnStyle.pressedOffsetY = 1.0f;
-		endTurnBtn = new Button(endturnBtnStyle);
-		endTurnBtn.addListener(new ClickListener(){
-			@Override
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getPlayer().prepareEndTurn();
-			};
-		});
+		actionSlots = new ActionSlots();
 		
-		// Création des statistiques
-		LabelStyle style = new LabelStyle();
-		style.font = Assets.hudFont;
-		lblHp = new Label("", style);
-		lblAtt = new Label("", style);
-		lblMovesLeft = new Label("", style);
+		Table top = createTopTable();
+		//top.setFillParent(true);
+		top.align(Align.bottom | Align.left);
+		Table bottom = createBottomTable();
+//		bottom.align(Align.center);
 		
-		Table stats = new Table();
-		stats.add(new Image(Assets.heart)).size(32, 32);
-		stats.add(lblHp).width(50).top();
-		stats.add(new Image(Assets.sword)).size(32, 32);
-		stats.add(lblAtt).width(50).top();
-		stats.add().expandX();
-		stats.row();
-		stats.add(new Image(Assets.menu_move)).size(32, 32);
-		stats.add(lblMovesLeft).width(50).top();
+		Table table = new Table();
+//		table.debug();
+		table.add(top);
+		table.row();
+		table.add().expandY();
+		table.row();
+		table.add(bottom);
+		table.pack();
+		table.setFillParent(true);
 		
-		stats.pack();
+		addActor(table);
 		
-		// Création de la table englobante
-		Table up = new Table();
-		up.add(displayMap).size(64, 64);
-		up.add(endTurnBtn).size(64, 64).padRight(5);
-		up.add(stats).align(Align.bottom | Align.left);
-		up.pack();
-		
-		// Préparation du menu
-//DBG		menu.prepareMenu();
-		return up;
+		refillActionSlots();
 	}
 	
 //	private Table createRightTable() {
@@ -181,6 +149,66 @@ public class HUDRenderer extends Stage {
 //		return right;
 //	}
 
+	private Table createTopTable() {
+		// Création du bouton d'affichage de la minimap
+//DBG		menu = new MenuButton();
+		ButtonStyle mapBtnStyle = new ButtonStyle();
+		mapBtnStyle.up = new TextureRegionDrawable(Assets.map);
+		mapBtnStyle.down = new TextureRegionDrawable(Assets.map);
+		mapBtnStyle.pressedOffsetY = 1.0f;
+		Button displayMap = new Button(mapBtnStyle);
+		displayMap.addListener(new ClickListener(){
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				HUDRenderer.this.toggleMinimapVisibility();
+			};
+		});
+		
+		ButtonStyle endturnBtnStyle = new ButtonStyle();
+		endturnBtnStyle.up = new TextureRegionDrawable(Assets.action_endturn);
+		endturnBtnStyle.down = new TextureRegionDrawable(Assets.action_endturn);
+		endturnBtnStyle.disabled = new TextureRegionDrawable(Assets.action_endturn_disabled);
+		endturnBtnStyle.pressedOffsetY = 1.0f;
+		endTurnBtn = new Button(endturnBtnStyle);
+		endTurnBtn.addListener(new ClickListener(){
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				GameControler.instance.getPlayer().prepareEndTurn();
+			};
+		});
+		
+		// Création des statistiques
+		LabelStyle style = new LabelStyle();
+		style.font = Assets.hudFont;
+		lblHp = new Label("", style);
+		lblAtt = new Label("", style);
+		lblMovesLeft = new Label("", style);
+		
+		Table stats = new Table();
+		stats.add(new Image(Assets.heart)).size(32, 32).padRight(5);
+		stats.add(lblHp).width(50).padRight(10).top();
+		stats.add(new Image(Assets.sword)).size(32, 32).padRight(5);
+		stats.add(lblAtt).width(50).padRight(10).top();
+		stats.add().expandX();
+		stats.row();
+		stats.add(new Image(Assets.menu_move)).size(32, 32).padRight(5);
+		stats.add(lblMovesLeft).width(50).padRight(10).top();
+		stats.pack();
+		
+		// Création de la table englobante
+		Table up = new Table();
+//		up.debug();
+		up.add(displayMap).size(64, 64).padRight(5);
+		up.add().expandX();
+		up.add(stats);
+		up.add().expandX();
+		up.add(endTurnBtn).size(64, 64).padRight(5);
+		up.pack();
+		// Préparation du menu
+//DBG		menu.prepareMenu();
+		return up;
+	}
+
 	public ActionSlots getActionSlots() {
 		return actionSlots;
 	}
@@ -201,27 +229,12 @@ public class HUDRenderer extends Stage {
 		}
 		return hit;
 	}
-
+	
 	public void init(Stage mapStage) {
 		this.mapStage = mapStage;
-		
-		actionSlots = new ActionSlots();
-		
-		Table table = new Table();
-//		table.debug();
-		table.add(createUpTable()).align(Align.left);
-		table.row();
-		table.add().expand();
-//DBG		table.add(createRightTable()).expand().align(Align.bottom | Align.right);
-		table.row();
-		table.add(createBottomTable()).colspan(2).align(Align.center);
-		table.pack();
-		table.setFillParent(true);
-		addActor(table);
-		
-		refillActionSlots();
+		createLayout();
 	}
-	
+
 	public void refillActionSlots() {
 		// Remplissage des slots de stock vides
 		actionSlots.fillArrivalSlots(2); // TODO Prendre la valeur définie au niveau du joueur
@@ -236,12 +249,6 @@ public class HUDRenderer extends Stage {
 		draw();
 		
 //		Table.drawDebug(this);
-	}
-	
-	public void setActionSlotsVisibility(boolean isVisible) {
-		if (actionSlotsTable != null) {
-			actionSlotsTable.setVisible(isVisible);
-		}
 	}
 
 	public void setMiniMap(int worldWidth, int worldHeight, int miniMapImageWidth, int miniMapImageHeight) {

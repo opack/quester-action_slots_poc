@@ -3,8 +3,8 @@ package com.slamdunk.quester.display.actors;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.slamdunk.quester.logic.controlers.PathToAreaControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.PathToAreaControler;
 
 public class PathToAreaActor extends WorldElementActor {
 	public PathToAreaActor(TextureRegion texture) {

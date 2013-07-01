@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.SnapshotArray;
+import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.display.camera.TouchGestureListener;
@@ -20,8 +21,6 @@ import com.slamdunk.quester.display.hud.HUDRenderer;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.map.ActorMap;
 import com.slamdunk.quester.display.map.MapRenderer;
-import com.slamdunk.quester.display.messagebox.MessageBox;
-import com.slamdunk.quester.display.messagebox.MessageBoxFactory;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.PlayerControler;
@@ -60,10 +59,6 @@ public class GameScreen implements Screen {
 	 */
 	private MapRenderer mapRenderer;
 	/**
-	 * Chargé de l'affichage du HUD.
-	 */
-	private HUDRenderer hudRenderer;
-	/**
 	 * L'acteur actuellement utilisé pour représenter le joueur sur la carte.
 	 */
 	private PlayerActor player;
@@ -73,14 +68,13 @@ public class GameScreen implements Screen {
 	 */
 	private boolean isFirstDisplay;
 	
-	public GameScreen(MapBuilder builder, int worldCellWidth, int worldCellHeight) {
+	public GameScreen(HUDRenderer hudRenderer, MapBuilder builder, int worldCellWidth, int worldCellHeight) {
 		// Crée les pièces du donjon
 		areas = builder.build();
 		Point entrance = builder.getEntranceRoom();
 		currentRoom = new Point(entrance.getX(), entrance.getY());
 		
 		// Création des renderers
-		hudRenderer = new HUDRenderer();
 		mapRenderer = new MapRenderer(builder.getAreaWidth(), builder.getAreaHeight(), worldCellWidth, worldCellHeight);
 		
 		// DBG Affichage du donjon en texte
@@ -129,9 +123,9 @@ public class GameScreen implements Screen {
 	 * Crée le HUD
 	 */
 	public void initHud(int miniMapWidth, int miniMapHeight) {
-		hudRenderer.init(mapRenderer.getStage());
+		Quester.getInstance().getHUDRenderer().init(mapRenderer.getStage());
 		if (miniMapWidth > 0 && miniMapHeight > 0) {
-			hudRenderer.setMiniMap(areas, miniMapWidth, miniMapHeight);
+			Quester.getInstance().getHUDRenderer().setMiniMap(areas, miniMapWidth, miniMapHeight);
 		}
 	}
 
@@ -173,7 +167,7 @@ public class GameScreen implements Screen {
         mapRenderer.createCharacters(area);
         
         // Mise à jour du HUD
-        ActionSlots actionSlots = hudRenderer.getActionSlots();
+        ActionSlots actionSlots = Quester.getInstance().getHUDRenderer().getActionSlots();
         List<CharacterControler> characters = mapRenderer.getMap().getCharacters();
         for (CharacterControler character : characters) {
         	actionSlots.addTarget(character.getActor());
@@ -184,7 +178,7 @@ public class GameScreen implements Screen {
         		actionSlots.addTarget((WorldElementActor)actor);
         	}
 		}
-        hudRenderer.update(display.regionX, display.regionY);
+        Quester.getInstance().getHUDRenderer().update(display.regionX, display.regionY);
         
         // Centrage de la caméra sur le joueur
 //        centerCameraOn(player);
@@ -196,7 +190,6 @@ public class GameScreen implements Screen {
 	@Override
 	public void dispose() {
 		mapRenderer.dispose();
-		hudRenderer.dispose();
 	}
 
 	public void enableInputListeners(boolean enable) {
@@ -269,7 +262,6 @@ public class GameScreen implements Screen {
 		
         // Dessine la scène et le hud
         mapRenderer.render();
-        hudRenderer.render(delta);
         
         fpsLogger.log();
 	}
@@ -307,34 +299,5 @@ public class GameScreen implements Screen {
 		
 		// Lancement de la musique
 		Assets.playMusic(backgroundMusic);
-	}
-
-	/**
-	 * Affiche un message à l'utilisateur
-	 * @param message
-	 */
-	public void showMessage(String message) {
-		MessageBox msg = MessageBoxFactory.createSimpleMessage(message, hudRenderer);
-		msg.show();
-	}
-
-	/**
-	 * Met à jour le HUD.
-	 * @param currentArea
-	 */
-	public void updateHUD(int currentAreaX, int currentAreaY) {
-		hudRenderer.update(currentAreaX, currentAreaY);
-	}
-
-	/**
-	 * Met à jour le HUD.
-	 * @param currentArea
-	 */
-	public void updateHUD(Point currentArea) {
-		updateHUD(currentArea.getX(), currentArea.getY());
-	}
-
-	public HUDRenderer getHUDRenderer() {
-		return hudRenderer;
 	}
 }

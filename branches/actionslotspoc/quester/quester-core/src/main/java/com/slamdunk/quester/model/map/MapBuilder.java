@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.data.PathData;
-import com.slamdunk.quester.model.points.PointManager;
+import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.points.Point;
+import com.slamdunk.quester.model.points.PointManager;
 
 public abstract class MapBuilder {
 	protected int areaHeight;

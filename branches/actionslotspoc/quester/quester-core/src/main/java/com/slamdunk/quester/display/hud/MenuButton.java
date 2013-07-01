@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.utils.Assets;
 import com.slamdunk.quester.utils.Config;
@@ -58,7 +59,7 @@ public class MenuButton {
 		displayMap.addListener(new ClickListener(){
 			@Override
 			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getScreen().getHUDRenderer().toggleMinimapVisibility();
+				Quester.getInstance().getHUDRenderer().toggleMinimapVisibility();
 				hideMenu();
 			};
 		});
