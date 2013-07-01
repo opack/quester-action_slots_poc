@@ -2,6 +2,7 @@ package com.slamdunk.quester.logic.controlers;
 
 import com.slamdunk.quester.display.actors.GroundActor;
 import com.slamdunk.quester.logic.ai.QuesterActions;
+import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.WorldElementData;
 
 public class GroundControler extends WorldElementControler {
@@ -22,16 +23,25 @@ public class GroundControler extends WorldElementControler {
 
 	public void movePlayer() {
 		PlayerControler player = GameControler.instance.getPlayer();
-		if (isDestinationSet) {
-			// Suppression d'un éventuel autre chemin affiché à l'écran par un autre GroundControler
-			resetDestination();
+		CharacterData data = player.getData();
+		if (player.updatePath(actor.getWorldX(), actor.getWorldY(), false)	// Il existe un chemin
+		&& (data.isFreeMove	// Le déplacement est gratuit
+				|| (data.movesLeft >= 1	// Le déplacement n'est pas gratuit mais il reste assez de moves...
+					&& player.getPath().size() == 1 ) )) { // ...et le chemin n'est long que d'1 case
+			GameControler.instance.getPlayer().prepareMoveTo(actor.getWorldX(), actor.getWorldY());
 		}
-		// La destination n'est pas encore définie. On propose un chemin au joueur.
-		else if (player.updatePath(actor.getWorldX(), actor.getWorldY(), false)) {
-			// Affichage du chmin proposé
-			GameControler.instance.getScreen().getMapRenderer().showPath(player.getPath());
-			isDestinationSet = true;
-		}
+		
+//		PlayerControler player = GameControler.instance.getPlayer();
+//		if (isDestinationSet) {
+//			// Suppression d'un éventuel autre chemin affiché à l'écran par un autre GroundControler
+//			resetDestination();
+//		}
+//		// La destination n'est pas encore définie. On propose un chemin au joueur.
+//		else if (player.updatePath(actor.getWorldX(), actor.getWorldY(), false)) {
+//			// Affichage du chmin proposé
+//			GameControler.instance.getScreen().getMapRenderer().showPath(player.getPath());
+//			isDestinationSet = true;
+//		}
 	}
 
 	@Override

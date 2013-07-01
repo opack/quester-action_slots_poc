@@ -24,6 +24,7 @@ import com.slamdunk.quester.display.messagebox.MessageBox;
 import com.slamdunk.quester.display.messagebox.MessageBoxFactory;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.PlayerControler;
 import com.slamdunk.quester.model.map.MapArea;
 import com.slamdunk.quester.model.map.MapBuilder;
 import com.slamdunk.quester.model.map.MapLevels;
@@ -140,9 +141,14 @@ public class GameScreen implements Screen {
 	 * @param att
 	 */
 	public void createPlayer(Point position) {
+		PlayerControler playerControler = GameControler.instance.getPlayer();
+		
 		player = new PlayerActor();
-		player.setControler(GameControler.instance.getPlayer());
+		player.setControler(playerControler);
 		player.setPositionInWorld(position.getX(), position.getY());
+		
+		playerControler.setActor(player);
+		playerControler.getAI().init();
 	}
 	
 	/**

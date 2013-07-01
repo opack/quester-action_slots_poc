@@ -1,3 +1,4 @@
+- A régler : lors des déplacements, updatePath est appelée 2 fois. Supprimer l'appel de prepareMove
 - Mobs : ajouter l'action "déplacement"
 - Au début du tour :
 	- Recharger les boutons fin de tour et move

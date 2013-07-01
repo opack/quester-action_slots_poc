@@ -67,6 +67,9 @@ public class AI {
 		if (!actions.isEmpty()) {
 			actions.remove(0);
 		}
+		if (actions.isEmpty()) {
+			init();
+		}
 	}
 	
 	public void setControler(CharacterControler controler) {

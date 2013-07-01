@@ -3,10 +3,12 @@ package com.slamdunk.quester.display.actors;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
 import com.slamdunk.quester.display.hud.actionslots.SlotData;
 import com.slamdunk.quester.logic.controlers.ActionSlotControler;
+import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.utils.Config;
 
 public class ActionSlotActor extends WorldElementActor {
@@ -33,26 +35,36 @@ public class ActionSlotActor extends WorldElementActor {
 	/**
 	 * Fait tomber le slot vers le slot indiqué
 	 */
-	public void affectTo(final ActionSlotActor destinationSlot) {
+	public void affectTo(final ActionSlotActor destinationSlot, final int nbSlotsToFill) {
 		final float initX = getX();
 		final float initY = getY();
 		final SlotData sourceSlotData = ActionSlotsHelper.SLOT_DATAS.get(getControler().getData().action);
 		// On modifie l'action dès à présent au cas ce slot soit utilisé juste derrière.
 		// En revanche, on attend la fin de l'animation pour changer l'image.
 		destinationSlot.getControler().getData().action = sourceSlotData.action;
-		addAction(Actions.sequence(
-			Actions.moveTo(
+		
+		SequenceAction sequence = Actions.sequence();
+		sequence.addAction(Actions.moveTo(
 				destinationSlot.getX() + (destinationSlot.getWidth() - getWidth()) / 2,
 				destinationSlot.getY() + (destinationSlot.getHeight() - getHeight()) / 2,
-				Config.asFloat("action.fallDuration", 1.0f)),
-			new Action(){
+				Config.asFloat("action.fallDuration", 1.0f)));
+		sequence.addAction(new Action(){
+					@Override
+					public boolean act(float delta) {
+						ActionSlotActor.this.setPosition(initX, initY);
+						destinationSlot.getImage().setDrawable(sourceSlotData.drawable);
+						return true;
+					}
+				});
+		if (nbSlotsToFill > 0) {
+			sequence.addAction(new Action(){
 				@Override
 				public boolean act(float delta) {
-					ActionSlotActor.this.setPosition(initX, initY);
-					destinationSlot.getImage().setDrawable(sourceSlotData.drawable);
+					GameControler.instance.getScreen().getHUDRenderer().getActionSlots().fillArrivalSlots(nbSlotsToFill);
 					return true;
 				}
-			}
-		));
+			});
+		}
+		addAction(sequence);
 	}
 }

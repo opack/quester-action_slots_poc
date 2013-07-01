@@ -31,14 +31,19 @@ public class PlayerControler extends CharacterControler {
 	 * cette porte. L'action sera préparée pendant le prochain
 	 * appel à think() et effectuée pendant la méthode act().
 	 */
-	public boolean crossPath(PathToAreaControler path) {
+	public boolean crossPath(PathToAreaControler pathControler) {
+		if (!updatePath(pathControler.getActor().getWorldX(), pathControler.getActor().getWorldY(), true)
+		|| (!characterData.isFreeMove && getPath().size() > characterData.movesLeft)) {
+			return false;
+		}
+		
 		// On se déplace sur le chemin
-		if (!prepareMoveOver(path.getActor().getWorldX(), path.getActor().getWorldY())) {
+		if (!prepareMoveOver(pathControler.getActor().getWorldX(), pathControler.getActor().getWorldY())) {
 			return false;
 		}
 		
 		// On entre dans le une fois que le déplacement est fini
-		ai.addAction(new CrossPathAction(path));
+		ai.addAction(new CrossPathAction(pathControler));
 		return true;
 	}
 	
@@ -74,10 +79,26 @@ public class PlayerControler extends CharacterControler {
 					ai.addAction(new AttackAction(character));
 				}
 			}
-			ai.addAction(new EndTurnAction());
 		break;
 		default:
 			super.receiveDrop(dropped);
 		}
+	}
+	
+	@Override
+	public boolean setPlaying(boolean isPlaying) {
+		boolean statusChanged = super.setPlaying(isPlaying);
+		// Remplissage des actions en début de tour, et réinitialisation du compteur
+		// de pas
+		if (statusChanged && isPlaying) {
+			GameControler.instance.getScreen().getHUDRenderer().refillActionSlots();
+			characterData.movesLeft = characterData.walkDistance;
+		}
+		return statusChanged;
+	}
+
+	public void prepareEndTurn() {
+		ai.clearActions();
+		ai.addAction(new EndTurnAction());
 	}
 }

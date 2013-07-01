@@ -7,7 +7,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.MathUtils;
 import com.slamdunk.quester.display.screens.DisplayData;
-import com.slamdunk.quester.display.screens.GameScreen;
+import com.slamdunk.quester.display.screens.DungeonScreen;
 import com.slamdunk.quester.display.screens.WorldScreen;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.model.map.DungeonBuilder;
@@ -26,8 +26,8 @@ public class Quester extends Game {
 	/**
 	 * Ecrans du jeu
 	 */
-	private GameScreen worldMapScreen;
-	private GameScreen dungeonScreen;
+	private WorldScreen worldMapScreen;
+	private DungeonScreen dungeonScreen;
 	
 	private static Quester instance;
 	
@@ -96,8 +96,6 @@ public class Quester extends Game {
 			// Création de l'acteur représentant le joueur
 			Point entrancePosition = builder.getEntrancePosition();
 			worldMapScreen.createPlayer(entrancePosition);
-			GameControler.instance.getPlayer().setActor(worldMapScreen.getPlayerActor());
-			GameControler.instance.getPlayer().getAI().init();
 			
 			// Le joueur est créé : création du hud
 			worldMapScreen.initHud(Config.asInt("minimap.width", (int)(screenWidth * 0.8)), Config.asInt("minimap.height", (int)(screenWidth * 0.8)));
@@ -133,7 +131,7 @@ public class Quester extends Game {
 		MapBuilder builder = new DungeonBuilder(dungeonWidth, dungeonHeight, difficulty);
 		builder.createAreas(roomWidth, roomHeight, GROUND_DATA);
 		builder.placeMainEntrances();
-		dungeonScreen = new GameScreen(builder, 96, 96);
+		dungeonScreen = new DungeonScreen(builder, 96, 96);
 		GameControler.instance.setScreen(dungeonScreen);
 		
 		// Choix de la musique de fond
@@ -142,8 +140,6 @@ public class Quester extends Game {
 		// Crée l'acteur représentant le joueur
 		Point entrancePosition = builder.getEntrancePosition();
 		dungeonScreen.createPlayer(entrancePosition);
-		GameControler.instance.getPlayer().setActor(dungeonScreen.getPlayerActor());
-		GameControler.instance.getPlayer().getAI().init();
 		
 		// Le joueur est créé : création du hud
 		dungeonScreen.initHud(Config.asInt("minimap.width", (int)(screenWidth * 0.8)), Config.asInt("minimap.height", (int)(screenWidth * 0.8)));

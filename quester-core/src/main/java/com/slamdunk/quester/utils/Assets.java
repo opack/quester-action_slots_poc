@@ -39,6 +39,7 @@ public class Assets {
 	//private static TextureAtlas atlas;
 	public static TextureRegion torch;
 	public static TextureRegion pathMarker;
+	public static TextureRegion pathMarkerDisabled;
 	public static TextureRegion wall;
 	public static TextureRegion ground;
 	public static TextureRegion grass;
@@ -95,6 +96,7 @@ public class Assets {
 	public static TextureRegion action_attack;
 	public static TextureRegion action_chest;
 	public static TextureRegion action_endturn;
+	public static TextureRegion action_endturn_disabled;
 	public static TextureRegion action_heal;
 	public static TextureRegion action_none;
 	public static TextureRegion action_shield;
@@ -149,6 +151,7 @@ public class Assets {
 		// TODO : utiliser un atlas
 		torch = loadTexture("torch.png");
 		pathMarker = loadTexture("path-marker.png");
+		pathMarkerDisabled = loadTexture("path-marker_disabled.png");
 		wall = loadTexture("wall.png");
 		ground = loadTexture("ground.png");
 		grass = loadTexture("grass.png");
@@ -205,6 +208,7 @@ public class Assets {
 		action_attack = loadTexture("actions/action_attack.png");
 		action_chest = loadTexture("actions/action_chest.png");
 		action_endturn = loadTexture("actions/action_endturn.png");
+		action_endturn_disabled = loadTexture("actions/action_endturn_disabled.png");
 		action_heal = loadTexture("actions/action_heal.png");
 		action_none = loadTexture("actions/action_none.png");
 		action_shield = loadTexture("actions/action_shield.png");

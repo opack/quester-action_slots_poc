@@ -20,24 +20,26 @@ import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
 import com.slamdunk.quester.display.hud.minimap.DungeonMiniMap;
 import com.slamdunk.quester.display.hud.minimap.MiniMap;
-import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.PlayerControler;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.map.MapArea;
 import com.slamdunk.quester.utils.Assets;
 
 public class HUDRenderer extends Stage {
 	private ActionSlots actionSlots;
+	private Table actionSlotsTable;
+	private Button endTurnBtn;
 	/**
 	 * Vecteur utilisé pour accélérer le traitement de la méthode hit
 	 */
 	private Vector2 hitTestPos;
 	private Label lblAtt;
 	private Label lblHp;
+	private Label lblMovesLeft;
 	private Stage mapStage;
-//	private MenuButton menu;
+	//	private MenuButton menu;
 	private MiniMap minimap;
-	private Table actionSlotsTable;
 	
 	public HUDRenderer() {
 		hitTestPos = new Vector2();
@@ -45,9 +47,6 @@ public class HUDRenderer extends Stage {
 	
 	private Table createBottomTable() {
 	// Création des images qui pourront être dnd
-		ActionSlotActor moveSlot = ActionSlotsHelper.createSlot(QuesterActions.MOVE, Assets.menu_move);
-		ActionSlotActor endTurnSlot = ActionSlotsHelper.createSlot(QuesterActions.END_TURN, Assets.action_endturn);
-		
 		ActionSlotActor upcomingSlot1 = ActionSlotsHelper.createEmptySlot();
 		ActionSlotActor upcomingSlot2 = ActionSlotsHelper.createEmptySlot();
 		ActionSlotActor upcomingSlot3 = ActionSlotsHelper.createEmptySlot();
@@ -64,8 +63,6 @@ public class HUDRenderer extends Stage {
 		ActionSlotActor stockSlot4 = ActionSlotsHelper.createEmptySlot();
 		ActionSlotActor stockSlot5 = ActionSlotsHelper.createEmptySlot();
 		// Ajout au gestionnaire de dnd
-		actionSlots.addSource(moveSlot);
-		actionSlots.addSource(endTurnSlot);
 		actionSlots.addUpcomingSlots(upcomingSlot1, upcomingSlot2, upcomingSlot3, upcomingSlot4, upcomingSlot5);
 		actionSlots.addStockSlots(stockSlot1, stockSlot2, stockSlot3, stockSlot4, stockSlot5);
 		actionSlots.addArrivalSlots(stockSlot1, stockSlot2, stockSlot3, stockSlot4, stockSlot5);
@@ -74,13 +71,13 @@ public class HUDRenderer extends Stage {
 		// Création de la table englobante
 		actionSlotsTable = new Table();
 		actionSlotsTable.align(Align.center);
-		actionSlotsTable.add(moveSlot).size(64, 64).padRight(5);
+		actionSlotsTable.add().expandX();
 		actionSlotsTable.add(stockSlot1).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot2).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot3).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot4).size(64, 64).padRight(5);
 		actionSlotsTable.add(stockSlot5).size(64, 64).padRight(5);
-		actionSlotsTable.add(endTurnSlot).size(64, 64).padRight(5);
+		actionSlotsTable.add().expandX();
 		actionSlotsTable.row().padBottom(5).padTop(5);
 		actionSlotsTable.add().expandX();
 		actionSlotsTable.add(upcomingSlot1).size(32, 32).padRight(5);
@@ -93,6 +90,65 @@ public class HUDRenderer extends Stage {
 //		bottom.add(arrivalSlot2).size(64, 64).padRight(5);
 		actionSlotsTable.pack();
 		return actionSlotsTable;
+	}
+	
+	private Table createUpTable() {
+		// Création du bouton d'affichage de la minimap
+//DBG		menu = new MenuButton();
+		ButtonStyle mapBtnStyle = new ButtonStyle();
+		mapBtnStyle.up = new TextureRegionDrawable(Assets.map);
+		mapBtnStyle.down = new TextureRegionDrawable(Assets.map);
+		mapBtnStyle.pressedOffsetY = 1.0f;
+		Button displayMap = new Button(mapBtnStyle);
+		displayMap.addListener(new ClickListener(){
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				GameControler.instance.getScreen().getHUDRenderer().toggleMinimapVisibility();
+			};
+		});
+		
+		ButtonStyle endturnBtnStyle = new ButtonStyle();
+		endturnBtnStyle.up = new TextureRegionDrawable(Assets.action_endturn);
+		endturnBtnStyle.down = new TextureRegionDrawable(Assets.action_endturn);
+		endturnBtnStyle.disabled = new TextureRegionDrawable(Assets.action_endturn_disabled);
+		endturnBtnStyle.pressedOffsetY = 1.0f;
+		endTurnBtn = new Button(endturnBtnStyle);
+		endTurnBtn.addListener(new ClickListener(){
+			@Override
+			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+				GameControler.instance.getPlayer().prepareEndTurn();
+			};
+		});
+		
+		// Création des statistiques
+		LabelStyle style = new LabelStyle();
+		style.font = Assets.hudFont;
+		lblHp = new Label("", style);
+		lblAtt = new Label("", style);
+		lblMovesLeft = new Label("", style);
+		
+		Table stats = new Table();
+		stats.add(new Image(Assets.heart)).size(32, 32);
+		stats.add(lblHp).width(50).top();
+		stats.add(new Image(Assets.sword)).size(32, 32);
+		stats.add(lblAtt).width(50).top();
+		stats.add().expandX();
+		stats.row();
+		stats.add(new Image(Assets.menu_move)).size(32, 32);
+		stats.add(lblMovesLeft).width(50).top();
+		
+		stats.pack();
+		
+		// Création de la table englobante
+		Table up = new Table();
+		up.add(displayMap).size(64, 64);
+		up.add(endTurnBtn).size(64, 64).padRight(5);
+		up.add(stats).align(Align.bottom | Align.left);
+		up.pack();
+		
+		// Préparation du menu
+//DBG		menu.prepareMenu();
+		return up;
 	}
 	
 //	private Table createRightTable() {
@@ -125,57 +181,10 @@ public class HUDRenderer extends Stage {
 //		return right;
 //	}
 
-	private Table createUpTable() {
-		// Création du bouton d'affichage de la minimap
-//DBG		menu = new MenuButton();
-		ButtonStyle mapBtnStyle = new ButtonStyle();
-		mapBtnStyle.up = new TextureRegionDrawable(Assets.map);
-		mapBtnStyle.down = new TextureRegionDrawable(Assets.map);
-		mapBtnStyle.pressedOffsetY = 1.0f;
-		Button displayMap = new Button(mapBtnStyle);
-		displayMap.addListener(new ClickListener(){
-			@Override
-			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getScreen().getHUDRenderer().toggleMinimapVisibility();
-			};
-		});
-		
-		// Création des statistiques
-		LabelStyle style = new LabelStyle();
-		style.font = Assets.hudFont;
-		lblHp = new Label("", style);
-		lblAtt = new Label("", style);
-		
-		Table stats = new Table();
-		stats.add(new Image(Assets.heart)).size(32, 32);
-		stats.add(lblHp).width(50).top();
-		stats.add().expandX();
-		stats.row();
-		stats.add(new Image(Assets.sword)).size(32, 32);
-		stats.add(lblAtt).width(50).top();
-		stats.pack();
-		
-		// Création de la table englobante
-		Table up = new Table();
-		up.add(displayMap).size(64, 64);
-		up.add(stats).align(Align.bottom | Align.left);
-		up.pack();
-		
-		// Préparation du menu
-//DBG		menu.prepareMenu();
-		return up;
-	}
-
 	public ActionSlots getActionSlots() {
 		return actionSlots;
 	}
 
-	public void toggleMinimapVisibility() {
-		if (minimap != null) {
-			minimap.setVisible(!minimap.isVisible());
-		}
-	}
-	
 	@Override
 	public Actor hit(float stageX, float stageY, boolean touchable) {
 		Actor hit = super.hit(stageX, stageY, touchable);
@@ -210,9 +219,14 @@ public class HUDRenderer extends Stage {
 		table.setFillParent(true);
 		addActor(table);
 		
-		actionSlots.fillActionSlots();
+		refillActionSlots();
 	}
 	
+	public void refillActionSlots() {
+		// Remplissage des slots de stock vides
+		actionSlots.fillArrivalSlots(2); // TODO Prendre la valeur définie au niveau du joueur
+	}
+
 	public void render(float delta) {
 		// Mise à jour éventuelle du menu
 //DBG		menu.act(delta);
@@ -223,13 +237,13 @@ public class HUDRenderer extends Stage {
 		
 //		Table.drawDebug(this);
 	}
-
+	
 	public void setActionSlotsVisibility(boolean isVisible) {
 		if (actionSlotsTable != null) {
 			actionSlotsTable.setVisible(isVisible);
 		}
 	}
-	
+
 	public void setMiniMap(int worldWidth, int worldHeight, int miniMapImageWidth, int miniMapImageHeight) {
 		minimap = new MiniMap(worldWidth, worldHeight);
 		minimap.init(miniMapImageWidth, miniMapImageHeight);
@@ -251,6 +265,12 @@ public class HUDRenderer extends Stage {
 		addActor(minimap);
 	}
 	
+	public void toggleMinimapVisibility() {
+		if (minimap != null) {
+			minimap.setVisible(!minimap.isVisible());
+		}
+	}
+	
 	public void update() {
 		update(-1, -1);
 	}
@@ -264,8 +284,17 @@ public class HUDRenderer extends Stage {
 		}
 		
 		// Mise à jour des stats
-		CharacterData playerData = GameControler.instance.getPlayer().getData();
+		PlayerControler player = GameControler.instance.getPlayer();
+		CharacterData playerData = player.getData();
 		lblHp.setText(String.valueOf(playerData.health));
 		lblAtt.setText(String.valueOf(playerData.attack));
+		String moves = "--";
+		if (!playerData.isFreeMove) {
+			moves = String.valueOf(playerData.movesLeft);
+		}
+		lblMovesLeft.setText(moves);
+		
+		// Activation des boutons
+		endTurnBtn.setDisabled(!player.isPlaying());
 	}
 }

@@ -2,7 +2,6 @@ package com.slamdunk.quester.display.map;
 
 import static com.slamdunk.quester.Quester.screenHeight;
 import static com.slamdunk.quester.Quester.screenWidth;
-import static com.slamdunk.quester.model.data.WorldElementData.PATH_MARKER_DATA;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,7 @@ import com.slamdunk.quester.logic.controlers.WorldElementControler;
 import com.slamdunk.quester.model.data.CastleData;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.PathData;
+import com.slamdunk.quester.model.data.PathMarkerData;
 import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.map.MapArea;
 import com.slamdunk.quester.model.map.MapLevels;
@@ -147,29 +147,25 @@ public class MapRenderer {
 					new GroundActor(Assets.ground));
 				break;
 	 		case PATH_MARKER:
-	 			boolean isLastMarker = false;
-	 			List<Point> path = GameControler.instance.getPlayer().getPath();
-	 			if (path != null && !path.isEmpty()) {
-	 				Point lastPos = path.get(path.size() - 1);
-	 				if (lastPos != null
-	 				&& lastPos.getX() == col
-	 				&& lastPos.getY() == row) {
-	 					isLastMarker = true;
-	 				}
-	 			}
-	 			// Si c'est le dernier marker, on met une image spéciale
-	 			// Si ce n'est pas le dernier marker, on met une image normale
 	 			PathMarkerActor actor = null;
-//	 			if (isLastMarker) {
-//	 				actor = new PathMarkerActor(Assets.menu_move);
-//	 			} else {
-	 				actor = new PathMarkerActor(Assets.pathMarker);
-//	 			}
+	 			PathMarkerData pathMarkerData = (PathMarkerData)data;
+	 			if (pathMarkerData.isReachable) {
+		 			if (pathMarkerData.isLastMarker) {
+		 				actor = new PathMarkerActor(Assets.menu_move);
+		 			} else {
+		 				actor = new PathMarkerActor(Assets.pathMarker);
+		 			}
+	 			} else {
+	 				if (pathMarkerData.isLastMarker) {
+		 				actor = new PathMarkerActor(Assets.menu_move_disabled);
+		 			} else {
+		 				actor = new PathMarkerActor(Assets.pathMarkerDisabled);
+		 			}
+	 			}
 	 			GameControler.instance.getScreen().getHUDRenderer().getActionSlots().addPathMarker(actor);
 		 		controler = new PathMarkerControler(
 					data, 
-					actor,
-					isLastMarker);
+					actor);
 				break;
 			case PATH_TO_REGION:
 				controler = createPathToArea((PathData)data);
@@ -337,9 +333,17 @@ private PathToAreaControler createPathToArea(PathData data) {
 			return;
 		}
 		MapLayer overlayLayer = map.getLayer(MapLevels.OVERLAY);
-		for (Point pos : path) {
-			createActor(pos.getX(), pos.getY(), PATH_MARKER_DATA, overlayLayer);
+		final int walkDistance = GameControler.instance.getPlayer().getData().walkDistance;
+		final int posCount = path.size();
+		for (int curPos = 0; curPos < posCount; curPos++) {
+			PathMarkerData data = new PathMarkerData();
+			data.isLastMarker = curPos == posCount - 1;
+			data.isReachable = curPos < walkDistance;
+			
+			Point pos = path.get(curPos);
 	 		overlayPath.add(pos);
+	 		
+	 		createActor(pos.getX(), pos.getY(), data, overlayLayer);
 		}
 	}
 }
