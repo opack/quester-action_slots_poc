@@ -1,5 +1,4 @@
 - Faire un nettoyage du code : retirer le code commenter et les DBG
-- Sur la carte du monde, désactiver le bouton fin de tour et la possibilité de jouer une action. La seule action possible avec les actions est l'échange ou la construction d'actions doublées/combos.
 - Mobs : ajouter l'action "déplacement"
 - Gérer l'échange entre 2 actions dans le stock.
 - Zones de perception : la zone est affichée pendant un appui long sur le mob.

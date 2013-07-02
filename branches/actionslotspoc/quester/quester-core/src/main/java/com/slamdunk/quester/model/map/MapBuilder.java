@@ -242,25 +242,24 @@ public abstract class MapBuilder {
 	protected int getNbPathsBetweenAreas() {
 		return 1;
 	}
-	
-	/**
-	 * Retourne l'emplacement du chemin sur le bord indiqué.
-	 * @param border
-	 * @return
-	 */
+
 	protected int getPathPosition(Borders border) {
 		int position = 0;
 		switch (border) {
-			// Les murs horizontaux
+			// Les côtés horizontaux
 			case TOP:
 			case BOTTOM:
-				position = areaWidth / 2;
+				// Choix d'un nombre entre 1 et taille -2 pour s'assurer qu'on ne
+				// place pas un chemin dans un coin
+				position = MathUtils.random(1, areaWidth - 2);
 				break;
 				
-			// Les murs verticaux
+			// Les côtés verticaux
 			case LEFT:
 			case RIGHT:
-				position = areaHeight / 2;
+				// Choix d'un nombre entre 1 et taille -2 pour s'assurer qu'on ne
+				// place pas un chemin dans un coin
+				position = MathUtils.random(1, areaHeight - 2);
 				break;
 		}
 		return position;

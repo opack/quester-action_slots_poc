@@ -173,7 +173,9 @@ public class HUDRenderer extends Stage {
 		endTurnBtn.addListener(new ClickListener(){
 			@Override
 			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getPlayer().prepareEndTurn();
+				if (!endTurnBtn.isDisabled()) {
+					GameControler.instance.getPlayer().prepareEndTurn();
+				}
 			};
 		});
 		
@@ -302,6 +304,6 @@ public class HUDRenderer extends Stage {
 		lblMovesLeft.setText(moves);
 		
 		// Activation des boutons
-		endTurnBtn.setDisabled(!player.isPlaying());
+		endTurnBtn.setDisabled(!player.isPlaying() || playerData.isFreeMove);
 	}
 }
