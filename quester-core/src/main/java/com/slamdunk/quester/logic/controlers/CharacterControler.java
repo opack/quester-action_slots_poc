@@ -22,16 +22,28 @@ import com.slamdunk.quester.model.points.Point;
 
 public class CharacterControler extends WorldElementControler implements Damageable {
 
-	private static int[][] NEIGHBORS = new int[][]{
+	/**
+	 * Les 8 voisins autour
+	 */
+	public static int[][] NEIGHBORS_ALL = new int[][]{
 		new int[]{-1, -1},
 		new int[]{0, -1},
 		new int[]{+1, -1},
 		new int[]{-1, 0},
-		new int[]{0, 0},
 		new int[]{+1, 0},
 		new int[]{-1, +1},
 		new int[]{0, +1},
 		new int[]{+1, +1},
+	};
+	
+	/**
+	 * Voisins en "+" : au-dessus, en-dessous, à gauche et à droite.
+	 */
+	public static int[][] NEIGHBORS_PLUS = new int[][]{
+		new int[]{0, -1},
+		new int[]{-1, 0},
+		new int[]{+1, 0},
+		new int[]{0, +1},
 	};
 	
 	/**
@@ -183,7 +195,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		final int myY = actor.getWorldY();
 		final int hisX = character.actor.getWorldX();
 		final int hisY = character.actor.getWorldY();
-		for (int[] neighbor : NEIGHBORS) {
+		for (int[] neighbor : NEIGHBORS_ALL) {
 			if (myX + neighbor[0] == hisX
 			&& myY + neighbor[1] == hisY) {
 				return true;

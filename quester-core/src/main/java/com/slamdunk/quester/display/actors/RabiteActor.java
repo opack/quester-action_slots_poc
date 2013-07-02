@@ -5,7 +5,7 @@ import com.slamdunk.quester.display.Clip;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.utils.Assets;
 
-public class RabiteActor extends DamageableActor {
+public class RabiteActor extends CharacterActor {
 	
 	private Clip attackClip;
 	private Clip idleClip;

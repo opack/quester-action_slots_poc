@@ -86,12 +86,6 @@ public class GameScreen implements Screen {
  		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
  		//DBGinputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
  		enableInputListeners(true);
-		
-		// DBG Rustine pour réussir à centrer sur le joueur lors de l'affichage
-        // de la toute première pièce. Etrangement le centerCameraOn(player) ne
-        // fonctionne pas la toute première fois (avant le passage dans le premier
-        // render()).
-        isFirstDisplay = true;
 	}
 	
 	/**
@@ -105,19 +99,6 @@ public class GameScreen implements Screen {
 			firstActor.getY() + map.getMapHeight() * map.getCellHeight() / 2, 
 			0);
 	}
-
-//DBG	/**
-//	 * Centre la caméra sur le joueur
-//	 * @param element
-//	 */
-//	public void centerCameraOn(WorldElementActor actor) {
-//		// On n'utilise pas actor.centerCameraOnSelf() car on veut
-//		// un déplacement immédiat de la caméra et non pas progressif.
-//		mapRenderer.getCamera().position.set(
-//			actor.getX() + actor.getWidth() / 2, 
-//			actor.getY() + actor.getHeight() / 2, 
-//			0);
-//	}
 	
 	/**
 	 * Crée le HUD
@@ -252,11 +233,6 @@ public class GameScreen implements Screen {
 		//Gdx.gl.glClearColor(0, 0, 0.2f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		// Mise à jour du menu contextuel, qui doit faire une belle animation pour apparaître
-//DBG		if (ContextMenuControler.openedMenu != null) {
-//			ContextMenuControler.openedMenu.act(delta);
-//		}
-		
 		// Le WorldElement dont le tour est en cours joue
 		GameControler.instance.getCurrentCharacter().act(delta);
 		
@@ -293,7 +269,6 @@ public class GameScreen implements Screen {
 		// on revient sur la carte du monde. Ca ne marche
 		// malheureusement pas et on doit recourir encore
 		// une fois à l'astuce du isFirstDisplay :(
-		//DBGcenterCameraOn(player);
 		centerCamera();
 		isFirstDisplay = true;
 		

@@ -118,40 +118,9 @@ public class HUDRenderer extends Stage {
 		
 		refillActionSlots();
 	}
-	
-//	private Table createRightTable() {
-//		// Création des images qui pourront être dnd
-//		ActionSlotActor upcomingSlot1 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor upcomingSlot2 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor upcomingSlot3 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor upcomingSlot4 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor arrivalSlot1 = ActionSlotsHelper.createEmptySlot();
-//		ActionSlotActor arrivalSlot2 = ActionSlotsHelper.createEmptySlot();
-//		
-//		// Ajout au gestionnaire de dnd
-//		actionSlots.addUpcomingSlots(upcomingSlot1, upcomingSlot2, upcomingSlot3, upcomingSlot4);
-//		actionSlots.addArrivalSlots(arrivalSlot1, arrivalSlot2);
-//		
-//		// Ajout à la table pour les organiser joliment
-//		Table right = new Table();
-//		right.add(upcomingSlot1).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(upcomingSlot2).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(upcomingSlot3).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(upcomingSlot4).size(32, 32).padBottom(5);
-//		right.row();
-//		right.add(arrivalSlot1).size(64, 64).padBottom(5);
-//		right.row();
-//		right.add(arrivalSlot2).size(64, 64).padBottom(5);
-//		right.row();
-//		return right;
-//	}
 
 	private Table createTopTable() {
 		// Création du bouton d'affichage de la minimap
-//DBG		menu = new MenuButton();
 		ButtonStyle mapBtnStyle = new ButtonStyle();
 		mapBtnStyle.up = new TextureRegionDrawable(Assets.map);
 		mapBtnStyle.down = new TextureRegionDrawable(Assets.map);
@@ -206,8 +175,6 @@ public class HUDRenderer extends Stage {
 		up.add().expandX();
 		up.add(endTurnBtn).size(64, 64).padRight(5);
 		up.pack();
-		// Préparation du menu
-//DBG		menu.prepareMenu();
 		return up;
 	}
 
@@ -244,7 +211,6 @@ public class HUDRenderer extends Stage {
 
 	public void render(float delta) {
 		// Mise à jour éventuelle du menu
-//DBG		menu.act(delta);
 		actionSlots.act(delta);
 		
 		// Dessin du HUD
