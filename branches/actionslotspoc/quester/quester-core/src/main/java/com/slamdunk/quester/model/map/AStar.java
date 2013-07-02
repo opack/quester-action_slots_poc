@@ -253,8 +253,12 @@ public class AStar {
         }
         return listPoint;
     }
+    
+    public PointManager getPointManager() {
+		return pointManager;
+	}
 
-    public boolean[][] getWalkables() {
+	public boolean[][] getWalkables() {
 		return walkables;		
 	}
     

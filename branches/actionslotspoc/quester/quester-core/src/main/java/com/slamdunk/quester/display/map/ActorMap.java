@@ -13,6 +13,7 @@ import com.slamdunk.quester.logic.controlers.WorldElementControler;
 import com.slamdunk.quester.model.map.AStar;
 import com.slamdunk.quester.model.map.MapLevels;
 import com.slamdunk.quester.model.points.Point;
+import com.slamdunk.quester.model.points.PointManager;
 
 /**
  * Carte du jeu composée d'Actors, disposés sur des MapLayer.
@@ -209,6 +210,10 @@ public class ActorMap extends Group {
 		return pathfinder;		
 	}
 	
+	public PointManager getPointManager() {
+		return pathfinder.getPointManager();
+	}
+	
 	/**
 	 * Retourne l'élément à la position indiquée sur la couche la plus élevée de la carte
 	 * @param col
@@ -241,6 +246,9 @@ public class ActorMap extends Group {
 		return null;
 	}
 
+	/**
+	 * Indique si la position indiquée est vide au-dessus du GROUND
+	 */
 	public boolean isEmpty(int x, int y) {
 		return isEmptyAbove(MapLevels.GROUND, x, y);
 	}

@@ -14,7 +14,11 @@ public class RabiteAI extends AI {
 			// Tour d'action 1 : ne rien faire
 			addAction(new EndTurnAction());
 			
-			// Tour d'action 2 : attaquer
+			// Tour d'action 2 : se déplacer
+			addAction(new RandomMoveAction());
+			addAction(new EndTurnAction());
+			
+			// Tour d'action 3 : attaquer
 			addAction(new AttackAction(GameControler.instance.getPlayer()));
 			addAction(new EndTurnAction());
 		} else {

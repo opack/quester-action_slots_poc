@@ -179,7 +179,7 @@ public class MapRenderer {
 				rabite.addListener(GameControler.instance);
         		rabite.getData().name = "Rabite" + rabite.getId();
         		// Tant qu'il n'est pas découvert, le rabite est invisible et inactif
-        		rabite.setEnabled(false);
+        		//rabite.setEnabled(false);
         		
         		map.addCharacter(rabite);
         		controler = rabite;
