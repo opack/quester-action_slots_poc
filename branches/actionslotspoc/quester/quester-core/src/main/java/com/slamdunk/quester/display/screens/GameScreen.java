@@ -29,6 +29,7 @@ import com.slamdunk.quester.model.map.MapBuilder;
 import com.slamdunk.quester.model.map.MapLevels;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
+import com.slamdunk.quester.utils.Config;
 
 /**
  * Représente un écran de jeu. Un écran contient plusieurs zones de carte et en affiche
@@ -83,8 +84,8 @@ public class GameScreen implements Screen {
 		// Création du gestionnaire d'input
  		inputMultiplexer = new InputMultiplexer();
  		inputMultiplexer.addProcessor(hudRenderer);
- 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
- 		//DBGinputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
+// 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
+ 		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
  		//DBGinputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
  		enableInputListeners(true);
 	}
@@ -98,6 +99,14 @@ public class GameScreen implements Screen {
 		mapRenderer.getCamera().position.set(
 			firstActor.getX() + map.getMapWidth() * map.getCellWidth() / 2, 
 			firstActor.getY() + map.getMapHeight() * map.getCellHeight() / 2, 
+			0);
+	}
+	
+	public void centerCameraOn(WorldElementActor actor) {
+		ActorMap map = mapRenderer.getMap();
+		mapRenderer.getCamera().position.set(
+			actor.getX() + actor.getWidth() / 2, 
+			actor.getY() + actor.getHeight() / 2, 
 			0);
 	}
 	
@@ -181,8 +190,10 @@ public class GameScreen implements Screen {
         // Centrage de la caméra sur le joueur
 //        centerCameraOn(player);
         centerCamera();
-        // Zoom pour afficher toute la carte
-        mapRenderer.getCamera().zoom = mapRenderer.getMap().getMapWidth() * mapRenderer.getMap().getCellWidth() / screenWidth;
+        //DBG// Zoom pour afficher toute la carte
+        //DBGmapRenderer.getCamera().zoom = mapRenderer.getMap().getMapWidth() * mapRenderer.getMap().getCellWidth() / screenWidth;
+        // Zoom pour afficher une partie de la carte
+        mapRenderer.getCamera().zoom = Config.asInt("map.cellsInScreenWidth", 7) * mapRenderer.getMap().getCellWidth() / screenWidth;
 	}
 
 	@Override
@@ -242,8 +253,8 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 		if (isFirstDisplay) {
 			isFirstDisplay = false;
-			//centerCameraOn(player);
-			centerCamera();
+			centerCameraOn(player);
+			//centerCamera();
 		}
 		
 		// Efface l'écran
