@@ -83,13 +83,9 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		super(data, body);
 		listeners = new ArrayList<CharacterListener>();
 		
-		if (ai == null) {
-			this.ai = new AI();
-		} else {
-			this.ai = ai;
-		}
-		ai.setControler(this);
-		ai.init();
+		this.ai = ai;
+		this.ai.setControler(this);
+		this.ai.init();
 	}
 	
 	@Override

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 
-public class AI {
+public abstract class AI {
 	/**
 	 * Actions programmées
 	 */
@@ -54,10 +54,11 @@ public class AI {
 	}
 
 	/**
-	 * Initialise l'IA
+	 * Initialise l'IA : par défaut, on cherche à penser
 	 */
 	public void init() {
 		clearActions();
+		addAction(new ThinkAction());
 	}
 	
 	/**
@@ -100,12 +101,9 @@ public class AI {
 	}
 
 	/**
-	 * Détermine la prochaine action à effectuer
+	 * Méthode chargée de décider ce que fera l'élément lorsque ce
+	 * sera à son tour de jouer. Par défaut, il ne fait rien et
+	 * termine son tour.
 	 */
-	public void think() {
-		// Méthode chargée de décider ce que fera l'élément lorsque ce
-		// sera à son tour de jouer. Par défaut, il ne fait rien et
-		// termine son tour.
-		nextAction();
-	}
+	public abstract void think();
 }

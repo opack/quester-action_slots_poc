@@ -77,7 +77,7 @@ public class PlayerControler extends CharacterControler {
 			for (CharacterControler character : GameControler.instance.getCharacters()) {
 				// Attaque tous les personnages hostiles, sans tenir compte de la portée de l'arme
 				if (character.isHostile()) {
-					ai.addAction(new AttackAction(character, true));
+					ai.addAction(new AttackAction(character));
 				}
 			}
 		break;

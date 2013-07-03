@@ -2,7 +2,6 @@ package com.slamdunk.quester.logic.ai;
 
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.CharacterListener;
-import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
 
@@ -29,21 +28,19 @@ public class MoveAction extends AbstractAIAction {
 	}
 
 	public void act() {
-		if (GameControler.instance.getScreen().getMap().isEmpty(destinationX, destinationY)) {
-			CharacterControler character = ai.controler;
-			
-			// Fait un bruit de pas
-			Assets.playSound(character.getStepSound());
-			
-			// Déplace le personnage
-			int oldX = character.getActor().getWorldX();
-			int oldY = character.getActor().getWorldY();
-			character.getActor().moveTo(destinationX, destinationY, 1 / character.getData().speed);
-			
-			// Avertit les listeners que le personnage bouge
-			for (CharacterListener listener : character.getListeners()) {
-				listener.onCharacterMoved(character, oldX, oldY);
-			}
+		CharacterControler character = ai.controler;
+		
+		// Fait un bruit de pas
+		Assets.playSound(character.getStepSound());
+		
+		// Déplace le personnage
+		int oldX = character.getActor().getWorldX();
+		int oldY = character.getActor().getWorldY();
+		character.getActor().moveTo(destinationX, destinationY, 1 / character.getData().speed);
+		
+		// Avertit les listeners que le personnage bouge
+		for (CharacterListener listener : character.getListeners()) {
+			listener.onCharacterMoved(character, oldX, oldY);
 		}
 		
 		// Si on est entré dans la zone de perception d'un ennemi, le déplacement est interrompu.

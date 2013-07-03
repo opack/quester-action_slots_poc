@@ -1,29 +1,26 @@
 package com.slamdunk.quester.logic.ai;
 
+import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.PlayerControler;
 
 /**
- * Le Rabite attaque un tour sur deux
+ * Le Rabite se déplace aléatoirement, et s'il est à côté du joueur il l'attaque.
  */
 public class RabiteAI extends AI {
-	
 	@Override
-	public void init() {
-		super.init();
-		if (getControler().isEnabled()) {
-			// Tour d'action 1 : ne rien faire
-			addAction(new EndTurnAction());
-			
-			// Tour d'action 2 : se déplacer
-			addAction(new RandomMoveAction());
-			addAction(new EndTurnAction());
-			
-			// Tour d'action 3 : attaquer
-			addAction(new AttackAction(GameControler.instance.getPlayer()));
-			addAction(new EndTurnAction());
-		} else {
-			// Le Rabite n'a pas encore été découvert : on ne fait rien
-			addAction(new EndTurnAction());
+	public void think() {
+		// Si le joueur est à portée, on l'attaque.
+		WorldElementActor rabiteActor = controler.getActor();
+		int range = controler.getData().weaponRange;
+		PlayerControler player = GameControler.instance.getPlayer();
+		if (GameControler.instance.getScreen().getMap().isWithinRangeOf(rabiteActor, player.getActor(), range)) {
+			addAction(new AttackAction(player));
 		}
+		// Sinon, on se déplace aléatoirement, ou on ne fait rien si aucun déplacement n'est possible
+		else {
+			addAction(new RandomMoveAction());
+		}
+		addAction(new EndTurnAction());
 	}
 }

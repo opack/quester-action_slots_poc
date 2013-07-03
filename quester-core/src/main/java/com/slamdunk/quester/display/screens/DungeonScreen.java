@@ -3,7 +3,6 @@ package com.slamdunk.quester.display.screens;
 import com.slamdunk.quester.display.hud.HUDRenderer;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.CharacterListener;
-import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.model.map.MapBuilder;
 
 public class DungeonScreen extends GameScreen implements CharacterListener {
@@ -20,8 +19,6 @@ public class DungeonScreen extends GameScreen implements CharacterListener {
 		for (CharacterControler character : getMapRenderer().getMap().getCharacters()) {
 			character.addListener(this);
 		}
-		// Place le joueur hors du mode freemove
-		GameControler.instance.getPlayer().getData().isFreeMove = false;
 	}
 	
 
@@ -40,17 +37,7 @@ public class DungeonScreen extends GameScreen implements CharacterListener {
 	@Override
 	public void onCharacterDeath(CharacterControler character) {
 		// Si tous les ennemis sont morts, alors le joueur est en freemove !
-		boolean areHostileRemaining = false;
-		for (CharacterControler curChar : getMapRenderer().getMap().getCharacters()) {
-			if (curChar.isHostile()) {
-				areHostileRemaining = true;
-				break;
-			}
-		}
-		if (!areHostileRemaining) {
-			GameControler.instance.getPlayer().getData().isFreeMove = true;
-			GameControler.instance.updateHUD();
-		}
+		checkFreeMove();
 	}
 
 	@Override

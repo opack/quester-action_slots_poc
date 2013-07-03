@@ -4,12 +4,6 @@ package com.slamdunk.quester.logic.ai;
 public class PlayerAI extends AI {
 	
 	@Override
-	public void init() {
-		super.init();
-		addAction(new ThinkAction());
-	}
-	
-	@Override
 	public void think() {
 		// Ne rien faire ici revient à continuer à appeler think()
 		// jusqu'à ce qu'une action ait été initiée par le joueur.
