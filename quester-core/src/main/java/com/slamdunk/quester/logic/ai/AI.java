@@ -48,7 +48,7 @@ public abstract class AI {
 	 */
 	public AIAction getNextAction() {
 		if (actions.isEmpty()) {
-			init();
+			addAction(new ThinkAction());
 		}
 		return actions.get(0);
 	}
@@ -58,7 +58,6 @@ public abstract class AI {
 	 */
 	public void init() {
 		clearActions();
-		addAction(new ThinkAction());
 	}
 	
 	/**
@@ -69,7 +68,7 @@ public abstract class AI {
 			actions.remove(0);
 		}
 		if (actions.isEmpty()) {
-			init();
+			addAction(new ThinkAction());
 		}
 	}
 	

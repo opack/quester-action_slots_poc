@@ -173,8 +173,8 @@ public class MapLayer extends Group {
 		cell.setY(newY);
 		
 		// Mise à jour du tableau de cellules
-		cells[oldX][oldY] = null;
 		cells[newX][newY] = cell;
+		cells[oldX][oldY] = null;		
 		
 		// Mise à jour de la taille et position de la cellule
 		if (layoutCell) {
