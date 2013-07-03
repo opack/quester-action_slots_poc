@@ -2,9 +2,12 @@ package com.slamdunk.quester.display.actors;
 
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.slamdunk.quester.display.Clip;
 import com.slamdunk.quester.display.map.ActorMap;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
@@ -28,6 +31,22 @@ public class CharacterActor extends WorldElementActor{
 			float offsetY = map.getCellHeight() - size; // En haut
 			getImage().setPosition(offsetX, offsetY);
 		}
+		
+		addListener(new InputListener() {
+	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+	        	if (characterControler.getDetectionArea() != null) {
+	        		GameControler.instance.getScreen().getMapRenderer().highlightDetectionArea(getWorldX(), getWorldY(), characterControler.getDetectionArea(), Color.BLUE);
+	        		return true;
+	        	}
+                return false;
+	        }
+	        
+	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+	        	if (characterControler.getDetectionArea() != null) {
+	        		GameControler.instance.getScreen().getMapRenderer().highlightDetectionArea(getWorldX(), getWorldY(), characterControler.getDetectionArea(), Color.WHITE);
+	        	}
+	        }
+		});
 	}
 
 	@Override

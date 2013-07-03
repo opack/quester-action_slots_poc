@@ -60,6 +60,11 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	private int damageReduction;
 	
 	/**
+	 * Zone de détection
+	 */
+	private int[][] detectionArea;
+	
+	/**
 	 * Indique si ce Character est dans son tour de jeu
 	 */
 	private boolean isPlaying;
@@ -74,7 +79,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	 * Objets intéressés par ce qui arrive au Character
 	 */
 	private List<CharacterListener> listeners;
-	
 	/**
 	 * Chemin que va suivre le personnage
 	 */
@@ -103,7 +107,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public void addListener(CharacterListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public boolean canAttack(WorldElementControler target) {
 		// Impossible d'attaquer :
 		// Si la cible n'est pas Damageable
@@ -120,7 +124,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		// Si aucun chemin n'existe
 		return litPath != null && !litPath.isEmpty();
 	}
-
+	
 	private void die() {
 		// Récupération du clip de mort de cet acteur
 		GameControler.instance.getScreen().getMapRenderer().createVisualEffect("explosion-death", actor);
@@ -130,30 +134,34 @@ public class CharacterControler extends WorldElementControler implements Damagea
 			listener.onCharacterDeath(this);
 		}
 	}
-	
+
 	@Override
 	public CharacterActor getActor() {
 		return (CharacterActor)super.getActor();
 	}
-	
+
 	public AI getAI() {
 		return ai;
 	}
-
+	
 	public Sound getAttackSound() {
 		return null;
 	}
-
+	
 	@Override
 	public CharacterData getData() {
 		return characterData;
 	}
-	
+
+	public int[][] getDetectionArea() {
+		return detectionArea;
+	}
+
 	@Override
 	public int getHealth() {
 		return characterData.health;
 	}
-
+	
 	public List<CharacterListener> getListeners() {
 		return listeners;
 	}
@@ -161,7 +169,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public List<Point> getPath() {
 		return path;
 	}
-	
+
 	public Sound getStepSound() {
 		return null;
 	}
@@ -179,27 +187,28 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public boolean isHostile() {
 		return false;
 	}
-
+	
 	/**
-	 * Renvoie truc si le CharacterControler passé en paramètre est dans la zone de perception
+	 * Renvoie true si le CharacterControler passé en paramètre est dans la zone de perception
 	 * de ce perso. C'est notamment ici qu'on pourra dire que si le CharacterControler a un sort
 	 * d'invisibilité, alors il ne sera pas visible.
 	 */
 	public boolean isInSight(CharacterControler character) {
-		// Par défaut, un personnage est visible s'il est dans une case autour
-		final int myX = actor.getWorldX();
-		final int myY = actor.getWorldY();
-		final int hisX = character.actor.getWorldX();
-		final int hisY = character.actor.getWorldY();
-		for (int[] neighbor : NEIGHBORS_ALL) {
-			if (myX + neighbor[0] == hisX
-			&& myY + neighbor[1] == hisY) {
-				return true;
+		if (detectionArea != null) {
+			final int myX = actor.getWorldX();
+			final int myY = actor.getWorldY();
+			final int hisX = character.actor.getWorldX();
+			final int hisY = character.actor.getWorldY();
+			for (int[] neighbor : detectionArea) {
+				if (myX + neighbor[0] == hisX
+				&& myY + neighbor[1] == hisY) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
-	
+
 	public boolean isPlaying() {
 		return isPlaying;
 	}
@@ -207,7 +216,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public boolean isShowDestination() {
 		return isShowDestination;
 	}
-
+	
 	/**
 	 * Déplace le personnage jusqu'à ce qu'il soit autour des coordonnées indiquées,
 	 * en placant à chaque fois une torche.
@@ -239,7 +248,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 			}
 		}
 	}
-	
+
 	public boolean prepareMoveNear(WorldElementActor target) {
 		// Calcule le chemin qu'il faut emprunter
 		updatePath(target.getWorldX(), target.getWorldY(), true);
@@ -253,7 +262,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		ai.addAction(new CheckEnemyDetection());
 		return true;
 	}
-
+	
 	public boolean prepareMoveOver(int x, int y) {
 		return prepareMove(x, y, false, true);
 	}
@@ -264,7 +273,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public boolean prepareMoveTo(int x, int y) {
 		return prepareMove(x, y, false, false);
 	}
-	
+
 	/**
 	 * Annule toutes les actions en cours et prépare le think()
 	 */
@@ -314,6 +323,10 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	public void setData(WorldElementData data) {
 		super.setData(data);
 		characterData = (CharacterData)data;
+	}
+	
+	public void setDetectionArea(int[][] detectionArea) {
+		this.detectionArea = detectionArea;
 	}
 	
 	@Override

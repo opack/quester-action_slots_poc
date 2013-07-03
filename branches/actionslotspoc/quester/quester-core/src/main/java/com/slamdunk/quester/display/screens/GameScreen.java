@@ -83,7 +83,8 @@ public class GameScreen implements Screen {
 		// Création du gestionnaire d'input
  		inputMultiplexer = new InputMultiplexer();
  		inputMultiplexer.addProcessor(hudRenderer);
- 		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
+ 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
+ 		//DBGinputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
  		//DBGinputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
  		enableInputListeners(true);
 	}

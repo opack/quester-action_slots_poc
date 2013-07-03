@@ -6,9 +6,11 @@ import static com.slamdunk.quester.Quester.screenWidth;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.Clip;
 import com.slamdunk.quester.display.actors.CastleActor;
@@ -345,6 +347,18 @@ private PathToAreaControler createPathToArea(PathData data) {
 	 		overlayPath.add(pos);
 	 		
 	 		createActor(pos.getX(), pos.getY(), data, overlayLayer);
+		}
+	}
+
+	public void highlightDetectionArea(int baseX, int baseY, int[][] detectionArea, Color color) {
+		WorldElementActor actor;
+		Image image;
+		for (int[] detectPos : detectionArea) {
+			actor = map.getTopElementAt(baseX + detectPos[0], baseY + detectPos[1], MapLevels.GROUND);
+			image = actor.getImage();
+			if (image != null) {
+				image.setColor(color);
+			}
 		}
 	}
 }
