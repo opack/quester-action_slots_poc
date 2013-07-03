@@ -288,9 +288,9 @@ public class CharacterControler extends WorldElementControler implements Damagea
 	}
 	
 	@Override
-	public void receiveDrop(ActionSlotControler dropped) {
+	public void receiveDrop(QuesterActions action) {
 		PlayerControler player = GameControler.instance.getPlayer();
-		switch (dropped.getData().action) {
+		switch (action) {
 		case ATTACK:
 			player.ai.clearActions();
 			player.ai.addAction(new AttackAction(this));

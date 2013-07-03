@@ -44,8 +44,8 @@ public class PathMarkerControler extends WorldElementControler {
 	}
 	
 	@Override
-	public void receiveDrop(ActionSlotControler dropped) {
-		if (dropped.getData().action == QuesterActions.MOVE) {
+	public void receiveDrop(QuesterActions action) {
+		if (action == QuesterActions.MOVE) {
 			moveAlongPath();
 		}
 	}

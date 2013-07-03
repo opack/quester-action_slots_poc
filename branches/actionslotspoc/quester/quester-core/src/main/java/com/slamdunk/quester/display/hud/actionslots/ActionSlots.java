@@ -74,7 +74,7 @@ public class ActionSlots {
 				dragActor.setSize(dragActorWidth, dragActorHeight);
 				payload.setDragActor(dragActor);
 				// On modifie l'image source pour afficher un slot vide
-				ActionSlotsHelper.setSlotData(ActionSlotsHelper.SLOT_DATAS.get(QuesterActions.NONE), source);
+				ActionSlotsHelper.setSlotData(QuesterActions.NONE, source);
 
 				return payload;
 			}
@@ -108,13 +108,20 @@ public class ActionSlots {
 			}
 
 			public void drop (Source source, Payload payload, float x, float y, int pointer) {
-				WorldElementControler controler = actor.getControler();
-				ActionSlotControler slotControler = dragActor.getControler();
-				if (controler.canAcceptDrop(slotControler.getData().action)) {
+				final WorldElementControler targetControler = actor.getControler();
+				final QuesterActions action = dragActor.getControler().getData().action;
+						
+				if (targetControler.canAcceptDrop(action)) {
+					// Si la cible est un autre ActionSlotControler, alors on procède à un échange
+					if (targetControler instanceof ActionSlotControler) {
+						QuesterActions oldAction = ((ActionSlotControler)targetControler).getData().action;
+						ActionSlotsHelper.setSlotData(oldAction, (ActionSlotActor)source.getActor());
+					}
+					
 					// On laisse le contrôleur gérer l'action
-					actor.getControler().receiveDrop(slotControler);
+					targetControler.receiveDrop(action);
 				} else {
-					// Si le chargement a été refusé, on replace l'action d'origine dans le slot
+					// Si le chargement a été refusé, alors on replace l'action d'origine à la source.
 					ActionSlotsHelper.copySlot((ActionSlotActor)dragAndDrop.getDragActor(), (ActionSlotActor)source.getActor());
 				}
 			}

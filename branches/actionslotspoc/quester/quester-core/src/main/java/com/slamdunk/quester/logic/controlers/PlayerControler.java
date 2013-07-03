@@ -70,8 +70,8 @@ public class PlayerControler extends CharacterControler {
 	}
 	
 	@Override
-	public void receiveDrop(ActionSlotControler dropped) {
-		switch (dropped.getData().action) {
+	public void receiveDrop(QuesterActions action) {
+		switch (action) {
 		case TECHSPE:
 			ai.clearActions();
 			for (CharacterControler character : GameControler.instance.getCharacters()) {
@@ -82,7 +82,7 @@ public class PlayerControler extends CharacterControler {
 			}
 		break;
 		default:
-			super.receiveDrop(dropped);
+			super.receiveDrop(action);
 		}
 	}
 	
