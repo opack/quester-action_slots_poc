@@ -3,7 +3,7 @@
 - BUGS :
 	- A leur mort, les Rabites restent parfois à l'écran
 	- L'animation de l'attaque du joueur est bizarre : la seconde frame semble disparaître, et le personnage est tout petit.
-- Faire un nettoyage du code : retirer le code commenter et les DBG
+- Faire un nettoyage du code : retirer le code commenté et les DBG
 - Refactoring général
 	- Remettre tout dans le même Stage : vu qu'on n'a plus de zoom, plus besoin de 2 caméras et donc 2 stages séparés.
 		- Cela permettra en plus de bien centrer la zone de jeu dans l'écran
