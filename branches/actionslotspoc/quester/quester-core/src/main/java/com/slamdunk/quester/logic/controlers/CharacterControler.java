@@ -16,6 +16,7 @@ import com.slamdunk.quester.logic.ai.MoveAction;
 import com.slamdunk.quester.logic.ai.MoveNearAction;
 import com.slamdunk.quester.logic.ai.ProtectAction;
 import com.slamdunk.quester.logic.ai.QuesterActions;
+import com.slamdunk.quester.logic.ai.ThinkAction;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.points.Point;
@@ -85,7 +86,6 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		
 		this.ai = ai;
 		this.ai.setControler(this);
-		this.ai.init();
 	}
 	
 	@Override
@@ -273,7 +273,8 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		if (isShowDestination) {
 			GameControler.instance.getScreen().getMapRenderer().clearPath();
 		}
-		ai.init();
+		ai.clearActions();
+		ai.addAction(new ThinkAction());
 	}
 	
 	public void protect(int damageReduction) {
@@ -321,7 +322,7 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		super.setEnabled(enabled);
 		// Quand un personnage est activé, on réinitialise son IA
 		if (prevEnableState != enabled && enabled) {
-			ai.init();
+			ai.clearActions();
 		}
 		// Quand un personnage passe à l'état inactif, on modifie l'action courante
 		// de son Actor en conséquence

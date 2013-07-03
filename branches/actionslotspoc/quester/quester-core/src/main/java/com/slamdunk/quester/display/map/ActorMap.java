@@ -271,10 +271,9 @@ public class ActorMap extends Group {
 	 * @return
 	 */
 	public boolean isEmptyAbove(MapLevels aboveLevel, int x, int y) {
-		final int minLevel = aboveLevel.ordinal();
-		MapLevels[] levels = MapLevels.values();
-		for (int level = levels.length - 1; level > minLevel; level--) {
-			if (!layers.get(levels[level]).isEmpty(x, y)) {
+		final int minLevel = aboveLevel.level;
+		for (int level = MapLevels.count() - 1; level > minLevel; level--) {
+			if (!layers.get(MapLevels.getLevel(level)).isEmpty(x, y)) {
 				return false;
 			}
 		}
@@ -292,8 +291,8 @@ public class ActorMap extends Group {
 	 * @return
 	 */
 	public boolean isEmptyBetween(MapLevels aboveLevel, MapLevels belowLevel, int x, int y) {
-		final int maxLevel = belowLevel.ordinal();
-		final int minLevel = aboveLevel.ordinal();
+		final int maxLevel = belowLevel.level;
+		final int minLevel = aboveLevel.level;
 		MapLevels[] levels = MapLevels.values();
 		for (int level = maxLevel - 1; level > minLevel; level--) {
 			if (!layers.get(levels[level]).isEmpty(x, y)) {
@@ -386,7 +385,7 @@ public class ActorMap extends Group {
 			layer.moveCell(oldCol,  oldRow,  newCol, newRow, false);
 			// Mise à jour du pathfinder si l'objet appartenait à une couche d'obstacles
 			if (containsObstacles(layer.getLevel())) {
-				// On part du principe qu'il n'y a qu'un seul objet solide)
+				// On part du principe qu'il n'y a qu'un seul objet solide
 				// par case. Du coup lorsqu'un objet est déplacé, solide ou non,
 				// son ancienne position est walkable.
 				setWalkable(oldCol, oldRow, true);

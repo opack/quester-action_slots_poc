@@ -1,33 +1,20 @@
 package com.slamdunk.quester.display.actors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Scaling;
 import com.slamdunk.quester.display.Clip;
-import com.slamdunk.quester.display.hud.actionslots.ActionSlotsHelper;
-import com.slamdunk.quester.display.hud.actionslots.SlotData;
 import com.slamdunk.quester.display.map.ActorMap;
-import com.slamdunk.quester.logic.ai.AIAction;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
-import com.slamdunk.quester.model.map.MapElements;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
 
 public class CharacterActor extends WorldElementActor{
 	protected CharacterControler characterControler;
-	protected boolean isDisplayingStats;
-	private List<Image> nextActions;
-	private Table futureActions;
 	
 	protected CharacterActor(TextureRegion texture) {
 		super(texture);
@@ -41,55 +28,6 @@ public class CharacterActor extends WorldElementActor{
 			float offsetY = map.getCellHeight() - size; // En haut
 			getImage().setPosition(offsetX, offsetY);
 		}
-		
-		addListener(new InputListener() {
-	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-	                return true;
-	        }
-	        
-	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-	        	for (CharacterControler character : GameControler.instance.getCharacters()) {
-	        		if (character.getData().element != MapElements.PLAYER) {
-	        			character.getActor().switchSpecifics();
-	        		}
-	        	}
-	        }
-		});
-		isDisplayingStats = true;
-		
-		createFutureActionsImages();
-		futureActions.setVisible(false);
-	}
-	
-	private void createFutureActionsImages() {
-		nextActions = new ArrayList<Image>();
-		ActorMap map = GameControler.instance.getScreen().getMap();
-		final float width = map.getCellWidth() * 0.2f;
-		final float height = map.getCellHeight() * 0.2f;
-		futureActions = new Table();
-//		futureActions.debug();
-		futureActions.add().expand();
-		futureActions.row();
-		futureActions.add().expandX();
-		futureActions.add(createFutureActionImage()).size(width, height);
-		futureActions.add(createFutureActionImage()).size(width, height);
-		futureActions.add(createFutureActionImage()).size(width, height);
-		futureActions.add().expandX();
-		futureActions.pack();
-		futureActions.setFillParent(true);
-		addActor(futureActions);
-	}
-
-	private Image createFutureActionImage() {
-		Image image = new Image(Assets.action_attack);
-		image.setScaling(Scaling.stretch);
-		nextActions.add(image);
-		return image;
-	}
-
-	protected void switchSpecifics() {
-		isDisplayingStats = !isDisplayingStats;
-		futureActions.setVisible(!isDisplayingStats);
 	}
 
 	@Override
@@ -97,38 +35,10 @@ public class CharacterActor extends WorldElementActor{
 		// Met à jour l'animation du personnage
 		drawClip(batch);
 		
-		if (isDisplayingStats) {
-			drawStats(batch);
-		} else {
-			drawFutureActions(batch);
-		}
+		drawStats(batch);
 //		Table.drawDebug(getStage());
 	}
 	
-	private void drawFutureActions(SpriteBatch batch) {
-		List<AIAction> actions = characterControler.getAI().getActions();
-		final int countActions = actions.size();
-		final int countImages = nextActions.size();
-		int curImage = 0;
-		for (int curAction = 0; curAction < countActions && curImage < countImages; curAction++) {
-			// Récupération de l'action
-			AIAction action = actions.get(curAction);
-			// Récupération des données de l'action
-			SlotData data = ActionSlotsHelper.SLOT_DATAS.get(action.getAction());
-			if (data != null) {
-				// Affectation de l'image
-				nextActions.get(curImage).setDrawable(data.drawable);
-				nextActions.get(curImage).setVisible(true);
-				curImage++;
-			}
-		}
-		if (curImage < countImages - 1) {
-			for (; curImage < countImages; curImage++) {
-				nextActions.get(curImage).setVisible(false);
-			}
-		}
-	}
-
 	private void drawStats(SpriteBatch batch) {
 	// Mesures
 		int picSize = Assets.heart.getTexture().getWidth();
