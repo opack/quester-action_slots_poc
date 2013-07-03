@@ -2,7 +2,11 @@ package com.slamdunk.quester.display.camera;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.slamdunk.quester.display.actors.CharacterActor;
+import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.display.map.MapRenderer;
 
 /**
@@ -38,13 +42,13 @@ public class TouchGestureListener extends GestureAdapter {
 //		return zoomMin;
 //	}
 	
-//	@Override
-//	public boolean pan(float x, float y, float deltaX, float deltaY) {
-//		// Modification de la position
-//		camera.position.add(-deltaX, deltaY, 0);
-//		return true;
-//	}
-
+	@Override
+	public boolean pan(float x, float y, float deltaX, float deltaY) {
+		// Modification de la position
+		camera.position.add(-deltaX, deltaY, 0);
+		return true;
+	}
+	
 	@Override
 	public boolean tap(float x, float y, int count, int button) {
 		// Un tap : on simule un touchDown puis un touchUp
@@ -53,6 +57,17 @@ public class TouchGestureListener extends GestureAdapter {
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean longPress(float x, float y) {
+		Vector2 screenCoords = new Vector2(x, y);
+		Vector2 stageCoords = stage.screenToStageCoordinates(screenCoords);
+		Actor actor = stage.hit(stageCoords.x, stageCoords.y, true);
+		if (actor != null && actor instanceof CharacterActor) {
+			((CharacterActor)actor).longPress();
+		}
+		return super.longPress(x, y);
 	}
 
 //	@Override

@@ -1,3 +1,5 @@
+- Si on conserve la possibilité d'avoir une map plus grande que l'espace affiché, créer une birdview qui montre aussi les monstres
+	- Le clic sur le bouton carte affiche la birdview de la salle, puis la carte du donjon, puis rien.
 - BUGS :
 	- A leur mort, les Rabites restent parfois à l'écran
 	- L'animation de l'attaque du joueur est bizarre : la seconde frame semble disparaître, et le personnage est tout petit.
