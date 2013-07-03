@@ -111,6 +111,21 @@ public class GameScreen implements Screen {
 	}
 
 	/**
+	 * Vérifie si le freemove doit être activé, et l'active le cas échéant.
+	 */
+	public void checkFreeMove() {
+		boolean areHostileRemaining = false;
+		for (CharacterControler curChar : mapRenderer.getMap().getCharacters()) {
+			if (curChar.isHostile()) {
+				areHostileRemaining = true;
+				break;
+			}
+		}
+		GameControler.instance.getPlayer().getData().isFreeMove = !areHostileRemaining;
+		GameControler.instance.updateHUD();
+	}
+	
+	/**
 	 * Crée une représentation physique (WorldActor) du joueur.
 	 * @param hp
 	 * @param att
@@ -146,6 +161,7 @@ public class GameScreen implements Screen {
 	 	CharacterControler playerControler = player.getControler();
 	 	mapRenderer.getMap().addCharacter(playerControler);
         mapRenderer.createCharacters(area);
+ 		checkFreeMove();
         
         // Mise à jour du HUD
         ActionSlots actionSlots = Quester.getInstance().getHUDRenderer().getActionSlots();

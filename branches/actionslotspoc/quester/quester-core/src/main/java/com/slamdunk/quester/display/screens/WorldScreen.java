@@ -34,12 +34,6 @@ public class WorldScreen extends GameScreen implements CharacterListener {
 	}
 	
 	@Override
-	public void displayWorld(DisplayData display) {
-		super.displayWorld(display);
-		GameControler.instance.getPlayer().getData().isFreeMove = true;
-	}
-
-	@Override
 	public void onActionPointsChanged(int oldValue, int newValue) {
 		// TODO Auto-generated method stub
 	}
