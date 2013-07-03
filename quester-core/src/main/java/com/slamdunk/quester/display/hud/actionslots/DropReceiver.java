@@ -23,5 +23,5 @@ public interface DropReceiver {
 	/**
 	 * Méthode appelée lorsqu'un chargement est lâché sur ce receiver
 	 */
-	void receiveDrop(ActionSlotControler dropped);
+	void receiveDrop(QuesterActions action);
 }

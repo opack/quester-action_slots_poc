@@ -2,7 +2,6 @@
 	- A leur mort, les Rabites restent parfois à l'écran
 	- L'animation de l'attaque du joueur est bizarre : la seconde frame semble disparaître, et le personnage est tout petit.
 - Faire un nettoyage du code : retirer le code commenter et les DBG
-- Gérer l'échange entre 2 actions dans le stock.
 - Zones de perception : la zone est affichée pendant un appui long sur le mob.
 - Dans le donjon, placer les portes aléatoirement sur le mur
 - Refactoring général

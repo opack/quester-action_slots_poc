@@ -15,9 +15,9 @@ import com.slamdunk.quester.utils.Assets;
 import com.slamdunk.quester.utils.Config;
 
 public class ActionSlotsHelper {
-	public static final Map<QuesterActions, SlotData> SLOT_DATAS;
 	private static final float APPEAR_RATE_TOTAL = Config.asFloat("action.appearRate.total", 6f);
 	private static final List<QuesterActions> NEXT_ACTIONS;
+	public static final Map<QuesterActions, SlotData> SLOT_DATAS;
 	
 	static {
 		// Création des données des slots pour chaque action possible
@@ -120,13 +120,14 @@ public class ActionSlotsHelper {
 		if (NEXT_ACTIONS.isEmpty()) {
 			chooseNextActions();
 		}
-		final QuesterActions action = NEXT_ACTIONS.remove(0);
-		final SlotData data = SLOT_DATAS.get(action);
-		slot.getControler().getData().action = data.action;
-		slot.getImage().setDrawable(data.drawable);
+		setSlotData(NEXT_ACTIONS.remove(0), slot);
 		slot.appear();
 	}
 	
+	public static void setSlotData(QuesterActions action, ActionSlotActor to) {
+		setSlotData(ActionSlotsHelper.SLOT_DATAS.get(action), to);
+	}
+
 	public static void setSlotData(SlotData from, ActionSlotActor to) {
 		to.getControler().getData().action = from.action;
 		to.getImage().setDrawable(from.drawable);
