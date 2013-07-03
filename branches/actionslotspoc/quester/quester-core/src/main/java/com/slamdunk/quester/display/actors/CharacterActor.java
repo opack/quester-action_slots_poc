@@ -33,11 +33,11 @@ public class CharacterActor extends WorldElementActor{
 		}
 		addListener(new InputListener() {
 	        public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//	        	if (characterControler.getDetectionArea() != null) {
-//	        		GameControler.instance.getScreen().getMapRenderer().highlightDetectionArea(getWorldX(), getWorldY(), characterControler.getDetectionArea(), Color.BLUE);
+	        	if (characterControler.getDetectionArea() != null) {
+	        		GameControler.instance.getScreen().getMapRenderer().highlightDetectionArea(getWorldX(), getWorldY(), characterControler.getDetectionArea(), Color.BLUE);
 	        		return true;
-//	        	}
-//                return false;
+	        	}
+                return false;
 	        }
 	        
 	        public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -48,11 +48,11 @@ public class CharacterActor extends WorldElementActor{
 		});
 	}
 	
-	public void longPress() {
-		if (characterControler.getDetectionArea() != null) {
-    		GameControler.instance.getScreen().getMapRenderer().highlightDetectionArea(getWorldX(), getWorldY(), characterControler.getDetectionArea(), Color.BLUE);
-    	}
-	}
+//DBG	public void longPress() {
+//		if (characterControler.getDetectionArea() != null) {
+//    		GameControler.instance.getScreen().getMapRenderer().highlightDetectionArea(getWorldX(), getWorldY(), characterControler.getDetectionArea(), Color.BLUE);
+//    	}
+//	}
 
 	@Override
 	public void drawSpecifics(SpriteBatch batch) {

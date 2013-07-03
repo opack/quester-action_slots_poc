@@ -2,11 +2,7 @@ package com.slamdunk.quester.display.camera;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector.GestureAdapter;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.slamdunk.quester.display.actors.CharacterActor;
-import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.display.map.MapRenderer;
 
 /**
@@ -59,16 +55,16 @@ public class TouchGestureListener extends GestureAdapter {
 		return false;
 	}
 	
-	@Override
-	public boolean longPress(float x, float y) {
-		Vector2 screenCoords = new Vector2(x, y);
-		Vector2 stageCoords = stage.screenToStageCoordinates(screenCoords);
-		Actor actor = stage.hit(stageCoords.x, stageCoords.y, true);
-		if (actor != null && actor instanceof CharacterActor) {
-			((CharacterActor)actor).longPress();
-		}
-		return super.longPress(x, y);
-	}
+//	@Override
+//	public boolean longPress(float x, float y) {
+//		Vector2 screenCoords = new Vector2(x, y);
+//		Vector2 stageCoords = stage.screenToStageCoordinates(screenCoords);
+//		Actor actor = stage.hit(stageCoords.x, stageCoords.y, true);
+//		if (actor != null && actor instanceof CharacterActor) {
+//			((CharacterActor)actor).longPress();
+//		}
+//		return super.longPress(x, y);
+//	}
 
 //	@Override
 //	public boolean zoom(float initialDistance, float distance) {
