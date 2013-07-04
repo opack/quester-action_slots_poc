@@ -351,6 +351,7 @@ public class MapRenderer implements CharacterListener {
 
 	public void dispose () {
 		stage.dispose();
+		GameControler.instance.getPlayer().removeListener(this);
 	}
 
 	public OrthographicCamera getCamera() {

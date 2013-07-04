@@ -318,6 +318,10 @@ public class CharacterControler extends WorldElementControler implements Damagea
 		break;
 		}
 	}
+
+	public void removeListener(CharacterListener listener) {
+		listeners.remove(listener);
+	}
 	
 	@Override
 	public void setData(WorldElementData data) {

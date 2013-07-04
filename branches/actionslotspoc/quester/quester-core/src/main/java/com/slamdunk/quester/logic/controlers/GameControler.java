@@ -51,17 +51,7 @@ public class GameControler implements CharacterListener {
 		screen.displayWorld(data);
 		
 		if (characters != null) {
-			updateHasMoreEnemies();
-		
-			// Initialise l'IA de tous les personnages
-			for (CharacterControler character : characters) {
-				character.ai.init();
-			}
-		
-			// Débute le jeu avec le premier joueur
-			initCharacterOrder();
-			Quester.getInstance().updateHUD(currentArea);
-	        characters.get(curCharacterPlaying).setPlaying(true);
+			setCharacters(characters);
 		}
 	}
 	
@@ -193,7 +183,19 @@ public class GameControler implements CharacterListener {
 	
 	public void setCharacters(List<CharacterControler> characters) {
 		this.characters = characters;
-		updateHasMoreEnemies();
+		if (characters != null) {
+			updateHasMoreEnemies();
+			
+			// Initialise l'IA de tous les personnages
+			for (CharacterControler character : characters) {
+				character.ai.init();
+			}
+		
+			// Débute le jeu avec le premier joueur
+			initCharacterOrder();
+			Quester.getInstance().updateHUD(currentArea);
+			characters.get(curCharacterPlaying).setPlaying(true);
+		}
 	}
 
 	public void setCurrentArea(int x, int y) {
