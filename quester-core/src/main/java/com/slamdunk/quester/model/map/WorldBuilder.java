@@ -58,7 +58,7 @@ public class WorldBuilder extends DungeonBuilder{
 		// On peut à présent remplir chaque zone
 		for (int x = 0; x < mapWidth; x++) {
 			for (int y = 0; y < mapHeight; y++) {
-				fillRoom(areas[x][y]);
+				fillArea(areas[x][y]);
 			}
 		}
 		
@@ -82,7 +82,7 @@ public class WorldBuilder extends DungeonBuilder{
 	}
 	
 	@Override
-	protected void fillRoom(MapArea area) {
+	protected void fillArea(MapArea area) {
 		// Plus on s'éloigne du village de départ, plus les châteaux sont vastes.
 		double percentage = (double)area.getDistance() / maxDistance;
 		int difficulty = 2;
@@ -100,8 +100,8 @@ public class WorldBuilder extends DungeonBuilder{
 		final String castleDifficultyProperty = "castle.difficulty" + difficulty;
 		int castleMinSize = Config.asInt(castleDifficultyProperty + ".castleMinSize", 1);
 		int castleMaxSize = Config.asInt(castleDifficultyProperty + ".castleMaxSize", 1);
-		int roomWidth = Config.asInt("castle.roomWidth", 8);
-		int roomHeight = Config.asInt("castle.roomHeight", 10);
+		int roomMinSize = Config.asInt(castleDifficultyProperty + ".roomMinSize", 7);
+		int roomMaxSize = Config.asInt(castleDifficultyProperty + ".roomMaxSize", 7);
 		
 		// Création de la structure de la zone
 		int width = area.getWidth();
@@ -134,7 +134,7 @@ public class WorldBuilder extends DungeonBuilder{
 					} else if (randomContent < Config.asFloat("castle.appearRate", 0.08f)){
 						area.setObjectAt(col, row, new CastleData(
 							MathUtils.random(castleMinSize, castleMaxSize), MathUtils.random(castleMinSize, castleMaxSize),
-							roomWidth, roomHeight,
+							MathUtils.random(roomMinSize, roomMaxSize), MathUtils.random(roomMinSize, roomMaxSize),
 							difficulty));
 					}
    		 		}

@@ -96,7 +96,7 @@ public abstract class MapBuilder {
 				// La taille de la zone correspond à la taille de la map,
 				// car on n'affiche qu'une zone à chaque fois.
 				MapArea room = new MapArea(col, row, areaWidth, areaHeight, defaultBackground);
-				fillRoom(room);
+				fillArea(room);
 				areas[col][row] = room;
 			}
 		}
@@ -204,7 +204,7 @@ public abstract class MapBuilder {
 	/**
 	 * Remplit une zone
 	 */
-	protected abstract void fillRoom(MapArea room);
+	protected abstract void fillArea(MapArea room);
 
 	public int getAreaHeight() {
 		return areaHeight;
