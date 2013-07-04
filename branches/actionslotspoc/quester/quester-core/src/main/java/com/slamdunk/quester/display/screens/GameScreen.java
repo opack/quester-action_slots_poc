@@ -175,6 +175,7 @@ public class GameScreen implements Screen {
 //DBG        mapRenderer.createCharacters(area);
 		GameControler.instance.setCharacters(mapRenderer.getMap().getCharacters());
  		checkFreeMove();
+ 		mapRenderer.removeFogAround(display.playerX, display.playerY);
         
         // Mise à jour du HUD
         ActionSlots actionSlots = Quester.getInstance().getHUDRenderer().getActionSlots();
