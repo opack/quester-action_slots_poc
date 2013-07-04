@@ -1,6 +1,7 @@
 package com.slamdunk.quester.model.data;
 
 import static com.slamdunk.quester.model.map.MapElements.EMPTY;
+import static com.slamdunk.quester.model.map.MapElements.FOG;
 import static com.slamdunk.quester.model.map.MapElements.GRASS;
 import static com.slamdunk.quester.model.map.MapElements.GROUND;
 import static com.slamdunk.quester.model.map.MapElements.ROCK;
@@ -15,6 +16,7 @@ public class WorldElementData {
 	 * et identiques à chaque fois
 	 */
 	public static final WorldElementData EMPTY_DATA = new WorldElementData(EMPTY);
+	public static final WorldElementData FOG_DATA = new WorldElementData(FOG);
 	public static final WorldElementData GRASS_DATA = new WorldElementData(GRASS);
 	public static final WorldElementData GROUND_DATA = new WorldElementData(GROUND);
 	public static final WorldElementData ROCK_DATA = new ObstacleData(ROCK);

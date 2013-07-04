@@ -1,10 +1,14 @@
-- Si on conserve la possibilité d'avoir une map plus grande que l'espace affiché, créer une birdview qui montre aussi les monstres
-	- Le clic sur le bouton carte affiche la birdview de la salle, puis la carte du donjon, puis rien.
+- Remettre le brouillard de guerre
+	- Gérer du brouillard léger : déjà découvert mais hors de la zone de vue (caché par les murs). Le joueur ne voit pas les monstres qui y passent.
+- Remettre le bouton permettant de centrer sur le joueur
+- Ajouter des murs
 - BUGS :
 	- A leur mort, les Rabites restent parfois à l'écran
 	- L'animation de l'attaque du joueur est bizarre : la seconde frame semble disparaître, et le personnage est tout petit.
 - Faire un nettoyage du code : retirer le code commenté et les DBG
 - Refactoring général
+	- GameScreen : créer une variable publique statique permettant de récupérer l'instance courante
+		- Cela permettra de retirer les GameControler.instance.getScreen()
 	- Remettre tout dans le même Stage : vu qu'on n'a plus de zoom, plus besoin de 2 caméras et donc 2 stages séparés.
 		- Cela permettra en plus de bien centrer la zone de jeu dans l'écran
 	- HUDRenderer : Nettoyer la gestion du HUD

@@ -41,6 +41,7 @@ public class Assets {
 	public static TextureRegion pathMarker;
 	public static TextureRegion pathMarkerDisabled;
 	public static TextureRegion wall;
+	public static TextureRegion fog;
 	public static TextureRegion ground;
 	public static TextureRegion grass;
 	public static TextureRegion entranceDoor;
@@ -152,6 +153,7 @@ public class Assets {
 		torch = loadTexture("torch.png");
 		pathMarker = loadTexture("path-marker.png");
 		pathMarkerDisabled = loadTexture("path-marker_disabled.png");
+		fog = loadTexture("fog.png");
 		wall = loadTexture("wall.png");
 		ground = loadTexture("ground.png");
 		grass = loadTexture("grass.png");
