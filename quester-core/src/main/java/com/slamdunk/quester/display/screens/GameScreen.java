@@ -173,6 +173,7 @@ public class GameScreen implements Screen {
 			GameControler.instance.getPlayer().getData(), 
 			MapLevels.CHARACTERS);
 //DBG        mapRenderer.createCharacters(area);
+		GameControler.instance.setCharacters(mapRenderer.getMap().getCharacters());
  		checkFreeMove();
         
         // Mise à jour du HUD

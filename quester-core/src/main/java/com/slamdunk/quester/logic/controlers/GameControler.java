@@ -191,16 +191,17 @@ public class GameControler implements CharacterListener {
 		// TODO Auto-generated method stub
 	}
 	
+	public void setCharacters(List<CharacterControler> characters) {
+		this.characters = characters;
+		updateHasMoreEnemies();
+	}
+
 	public void setCurrentArea(int x, int y) {
 		currentArea.setXY(x, y);
 	}
 
 	public void setScreen(GameScreen screen) {
 		this.screen = screen;
-		if (screen.getMap() != null) {
-			this.characters = screen.getMap().getCharacters();
-			updateHasMoreEnemies();
-		}
 	}
 	
 	public void updateHasMoreEnemies() {
