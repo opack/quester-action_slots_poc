@@ -419,19 +419,7 @@ public class MapRenderer implements CharacterListener {
 		
 		// Suppression du brouillard de guerre si c'est le joueur qui a bougé
 		if (character.getData().element == MapElements.PLAYER) {
-			MapLayer fog = map.getLayer(MapLevels.FOG);
-			// Suppression du brouillard sur la ligne au-dessus du joueur
-			removeFog(newCol - 1, newRow + 1, fog);
-			removeFog(newCol, newRow + 1, fog);
-			removeFog(newCol + 1, newRow + 1, fog);
-			// Suppression du brouillard sur la même ligne que le joueur
-			removeFog(newCol - 1, newRow, fog);
-			removeFog(newCol, newRow, fog);
-			removeFog(newCol + 1, newRow, fog);
-			// Suppression du brouillard sur la ligne au-dessous du joueur
-			removeFog(newCol - 1, newRow - 1, fog);
-			removeFog(newCol, newRow - 1, fog);
-			removeFog(newCol + 1, newRow - 1, fog);
+			removeFogAround(newCol, newRow);
 		}
 	}
 
@@ -443,6 +431,23 @@ public class MapRenderer implements CharacterListener {
 	private void removeFog(int col, int row, MapLayer fog) {
 		fog.removeCell(col, row);
 		renderedArea.setFogAt(col, row, null);
+	}
+	
+
+	public void removeFogAround(int col, int row) {
+		MapLayer fog = map.getLayer(MapLevels.FOG);
+		// Suppression du brouillard sur la ligne au-dessus du joueur
+		removeFog(col - 1, row + 1, fog);
+		removeFog(col, row + 1, fog);
+		removeFog(col + 1, row + 1, fog);
+		// Suppression du brouillard sur la même ligne que le joueur
+		removeFog(col - 1, row, fog);
+		removeFog(col, row, fog);
+		removeFog(col + 1, row, fog);
+		// Suppression du brouillard sur la ligne au-dessous du joueur
+		removeFog(col - 1, row - 1, fog);
+		removeFog(col, row - 1, fog);
+		removeFog(col + 1, row - 1, fog);
 	}
 
 	public void render() {
