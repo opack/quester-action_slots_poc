@@ -97,7 +97,7 @@ public class DungeonBuilder extends MapBuilder {
 				&& forbiddenX == choosenRoomX
 				&& forbiddenY == choosenRoomY);
 		// Le PathData correspondant ne pointe vers aucune autre région
-		PathData path = new PathData(door, choosenWall, -1, -1);
+		PathData path = new PathData(door, choosenWall, -1, -1, -1, -1);
 		// Le joueur ne peut pas ressortir par l'entrée
 		if (door == DUNGEON_ENTRANCE_DOOR) {
 			path.isCrossable = false;

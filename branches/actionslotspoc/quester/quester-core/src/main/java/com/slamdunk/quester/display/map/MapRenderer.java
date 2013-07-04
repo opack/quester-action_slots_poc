@@ -51,30 +51,18 @@ import com.slamdunk.quester.utils.Assets;
  */
 public class MapRenderer implements CharacterListener {
 	protected final OrthographicCamera camera;
-	protected final ActorMap map;
+	protected ActorMap map;
 	private List<Point> overlayPath;
 	private MapArea renderedArea;
 	
 	protected final Stage stage;
+	private final int cellHeight;
+	private final int cellWidth;
 	
-	public MapRenderer(int mapWidth, int mapHeight, int worldCellWidth, int worldCellHeight) {
-        map = new ActorMap(mapWidth, mapHeight, worldCellWidth, worldCellHeight);
-        
-        // Crée une couche de fond
-        map.addLayer(MapLevels.GROUND);
-        
-        // Crée une couche avec les objets
-        map.addLayer(MapLevels.OBJECTS);
-        
-        // Crée une couche avec les personnages
-        map.addLayer(MapLevels.CHARACTERS);
-        
-        // Crée une couche de brouillard
-        map.addLayer(MapLevels.FOG);
-        
-        // Crée une couche avec diverses informations
-        map.addLayer(MapLevels.OVERLAY);
-        
+	public MapRenderer(int worldCellWidth, int worldCellHeight) {
+		this.cellWidth = worldCellWidth;
+		this.cellHeight = worldCellHeight;
+		
         // Création de la caméra
  		camera = new OrthographicCamera();
  		camera.setToOrtho(false, screenWidth, screenHeight);
@@ -83,7 +71,6 @@ public class MapRenderer implements CharacterListener {
  		// Création du Stage
  		stage = new Stage();
  		stage.setCamera(camera);
- 		stage.addActor(map);
  		
  		// Création de la liste qui contiendra les WorldActor utilisés pour l'affichage du chemin du joueur
 		overlayPath = new ArrayList<Point>();
@@ -97,14 +84,33 @@ public class MapRenderer implements CharacterListener {
 	}
 
 	public void buildMap(MapArea area, Point currentRoom) {
-		this.renderedArea = area;
-		MapLayer backgroundLayer = map.getLayer(MapLevels.GROUND);
-        MapLayer objectsLayer = map.getLayer(MapLevels.OBJECTS);
-        MapLayer charactersLayer = map.getLayer(MapLevels.CHARACTERS);
-        MapLayer fogLayer = map.getLayer(MapLevels.FOG);
+		if (map != null) {
+			// Suppression de la map du Stage s'il en existe une et que les dimensions sont différentes
+			stage.getRoot().removeActor(map);
+		}
+		// Création d'une map aux dimensions souhaitées
+		map = new ActorMap(area.getWidth(), area.getHeight(), cellWidth, cellHeight);
         
-		// Nettoyage de la pièce actuelle
-		map.clearMap();
+        // Crée une couche de fond
+		MapLayer backgroundLayer = map.addLayer(MapLevels.GROUND);
+        
+        // Crée une couche avec les objets
+		MapLayer objectsLayer = map.addLayer(MapLevels.OBJECTS);
+        
+        // Crée une couche avec les personnages
+		MapLayer charactersLayer = map.addLayer(MapLevels.CHARACTERS);
+        
+        // Crée une couche de brouillard
+		MapLayer fogLayer = map.addLayer(MapLevels.FOG);
+        
+        // Crée une couche avec diverses informations
+        map.addLayer(MapLevels.OVERLAY);
+        
+        // Ajout de la map au Stage
+        stage.addActor(map);
+		
+        // Stocke la map logique actuellement affichée
+		this.renderedArea = area;
         
         // Création des éléments de la carte
 	 	for (int col = 0; col < area.getWidth(); col++) {
@@ -116,7 +122,7 @@ public class MapRenderer implements CharacterListener {
    		 	}
         }
 	}
-	
+
 	public void clearOverlay() {
 		MapLayer overlayLayer = map.getLayer(MapLevels.OVERLAY);
 		overlayLayer.clearLayer();
@@ -129,29 +135,6 @@ public class MapRenderer implements CharacterListener {
 				overlayLayer.removeCell(pos.getX(), pos.getY());
 			}
 		}
-	}
-
-//DBG	public void createCharacters(MapArea area) {
-//		MapLayer charactersLayer = map.getLayer(MapLevels.CHARACTERS);
-//		
-//		// Création des personnages
-//        for (CharacterData character : area.getCharacters()) {
-//        	// Recherche d'une position aléatoire disponible
-//        	int col = -1;
-//        	int row = -1;
-//        	do {
-//	        	col = MathUtils.random(area.getWidth() - 1);
-//	        	row = MathUtils.random(area.getHeight() - 1);
-//        	} while (!map.isEmpty(ActorMap.LAYERS_OBSTACLES, col, row));
-//        	
-//        	// Création et placement de l'acteur
-//        	createActor(col, row, character, charactersLayer);
-//        }
-//	}
-	
-	public WorldElementActor createActor(int col, int row, WorldElementData data, MapLevels level) {
-		MapLayer layer = map.getLayer(level);
-		return createActor(col, row, data, layer);
 	}
 	
 	private WorldElementActor createActor(int col, int row, WorldElementData data, MapLayer layer) {
@@ -276,6 +259,29 @@ public class MapRenderer implements CharacterListener {
 		return actor;
 	}
 
+	public WorldElementActor createActor(int col, int row, WorldElementData data, MapLevels level) {
+		MapLayer layer = map.getLayer(level);
+		return createActor(col, row, data, layer);
+	}
+
+//DBG	public void createCharacters(MapArea area) {
+//		MapLayer charactersLayer = map.getLayer(MapLevels.CHARACTERS);
+//		
+//		// Création des personnages
+//        for (CharacterData character : area.getCharacters()) {
+//        	// Recherche d'une position aléatoire disponible
+//        	int col = -1;
+//        	int row = -1;
+//        	do {
+//	        	col = MathUtils.random(area.getWidth() - 1);
+//	        	row = MathUtils.random(area.getHeight() - 1);
+//        	} while (!map.isEmpty(ActorMap.LAYERS_OBSTACLES, col, row));
+//        	
+//        	// Création et placement de l'acteur
+//        	createActor(col, row, character, charactersLayer);
+//        }
+//	}
+	
 	private PathToAreaControler createPathToArea(PathData data) {
 		PathToAreaActor actor = null;
 		switch (data.border) {
@@ -297,7 +303,7 @@ public class MapRenderer implements CharacterListener {
 			(PathData)data, 
 			actor);
 	}
-
+	
 	//	 TODO Créer une méthode createVisualEffect qui crée un ClipActor destiné à contenir
 //	 un effet spécial, à le jouer et à disparaître.
 //	 Cette méthode servira pour la mort des personnages, les coups reçus, les sorts...
@@ -346,11 +352,11 @@ public class MapRenderer implements CharacterListener {
 	public void dispose () {
 		stage.dispose();
 	}
-	
+
 	public OrthographicCamera getCamera() {
 		return camera;
 	}
-	
+
 	public WorldElementControler getControlerAt(int x, int y, MapLevels layerName) {
 		MapLayer layer = map.getLayer(layerName);
 		LayerCell cell = layer.getCell(x, y);
@@ -363,9 +369,17 @@ public class MapRenderer implements CharacterListener {
 	public ActorMap getMap() {
 		return map;
 	}
-
+	
 	public Stage getStage() {
 		return stage;
+	}
+	
+	public int getCellHeight() {
+		return cellHeight;
+	}
+
+	public int getCellWidth() {
+		return cellWidth;
 	}
 
 	public void highlightDetectionArea(int baseX, int baseY, int[][] detectionArea, Color color) {
@@ -421,14 +435,14 @@ public class MapRenderer implements CharacterListener {
 		}
 	}
 
-	private void removeFog(int col, int row, MapLayer fog) {
-		fog.removeCell(col, row);
-		renderedArea.setFogAt(col, row, null);
-	}
-
 	@Override
 	public void onHealthPointsChanged(int oldValue, int newValue) {
 		// TODO Auto-generated method stub
+	}
+
+	private void removeFog(int col, int row, MapLayer fog) {
+		fog.removeCell(col, row);
+		renderedArea.setFogAt(col, row, null);
 	}
 
 	public void render() {

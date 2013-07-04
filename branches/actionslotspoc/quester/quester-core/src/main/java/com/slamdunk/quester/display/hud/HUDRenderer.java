@@ -261,15 +261,23 @@ public class HUDRenderer extends Stage {
 		// Mise à jour des stats
 		PlayerControler player = GameControler.instance.getPlayer();
 		CharacterData playerData = player.getData();
-		lblHp.setText(String.valueOf(playerData.health));
-		lblAtt.setText(String.valueOf(playerData.attack));
-		String moves = "--";
-		if (!playerData.isFreeMove) {
-			moves = String.valueOf(playerData.movesLeft);
+		if (lblHp != null) {
+			lblHp.setText(String.valueOf(playerData.health));
 		}
-		lblMovesLeft.setText(moves);
+		if (lblAtt != null) {
+			lblAtt.setText(String.valueOf(playerData.attack));
+		}
+		if (lblMovesLeft != null) {
+			String moves = "--";
+			if (!playerData.isFreeMove) {
+				moves = String.valueOf(playerData.movesLeft);
+			}
+			lblMovesLeft.setText(moves);
+		}
 		
 		// Activation des boutons
-		endTurnBtn.setDisabled(!player.isPlaying() || playerData.isFreeMove);
+		if (endTurnBtn != null) {
+			endTurnBtn.setDisabled(!player.isPlaying() || playerData.isFreeMove);
+		}
 	}
 }

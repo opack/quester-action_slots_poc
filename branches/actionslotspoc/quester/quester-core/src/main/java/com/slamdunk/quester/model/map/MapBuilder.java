@@ -15,10 +15,8 @@ import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.model.points.PointManager;
 
 public abstract class MapBuilder {
-	protected int areaHeight;
 	protected final MapArea[][] areas;
 	protected boolean areasCreated;
-	protected int areaWidth;
 	protected Point entranceArea;
 	
 	protected Point entrancePosition;
@@ -88,14 +86,15 @@ public abstract class MapBuilder {
 	 * Crée les zones du donjon, sans portes mais avec du sol.
 	 * Penser à passer le flag roomsCreated à true.
 	 */
-	public void createAreas(int areaWidth, int areaHeight, WorldElementData defaultBackground) {
-		this.areaWidth = areaWidth;
-		this.areaHeight = areaHeight;
+	public void createAreas(Point areaMinSize, Point areaMaxSize, WorldElementData defaultBackground) {
 		for (int col = 0; col < mapWidth; col ++) {
 			for (int row = 0; row < mapHeight; row ++) {
 				// La taille de la zone correspond à la taille de la map,
 				// car on n'affiche qu'une zone à chaque fois.
-				MapArea room = new MapArea(col, row, areaWidth, areaHeight, defaultBackground);
+				MapArea room = new MapArea(
+					col, row,
+					MathUtils.random(areaMinSize.getX(), areaMaxSize.getX()), MathUtils.random(areaMinSize.getY(), areaMaxSize.getY()),
+					defaultBackground);
 				fillArea(room);
 				areas[col][row] = room;
 			}
@@ -105,18 +104,28 @@ public abstract class MapBuilder {
 
 	private void createHorizontalPath(MapArea leftArea, MapArea rightArea) {
 		int nbPaths = getNbPathsBetweenAreas();
-		int position;
+//DBG		int position;
+		int posOnRightWall;
+		int posOnLeftWall;
 		for (int cur = 0; cur < nbPaths; cur ++) {
-			// Récupération d'une position pour placer une porte sur un mur vertical
-			position = getPathPosition(LEFT);
+			// Récupération d'une position pour placer la porte sur un mur vertical
+//DBG			position = getPathPosition(LEFT);
+			posOnRightWall = getPathPosition(leftArea, RIGHT);
+			posOnLeftWall = getPathPosition(rightArea, LEFT);
 			
-			// On place un chemin au milieu du mur droit de la première zone
-			PathData pathToRight = new PathData(pathType, RIGHT, rightArea.getX(), rightArea.getY());
-			leftArea.addPath(RIGHT, pathToRight, position);
+			// On place un chemin sur le mur droit de la première zone
+			PathData pathToRight = new PathData(
+				pathType, RIGHT,
+				rightArea.getX(), rightArea.getY(),
+				0, posOnLeftWall);
+			leftArea.addPath(RIGHT, pathToRight, posOnRightWall);
 			
-			// On place un chemin au milieu du mur gauche de la seconde zone
-			PathData pathToLeft = new PathData(pathType, LEFT, leftArea.getX(), leftArea.getY());
-			rightArea.addPath(LEFT, pathToLeft, position);
+			// On place un chemin sur le mur gauche de la seconde zone
+			PathData pathToLeft = new PathData(
+				pathType, LEFT, 
+				leftArea.getX(), leftArea.getY(), 
+				leftArea.getWidth() - 1, posOnRightWall);
+			rightArea.addPath(LEFT, pathToLeft, posOnLeftWall);
 		}
 	}
 
@@ -186,18 +195,28 @@ public abstract class MapBuilder {
 
 	private void createVerticalPath(MapArea topArea, MapArea bottomArea) {
 		int nbPaths = getNbPathsBetweenAreas();
-		int position;
+//DBG		int position;
+		int posOnTopWall;
+		int posOnBottomWall;
 		for (int cur = 0; cur < nbPaths; cur ++) {
 			// Récupération d'une position pour placer une porte sur un mur horizontal
-			position = getPathPosition(TOP);
+//DBG			position = getPathPosition(TOP);
+			posOnTopWall = getPathPosition(bottomArea, TOP);
+			posOnBottomWall = getPathPosition(topArea, BOTTOM);
 			
 			// On place un chemin au milieu du mur bas de la première zone
-			PathData pathToBottom = new PathData(pathType, BOTTOM, bottomArea.getX(), bottomArea.getY());
-			topArea.addPath(BOTTOM, pathToBottom, position);
+			PathData pathToBottom = new PathData(
+				pathType, BOTTOM,
+				bottomArea.getX(), bottomArea.getY(),
+				posOnTopWall, bottomArea.getHeight() - 1);
+			topArea.addPath(BOTTOM, pathToBottom, posOnBottomWall);
 			
 			// On place un chemin au milieu du mur haut de la seconde zone
-			PathData pathToTop = new PathData(pathType, TOP, topArea.getX(), topArea.getY());
-			bottomArea.addPath(TOP, pathToTop, position);
+			PathData pathToTop = new PathData(
+				pathType, TOP,
+				topArea.getX(), topArea.getY(),
+				posOnBottomWall, 0);
+			bottomArea.addPath(TOP, pathToTop, posOnTopWall);
 		}
 	}
 	
@@ -206,14 +225,6 @@ public abstract class MapBuilder {
 	 */
 	protected abstract void fillArea(MapArea room);
 
-	public int getAreaHeight() {
-		return areaHeight;
-	}
-	
-	public int getAreaWidth() {
-		return areaWidth;
-	}
-	
 	public MapElements getPathType() {
 		return pathType;
 	}
@@ -243,7 +254,7 @@ public abstract class MapBuilder {
 		return 1;
 	}
 
-	protected int getPathPosition(Borders border) {
+	protected int getPathPosition(MapArea area, Borders border) {
 		int position = 0;
 		switch (border) {
 			// Les côtés horizontaux
@@ -251,7 +262,7 @@ public abstract class MapBuilder {
 			case BOTTOM:
 				// Choix d'un nombre entre 1 et taille -2 pour s'assurer qu'on ne
 				// place pas un chemin dans un coin
-				position = MathUtils.random(1, areaWidth - 2);
+				position = MathUtils.random(1, area.getWidth() - 2);
 				break;
 				
 			// Les côtés verticaux
@@ -259,7 +270,7 @@ public abstract class MapBuilder {
 			case RIGHT:
 				// Choix d'un nombre entre 1 et taille -2 pour s'assurer qu'on ne
 				// place pas un chemin dans un coin
-				position = MathUtils.random(1, areaHeight - 2);
+				position = MathUtils.random(1, area.getHeight() - 2);
 				break;
 		}
 		return position;

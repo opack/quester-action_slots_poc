@@ -1,3 +1,4 @@
+- Ajouter la possibilité d'avoir des pièces de taille différentes
 - Remettre le brouillard de guerre
 	- Gérer du brouillard léger : déjà découvert mais hors de la zone de vue (caché par les murs). Le joueur ne voit pas les monstres qui y passent.
 - Remettre le bouton permettant de centrer sur le joueur
