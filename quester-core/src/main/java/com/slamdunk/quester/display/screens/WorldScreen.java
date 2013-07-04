@@ -7,7 +7,6 @@ import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.CharacterListener;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.model.map.MapBuilder;
-import com.slamdunk.quester.model.points.Point;
 
 public class WorldScreen extends GameScreen implements CharacterListener {
 
@@ -24,9 +23,18 @@ public class WorldScreen extends GameScreen implements CharacterListener {
 		// TODO 
 	}
 	
+//DBG	@Override
+//	public void createPlayer(Point position) {
+//		super.createPlayer(position);
+//		
+//		// Ajout du screen en tant que listener : lorsque le joueur bouge, on
+//		// veut parfois lui proposer de choisir un évènement
+//		GameControler.instance.getPlayer().addListener(this);
+//	}
+	
 	@Override
-	public void createPlayer(Point position) {
-		super.createPlayer(position);
+	public void displayWorld(DisplayData display) {
+		super.displayWorld(display);
 		
 		// Ajout du screen en tant que listener : lorsque le joueur bouge, on
 		// veut parfois lui proposer de choisir un évènement

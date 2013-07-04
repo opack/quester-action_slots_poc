@@ -80,15 +80,18 @@ public class MapArea {
 		WorldElementData empty = EMPTY_DATA;
 		WorldElementData[][] groundLayer = new WorldElementData[width][height];
 		WorldElementData[][] objectsLayer = new WorldElementData[width][height];
+		WorldElementData[][] charactersLayer = new WorldElementData[width][height];
 		WorldElementData[][] fogLayer = new WorldElementData[width][height];
 		for (int col = 0; col < width; col++) {
 			Arrays.fill(groundLayer[col], defaultBackground);
 			Arrays.fill(objectsLayer[col], empty);
+			Arrays.fill(charactersLayer[col], empty);
 			Arrays.fill(fogLayer[col], empty);
 		}
 		layout = new HashMap<MapLevels, WorldElementData[][]>();
 		layout.put(MapLevels.GROUND, groundLayer);
 		layout.put(MapLevels.OBJECTS, objectsLayer);
+		layout.put(MapLevels.CHARACTERS, charactersLayer);
 		layout.put(MapLevels.FOG, fogLayer);		
 		
 		paths = new HashMap<Borders, Set<PathData>>();
@@ -97,10 +100,6 @@ public class MapArea {
 		}
 		
 		characters = new ArrayList<CharacterData>();
-	}
-
-	public void addCharacter(CharacterData data) {
-		characters.add(data);
 	}
 
 	public void addPath(Borders wall, PathData path) {
@@ -205,6 +204,10 @@ public class MapArea {
 		return distance;
 	}
 	
+	public WorldElementData getCharacterAt(int x, int y) {
+		return getAt(MapLevels.CHARACTERS, x, y);
+	}
+	
 	public WorldElementData getFogAt(int x, int y) {
 		return getAt(MapLevels.FOG, x, y);
 	}
@@ -237,6 +240,11 @@ public class MapArea {
 		return y;
 	}
 
+	public boolean isEmpty(MapLevels level, int col, int row) {
+		WorldElementData data = getAt(level, col, row);
+		return data == null || data.element == MapElements.EMPTY;
+	}
+	
 	public boolean isPermKillCharacters() {
 		return isPermKillCharacters;
 	}
@@ -256,8 +264,13 @@ public class MapArea {
 	public void setDistance(int distance) {
 		this.distance = distance;
 	}
-	
-	public void setFogAt(int x, int y, WorldElementData element) {
+
+	public void setCharacterAt(int x, int y, CharacterData character) {
+		setAt(MapLevels.CHARACTERS, x, y, character);
+		characters.add(character);
+	}
+	public
+	void setFogAt(int x, int y, WorldElementData element) {
 		setAt(MapLevels.FOG, x, y, element);
 	}
 	
@@ -315,5 +328,19 @@ public class MapArea {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	public void removeCharacter(WorldElementData character) {
+		// Suppression de la carte
+		WorldElementData[][] charactersLayer = layout.get(MapLevels.CHARACTERS);
+		for (int col = 0; col < width; col++) {
+			for (int row = 0; row < height; row++) {
+				if (character.equals(charactersLayer[col][row])) {
+					charactersLayer[col][row] = null;
+				}
+			}
+		}
+		// Suppression de la liste de personnages
+		characters.remove(character);
 	}
 }

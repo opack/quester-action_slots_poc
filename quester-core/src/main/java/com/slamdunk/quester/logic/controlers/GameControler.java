@@ -166,7 +166,7 @@ public class GameControler implements CharacterListener {
 		characters.remove(character);
 		MapArea area = screen.getCurrentArea();
 		if (area.isPermKillCharacters()) {
-			area.getCharacters().remove(deadCharacterData);
+			area.removeCharacter(deadCharacterData);
 		}
 		
 		// Si c'est le joueur qui est mort, le jeu s'achève

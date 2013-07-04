@@ -8,21 +8,24 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.Clip;
 import com.slamdunk.quester.display.actors.CastleActor;
+import com.slamdunk.quester.display.actors.CharacterActor;
 import com.slamdunk.quester.display.actors.ClipActor;
 import com.slamdunk.quester.display.actors.EntranceDoorActor;
 import com.slamdunk.quester.display.actors.ExitDoorActor;
 import com.slamdunk.quester.display.actors.GroundActor;
 import com.slamdunk.quester.display.actors.PathMarkerActor;
 import com.slamdunk.quester.display.actors.PathToAreaActor;
+import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.display.actors.RabiteActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.controlers.CastleControler;
+import com.slamdunk.quester.logic.controlers.CharacterControler;
+import com.slamdunk.quester.logic.controlers.CharacterListener;
 import com.slamdunk.quester.logic.controlers.DungeonDoorControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.GroundControler;
@@ -36,6 +39,7 @@ import com.slamdunk.quester.model.data.PathData;
 import com.slamdunk.quester.model.data.PathMarkerData;
 import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.map.MapArea;
+import com.slamdunk.quester.model.map.MapElements;
 import com.slamdunk.quester.model.map.MapLevels;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
@@ -45,10 +49,11 @@ import com.slamdunk.quester.utils.Assets;
  * ensuite manipulés via une ActorMap, qui aide à les disposer correctement en couches
  * et en quadrillage.
  */
-public class MapRenderer {
+public class MapRenderer implements CharacterListener {
 	protected final OrthographicCamera camera;
 	protected final ActorMap map;
 	private List<Point> overlayPath;
+	private MapArea renderedArea;
 	
 	protected final Stage stage;
 	
@@ -84,29 +89,39 @@ public class MapRenderer {
 		overlayPath = new ArrayList<Point>();
 	}
 	
+	public void addCharacter(CharacterActor character) {
+		map.addCharacter(character);
+		// Ajout du renderer en tant que listener : lorsque le personnage, on
+		// veut mettre à jour l'area
+		character.getControler().addListener(this);
+	}
+
 	public void buildMap(MapArea area, Point currentRoom) {
+		this.renderedArea = area;
 		MapLayer backgroundLayer = map.getLayer(MapLevels.GROUND);
         MapLayer objectsLayer = map.getLayer(MapLevels.OBJECTS);
+        MapLayer charactersLayer = map.getLayer(MapLevels.CHARACTERS);
         MapLayer fogLayer = map.getLayer(MapLevels.FOG);
         
 		// Nettoyage de la pièce actuelle
 		map.clearMap();
         
-        // Création du fond, des objets et du brouillard
-	 	for (int col=0; col < area.getWidth(); col++) {
-   		 	for (int row=0; row < area.getHeight(); row++) {
+        // Création des éléments de la carte
+	 	for (int col = 0; col < area.getWidth(); col++) {
+   		 	for (int row = 0; row < area.getHeight(); row++) {
    		 		createActor(col, row, area.getGroundAt(col, row), backgroundLayer);
    		 		createActor(col, row, area.getObjectAt(col, row), objectsLayer);
+   	        	createActor(col, row, area.getCharacterAt(col, row), charactersLayer);
    		 		createActor(col, row, area.getFogAt(col, row), fogLayer);
    		 	}
         }
 	}
-
+	
 	public void clearOverlay() {
 		MapLayer overlayLayer = map.getLayer(MapLevels.OVERLAY);
 		overlayLayer.clearLayer();
 	}
-	
+
 	public void clearPath() {
 		if (!overlayPath.isEmpty()) {
 			MapLayer overlayLayer = map.getLayer(MapLevels.OVERLAY);
@@ -116,7 +131,35 @@ public class MapRenderer {
 		}
 	}
 
-	private void createActor(int col, int row, WorldElementData data, MapLayer layer) {
+//DBG	public void createCharacters(MapArea area) {
+//		MapLayer charactersLayer = map.getLayer(MapLevels.CHARACTERS);
+//		
+//		// Création des personnages
+//        for (CharacterData character : area.getCharacters()) {
+//        	// Recherche d'une position aléatoire disponible
+//        	int col = -1;
+//        	int row = -1;
+//        	do {
+//	        	col = MathUtils.random(area.getWidth() - 1);
+//	        	row = MathUtils.random(area.getHeight() - 1);
+//        	} while (!map.isEmpty(ActorMap.LAYERS_OBSTACLES, col, row));
+//        	
+//        	// Création et placement de l'acteur
+//        	createActor(col, row, character, charactersLayer);
+//        }
+//	}
+	
+	public WorldElementActor createActor(int col, int row, WorldElementData data, MapLevels level) {
+		MapLayer layer = map.getLayer(level);
+		return createActor(col, row, data, layer);
+	}
+	
+	private WorldElementActor createActor(int col, int row, WorldElementData data, MapLayer layer) {
+		if (data == null) {
+			System.out.println("MapRenderer.createActor() Pas de data à " + col + " " + row);
+			return null;
+		}
+		boolean isCharacter = false;
 		WorldElementControler controler = null;
 		switch (data.element) {
 		 	case CASTLE:
@@ -138,6 +181,11 @@ public class MapRenderer {
 		 		controler = new DungeonDoorControler(
 					(PathData)data, 
 					new ExitDoorActor());
+				break;
+		 	case FOG:
+		 		controler = new GroundControler(
+					data, 
+					new GroundActor(Assets.fog));
 				break;
 	 		case GRASS:
 	 			controler = new GroundControler(
@@ -173,6 +221,13 @@ public class MapRenderer {
 			case PATH_TO_REGION:
 				controler = createPathToArea((PathData)data);
 				break;
+			case PLAYER:
+				controler = GameControler.instance.getPlayer();
+				CharacterActor playerActor = new PlayerActor();
+				controler.setActor(playerActor);
+				isCharacter = true;
+//DBG				controler.getAI().init();
+				break;
 			case RABITE:
 				RabiteActor rabiteActor = new RabiteActor();
 				RabiteControler rabite = new RabiteControler(
@@ -182,8 +237,7 @@ public class MapRenderer {
         		rabite.getData().name = "Rabite" + rabite.getId();
         		// Tant qu'il n'est pas découvert, le rabite est invisible et inactif
         		//rabite.setEnabled(false);
-        		
-        		map.addCharacter(rabite);
+        		isCharacter = true;
         		controler = rabite;
         		break;
 			case ROCK:
@@ -204,38 +258,25 @@ public class MapRenderer {
 			case EMPTY:
 			default:
 				// Case vide ou avec une valeur inconnue: rien à faire :)
-				return;
+				return null;
 		}
 		WorldElementActor actor = controler.getActor();
 		actor.setControler(controler);
 		actor.setPositionInWorld(col, row);
+		
+		if (isCharacter) {
+			addCharacter((CharacterActor)actor);
+		}
 		
 		layer.setCell(new LayerCell(String.valueOf(controler.getId()), col, row, actor));
 		// Si cet élément est solide et que la cellule était marquée comme walkable, elle ne l'est plus
 		if (data.isSolid && map.isWalkable(col, row)) {
 			map.setWalkable(col, row, false);
 		}
+		return actor;
 	}
 
-	public void createCharacters(MapArea area) {
-		MapLayer charactersLayer = map.getLayer(MapLevels.CHARACTERS);
-		
-		// Création des personnages
-        for (CharacterData character : area.getCharacters()) {
-        	// Recherche d'une position aléatoire disponible
-        	int col = -1;
-        	int row = -1;
-        	do {
-	        	col = MathUtils.random(area.getWidth() - 1);
-	        	row = MathUtils.random(area.getHeight() - 1);
-        	} while (!map.isEmpty(ActorMap.LAYERS_OBSTACLES, col, row));
-        	
-        	// Création et placement de l'acteur
-        	createActor(col, row, character, charactersLayer);
-        }
-	}
-	
-private PathToAreaControler createPathToArea(PathData data) {
+	private PathToAreaControler createPathToArea(PathData data) {
 		PathToAreaActor actor = null;
 		switch (data.border) {
 		case TOP:
@@ -305,7 +346,7 @@ private PathToAreaControler createPathToArea(PathData data) {
 	public void dispose () {
 		stage.dispose();
 	}
-
+	
 	public OrthographicCamera getCamera() {
 		return camera;
 	}
@@ -322,9 +363,72 @@ private PathToAreaControler createPathToArea(PathData data) {
 	public ActorMap getMap() {
 		return map;
 	}
-	
+
 	public Stage getStage() {
 		return stage;
+	}
+
+	public void highlightDetectionArea(int baseX, int baseY, int[][] detectionArea, Color color) {
+		WorldElementActor actor;
+		Image image;
+		for (int[] detectPos : detectionArea) {
+			actor = map.getTopElementAt(baseX + detectPos[0], baseY + detectPos[1], MapLevels.GROUND);
+			image = actor.getImage();
+			if (image != null) {
+				image.setColor(color);
+			}
+		}
+	}
+
+	@Override
+	public void onActionPointsChanged(int oldValue, int newValue) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onAttackPointsChanged(int oldValue, int newValue) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onCharacterDeath(CharacterControler character) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onCharacterMoved(CharacterControler character, int oldCol, int oldRow) {
+		// Mise à jour des données de l'ActorMap
+		WorldElementActor actor = character.getActor();
+		final int newCol = actor.getWorldX();
+		final int newRow = actor.getWorldY();
+		map.updateMapPosition(actor, oldCol, oldRow, newCol, newRow);
+		
+		// Suppression du brouillard de guerre si c'est le joueur qui a bougé
+		if (character.getData().element == MapElements.PLAYER) {
+			MapLayer fog = map.getLayer(MapLevels.FOG);
+			// Suppression du brouillard sur la ligne au-dessus du joueur
+			removeFog(newCol - 1, newRow + 1, fog);
+			removeFog(newCol, newRow + 1, fog);
+			removeFog(newCol + 1, newRow + 1, fog);
+			// Suppression du brouillard sur la même ligne que le joueur
+			removeFog(newCol - 1, newRow, fog);
+			removeFog(newCol, newRow, fog);
+			removeFog(newCol + 1, newRow, fog);
+			// Suppression du brouillard sur la ligne au-dessous du joueur
+			removeFog(newCol - 1, newRow - 1, fog);
+			removeFog(newCol, newRow - 1, fog);
+			removeFog(newCol + 1, newRow - 1, fog);
+		}
+	}
+
+	private void removeFog(int col, int row, MapLayer fog) {
+		fog.removeCell(col, row);
+		renderedArea.setFogAt(col, row, null);
+	}
+
+	@Override
+	public void onHealthPointsChanged(int oldValue, int newValue) {
+		// TODO Auto-generated method stub
 	}
 
 	public void render() {
@@ -347,18 +451,6 @@ private PathToAreaControler createPathToArea(PathData data) {
 	 		overlayPath.add(pos);
 	 		
 	 		createActor(pos.getX(), pos.getY(), data, overlayLayer);
-		}
-	}
-
-	public void highlightDetectionArea(int baseX, int baseY, int[][] detectionArea, Color color) {
-		WorldElementActor actor;
-		Image image;
-		for (int[] detectPos : detectionArea) {
-			actor = map.getTopElementAt(baseX + detectPos[0], baseY + detectPos[1], MapLevels.GROUND);
-			image = actor.getImage();
-			if (image != null) {
-				image.setColor(color);
-			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.slamdunk.quester.model.map;
 
+import static com.slamdunk.quester.model.data.WorldElementData.FOG_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.GROUND_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.WALL_DATA;
 import static com.slamdunk.quester.model.map.Borders.BOTTOM;
@@ -167,7 +168,7 @@ public class DungeonBuilder extends MapBuilder {
    		 		// On dessine du sol partout
    		 		area.setGroundAt(col, row, GROUND_DATA);
    		 		
-   		 		// Et des murs sur le pourtour de la pièce
+   		 		// Des murs sur le pourtour de la pièce
    		 		if (col == 0
    		 		|| row == 0
    		 		|| col == width - 1
@@ -175,6 +176,9 @@ public class DungeonBuilder extends MapBuilder {
    		 		) {
    		 			area.setObjectAt(col, row, WALL_DATA);
 //   		 			pathfinder.setWalkable(col, row, false);
+   		 		} else {
+   		 			// Du brouillard dans la pièce
+   		 			area.setFogAt(col, row, FOG_DATA);
    		 		}
    		 	}
         }
@@ -221,16 +225,29 @@ public class DungeonBuilder extends MapBuilder {
 		// Ajout des personnages
 		// TODO : Améliorer la gestion de la difficulté
 		int nbRobots = MathUtils.random(1, (int)(difficulty * 1.5) + 1);
+		Point randomPos = new Point(-1, -1);
 		for (int count = 0; count < nbRobots; count++) {
+			// Recherche d'une position aléatoire disponible
+			getRandomFreePos(randomPos, area);			
 			CharacterData data = new CharacterData (
 				RABITE,
 				MathUtils.random(difficulty + 10, difficulty * 2 + 10),
 				MathUtils.random(difficulty + 1, (int)((difficulty + 1) * 1.5)));
 			data.speed = 4;
-			area.addCharacter(data);
+			area.setCharacterAt(randomPos.getX(), randomPos.getY(), data);
 		}
 	}
 	
+	private void getRandomFreePos(Point posToFill, MapArea area) {
+	  	int col = -1;
+	  	int row = -1;
+	  	do {
+	        	col = MathUtils.random(area.getWidth() - 1);
+	        	row = MathUtils.random(area.getHeight() - 1);
+	  	} while (!area.isEmpty(MapLevels.OBJECTS, col, row) || !area.isEmpty(MapLevels.CHARACTERS, col, row));
+	  	posToFill.setXY(col, row);
+	}
+
 	/**
 	 * Choisit aléatoirement une pièce pour y placer l'entrée et la sortie du donjon.
 	 * L'algorithme fait en sorte de ne pas mettre les deux sur le même côté du donjon.

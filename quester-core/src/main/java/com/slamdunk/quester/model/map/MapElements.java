@@ -14,10 +14,6 @@ public enum MapElements {
 	 */
 	COMMON_DOOR,
 	/**
-	 * Ombre ou lumière
-	 */
-	DARKNESS,
-	/**
 	 * Porte d'entrée du donjon
 	 */
 	DUNGEON_ENTRANCE_DOOR,
@@ -29,6 +25,10 @@ public enum MapElements {
 	 * Aucun élément.
 	 */
 	EMPTY,
+	/**
+	 * Brouillard
+	 */
+	FOG,
 	/**
 	 * Herbe
 	 */

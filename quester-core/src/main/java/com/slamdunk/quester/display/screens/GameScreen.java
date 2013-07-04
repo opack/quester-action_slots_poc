@@ -10,23 +10,25 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
+import com.slamdunk.quester.display.camera.TouchGestureListener;
 import com.slamdunk.quester.display.hud.HUDRenderer;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.map.ActorMap;
 import com.slamdunk.quester.display.map.MapRenderer;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
-import com.slamdunk.quester.logic.controlers.PlayerControler;
 import com.slamdunk.quester.model.map.MapArea;
 import com.slamdunk.quester.model.map.MapBuilder;
 import com.slamdunk.quester.model.map.MapLevels;
 import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester.utils.Assets;
+import com.slamdunk.quester.utils.Config;
 
 /**
  * Représente un écran de jeu. Un écran contient plusieurs zones de carte et en affiche
@@ -81,8 +83,8 @@ public class GameScreen implements Screen {
 		// Création du gestionnaire d'input
  		inputMultiplexer = new InputMultiplexer();
  		inputMultiplexer.addProcessor(hudRenderer);
- 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
-// 		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
+// 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
+ 		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
  		//DBGinputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
  		enableInputListeners(true);
 	}
@@ -132,21 +134,21 @@ public class GameScreen implements Screen {
 		GameControler.instance.updateHUD();
 	}
 	
-	/**
-	 * Crée une représentation physique (WorldActor) du joueur.
-	 * @param hp
-	 * @param att
-	 */
-	public void createPlayer(Point position) {
-		PlayerControler playerControler = GameControler.instance.getPlayer();
-		
-		player = new PlayerActor();
-		player.setControler(playerControler);
-		player.setPositionInWorld(position.getX(), position.getY());
-		
-		playerControler.setActor(player);
-		playerControler.getAI().init();
-	}
+//DBG	/**
+//	 * Crée une représentation physique (WorldActor) du joueur.
+//	 * @param hp
+//	 * @param att
+//	 */
+//	public void createPlayer(Point position) {
+//		PlayerControler playerControler = GameControler.instance.getPlayer();
+//		
+//		player = new PlayerActor();
+//		player.setControler(playerControler);
+//		player.setPositionInWorld(position.getX(), position.getY());
+//		
+//		playerControler.setActor(player);
+//		playerControler.getAI().init();
+//	}
 	
 	/**
 	 * Affiche la pièce de donjon aux coordonnées indiquées, en placant
@@ -163,11 +165,14 @@ public class GameScreen implements Screen {
 		MapArea area = areas[display.regionX][display.regionY];
 		mapRenderer.buildMap(area, currentRoom);
 
-	 	// Placement du joueur puis création des autres personnages
-	 	player.setPositionInWorld(display.playerX, display.playerY);
-	 	CharacterControler playerControler = player.getControler();
-	 	mapRenderer.getMap().addCharacter(playerControler);
-        mapRenderer.createCharacters(area);
+	 	// Placement du joueur
+//DBG	 	player.setPositionInWorld(display.playerX, display.playerY);
+//	 	mapRenderer.addCharacter(player);
+		player = (PlayerActor)mapRenderer.createActor(
+			display.playerX, display.playerY,
+			GameControler.instance.getPlayer().getData(), 
+			MapLevels.CHARACTERS);
+//DBG        mapRenderer.createCharacters(area);
  		checkFreeMove();
         
         // Mise à jour du HUD
@@ -187,8 +192,8 @@ public class GameScreen implements Screen {
         // Centrage de la caméra sur le joueur
 //        centerCameraOn(player);
         centerCamera();
-        // Zoom pour afficher toute la carte
-        mapRenderer.getCamera().zoom = mapRenderer.getMap().getMapWidth() * mapRenderer.getMap().getCellWidth() / screenWidth;
+        // Zoom pour afficher une partie de la carte
+        mapRenderer.getCamera().zoom = Config.asInt("map.cellsInWidth", 7) * mapRenderer.getMap().getCellWidth() / screenWidth;
 	}
 
 	@Override

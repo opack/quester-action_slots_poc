@@ -43,7 +43,7 @@ public class WorldElementActor extends Group {
 	/**
 	 * Le monde dans lequel évolue l'Actor
 	 */
-	private ActorMap map;
+//	private ActorMap map;
 	
 	/**
 	 * Compteur utilisé pour cadencer les animations
@@ -58,7 +58,7 @@ public class WorldElementActor extends Group {
 	private int worldY;
 	
 	public WorldElementActor(TextureRegion texture) {
-		map = GameControler.instance.getScreen().getMap();
+		ActorMap map = GameControler.instance.getScreen().getMap();
 		
 		if (texture != null) {
 			image = new Image(texture);
@@ -71,12 +71,12 @@ public class WorldElementActor extends Group {
 		currentAction = QuesterActions.NONE;
 	}
 	
-	public void centerCameraOnSelf() {
-		addAction(new CameraMoveToAction(
-				getX() + map.getCellWidth() / 2,
-				getY() + map.getCellHeight() / 2,
-				1.0f));
-	}
+//DBG	public void centerCameraOnSelf() {
+//		addAction(new CameraMoveToAction(
+//				getX() + map.getCellWidth() / 2,
+//				getY() + map.getCellHeight() / 2,
+//				1.0f));
+//	}
 
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
@@ -152,6 +152,7 @@ public class WorldElementActor extends Group {
 	}
 	
 	public void moveTo(int destinationX, int destinationY, float duration) {
+		ActorMap map = GameControler.instance.getScreen().getMap();
 		currentAction = QuesterActions.MOVE;
 		isLookingLeft = destinationX <= worldX;
 			
@@ -230,10 +231,10 @@ public class WorldElementActor extends Group {
 	 * @param worldY
 	 */
 	public void setPositionInWorld(int newX, int newY) {
-		map.updateMapPosition(
-			this,
-			worldX, worldY,
-			newX, newY);
+//		map.updateMapPosition(
+//			this,
+//			worldX, worldY,
+//			newX, newY);
 		setWorldX(newX);
 		setWorldY(newY);
 	}

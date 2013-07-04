@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.slamdunk.quester.display.actors.CharacterActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
@@ -77,10 +78,14 @@ public class ActorMap extends Group {
 		LAYERS_OBSTACLES = new MapLevels[]{MapLevels.CHARACTERS, MapLevels.OBJECTS};
 	}
 
-	public void addCharacter(CharacterControler character) {
-		characters.add(character);
+	public void addCharacter(CharacterActor actor) {
+		CharacterControler controler = actor.getControler();
+		characters.add(controler);
 		MapLayer charactersLayer = getLayer(MapLevels.CHARACTERS);
-        charactersLayer.setCell(new LayerCell(String.valueOf(character.getId()), character.getActor().getWorldX(), character.getActor().getWorldY(), character.getActor()));
+        charactersLayer.setCell(new LayerCell(
+        	String.valueOf(controler.getId()), 
+        	actor.getWorldX(), actor.getWorldY(), 
+        	actor));
 	}
 
 	public MapLayer addLayer(MapLevels level) {

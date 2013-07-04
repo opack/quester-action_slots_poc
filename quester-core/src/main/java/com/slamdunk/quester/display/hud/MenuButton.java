@@ -73,7 +73,7 @@ public class MenuButton {
 		centerCamera.addListener(new ClickListener(){
 			@Override
 			public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-				GameControler.instance.getPlayer().getActor().centerCameraOnSelf();
+				//DBG GameControler.instance.getPlayer().getActor().centerCameraOnSelf();
 				hideMenu();
 			};
 		});

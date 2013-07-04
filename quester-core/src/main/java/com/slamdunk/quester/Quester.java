@@ -103,8 +103,8 @@ public class Quester extends Game {
 			worldMapScreen.setBackgroundMusic(Assets.worldmapMusics[MathUtils.random(Assets.worldmapMusics.length - 1)]);
 			
 			// Création de l'acteur représentant le joueur
-			Point entrancePosition = builder.getEntrancePosition();
-			worldMapScreen.createPlayer(entrancePosition);
+//DBG			Point entrancePosition = builder.getEntrancePosition();
+//			worldMapScreen.createPlayer(entrancePosition);
 			
 			// Le joueur est créé : création du hud
 			worldMapScreen.initHud(Config.asInt("minimap.width", (int)(screenWidth * 0.8)), Config.asInt("minimap.height", (int)(screenWidth * 0.8)));
@@ -114,8 +114,8 @@ public class Quester extends Game {
 	        DisplayData data = new DisplayData();
 	        data.regionX = entranceRoom.getX();
 	        data.regionY = entranceRoom.getY();
-	        data.playerX = entrancePosition.getX();
-	        data.playerY = entrancePosition.getY();
+	        data.playerX = builder.getEntrancePosition().getX();
+	        data.playerY = builder.getEntrancePosition().getY();
 	        GameControler.instance.displayWorld(data);
 		}
 		// Affichage de la carte
@@ -146,8 +146,8 @@ public class Quester extends Game {
 		dungeonScreen.setBackgroundMusic(Assets.dungeonMusics[MathUtils.random(Assets.dungeonMusics.length - 1)]);
 		
 		// Crée l'acteur représentant le joueur
-		Point entrancePosition = builder.getEntrancePosition();
-		dungeonScreen.createPlayer(entrancePosition);
+//DBG		Point entrancePosition = builder.getEntrancePosition();
+//		dungeonScreen.createPlayer(entrancePosition);
 		
 		// Le joueur est créé : création du hud
 		dungeonScreen.initHud(Config.asInt("minimap.width", (int)(screenWidth * 0.8)), Config.asInt("minimap.height", (int)(screenWidth * 0.8)));
@@ -157,8 +157,8 @@ public class Quester extends Game {
         DisplayData data = new DisplayData();
         data.regionX = entranceRoom.getX();
         data.regionY = entranceRoom.getY();
-        data.playerX = entrancePosition.getX();
-        data.playerY = entrancePosition.getY();
+        data.playerX = builder.getEntrancePosition().getX();
+        data.playerY = builder.getEntrancePosition().getY();
         GameControler.instance.displayWorld(data);
         
         updateHUD(data.regionX, data.regionY);
