@@ -89,7 +89,17 @@ public class Quester extends Game {
 		return dungeonScreen;
 	}
 	
+	private void disposeDungeonScreen() {
+		if (dungeonScreen != null) {
+			dungeonScreen.dispose();
+			dungeonScreen = null;
+		}
+	}
+	
 	public void enterWorldMap() {
+		// Suppression du donjon éventuel
+		disposeDungeonScreen();
+		
 		// Si le monde n'est pas encore créé, on le crée
 		if (worldMapScreen == null) {
 			// Création de la carte
@@ -120,12 +130,16 @@ public class Quester extends Game {
 	        data.playerX = builder.getEntrancePosition().getX();
 	        data.playerY = builder.getEntrancePosition().getY();
 	        GameControler.instance.displayWorld(data);
+		} else {
+			// Affichage de la carte
+			GameControler.instance.setScreen(worldMapScreen);
+			worldMapScreen.initHud(Config.asInt("minimap.width", (int)(screenWidth * 0.8)), Config.asInt("minimap.height", (int)(screenWidth * 0.8)));
+			GameControler.instance.setCurrentArea(worldMapScreen.getCurrentArea().getX(), worldMapScreen.getCurrentArea().getY());
+			GameControler.instance.setCharacters(worldMapScreen.getMap().getCharacters());
+			worldMapScreen.checkFreeMove();
+			GameControler.instance.getPlayer().setActor(worldMapScreen.getPlayerActor());
+			updateHUD(GameControler.instance.getCurrentArea());
 		}
-		// Affichage de la carte
-		GameControler.instance.setScreen(worldMapScreen);
-		GameControler.instance.setCurrentArea(worldMapScreen.getCurrentArea().getX(), worldMapScreen.getCurrentArea().getY());
-		GameControler.instance.getPlayer().setActor(worldMapScreen.getPlayerActor());
-		updateHUD(GameControler.instance.getCurrentArea());
 		setScreen(worldMapScreen);
 	}
 	
@@ -134,9 +148,7 @@ public class Quester extends Game {
 			Point roomMinSize, Point roomMaxSize,
 			int difficulty) {
 		// Si un donjon existe déjà, on le supprime
-		if (dungeonScreen != null) {
-			dungeonScreen.dispose();
-		}
+		disposeDungeonScreen();
 		
 		// Construction de la carte
 		MapBuilder builder = new DungeonBuilder(dungeonWidth, dungeonHeight, difficulty);
