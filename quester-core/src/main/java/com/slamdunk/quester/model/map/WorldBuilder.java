@@ -66,16 +66,17 @@ public class WorldBuilder extends DungeonBuilder{
 	}
 	
 	@Override
-	public void createAreas(int areaWidth, int areaHeight, WorldElementData defaultBackground) {
+	public void createAreas(Point areaMinSize, Point areaMaxSize, WorldElementData defaultBackground) {
 		// On redéfinit createAreas car on ne veut appeler fillRoom qu'à la fin du processus,
 		// quand les liens entre les pièces ont été faits.
-		this.areaWidth = areaWidth;
-		this.areaHeight = areaHeight;
 		for (int col = 0; col < mapWidth; col ++) {
 			for (int row = 0; row < mapHeight; row ++) {
 				// La taille de la zone correspond à la taille de la map,
 				// car on n'affiche qu'une zone à chaque fois.
-				areas[col][row] = new MapArea(col, row, areaWidth, areaHeight, defaultBackground);
+				areas[col][row] = new MapArea(
+					col, row, 
+					MathUtils.random(areaMinSize.getX(), areaMaxSize.getX()), MathUtils.random(areaMinSize.getY(), areaMaxSize.getY()),
+					defaultBackground);
 			}
 		}
 		areasCreated = true;
@@ -100,8 +101,12 @@ public class WorldBuilder extends DungeonBuilder{
 		final String castleDifficultyProperty = "castle.difficulty" + difficulty;
 		int castleMinSize = Config.asInt(castleDifficultyProperty + ".castleMinSize", 1);
 		int castleMaxSize = Config.asInt(castleDifficultyProperty + ".castleMaxSize", 1);
-		int roomMinSize = Config.asInt(castleDifficultyProperty + ".roomMinSize", 7);
-		int roomMaxSize = Config.asInt(castleDifficultyProperty + ".roomMaxSize", 7);
+		Point roomMinSize = new Point(
+			Config.asInt(castleDifficultyProperty + ".roomMinSize", 7),
+			Config.asInt(castleDifficultyProperty + ".roomMinSize", 7));
+		Point roomMaxSize = new Point(
+			Config.asInt(castleDifficultyProperty + ".roomMaxSize", 9),
+			Config.asInt(castleDifficultyProperty + ".roomMaxSize", 9));
 		
 		// Création de la structure de la zone
 		int width = area.getWidth();
@@ -134,7 +139,7 @@ public class WorldBuilder extends DungeonBuilder{
 					} else if (randomContent < Config.asFloat("castle.appearRate", 0.08f)){
 						area.setObjectAt(col, row, new CastleData(
 							MathUtils.random(castleMinSize, castleMaxSize), MathUtils.random(castleMinSize, castleMaxSize),
-							MathUtils.random(roomMinSize, roomMaxSize), MathUtils.random(roomMinSize, roomMaxSize),
+							roomMinSize, roomMaxSize,
 							difficulty));
 					}
    		 		}

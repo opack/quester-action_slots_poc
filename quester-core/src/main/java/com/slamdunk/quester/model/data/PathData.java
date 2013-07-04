@@ -6,14 +6,18 @@ import com.slamdunk.quester.model.map.MapElements;
 public class PathData extends ObstacleData {
 	public Borders border;
 	public boolean isCrossable;
-	public int toX;
-	public int toY;
+	public int areaX;
+	public int areaY;
+	public int arrivalCol;
+	public int arrivalRow;
 	
-	public PathData(MapElements pathType, Borders border, int toX, int toY) {
+	public PathData(MapElements pathType, Borders border, int areaX, int areaY, int arrivalCol, int arrivalRow) {
 		super(pathType);
 		this.border = border;
-		this.toX = toX;
-		this.toY = toY;
+		this.areaX = areaX;
+		this.areaY = areaY;
+		this.arrivalCol = arrivalCol;
+		this.arrivalRow = arrivalRow;
 		isCrossable = true;
 	}
 }

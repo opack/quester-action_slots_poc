@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Scaling;
 import com.slamdunk.quester.display.Clip;
 import com.slamdunk.quester.display.map.ActorMap;
+import com.slamdunk.quester.display.map.MapRenderer;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.GameControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
@@ -58,13 +59,12 @@ public class WorldElementActor extends Group {
 	private int worldY;
 	
 	public WorldElementActor(TextureRegion texture) {
-		ActorMap map = GameControler.instance.getScreen().getMap();
-		
 		if (texture != null) {
+			MapRenderer mapRenderer = GameControler.instance.getScreen().getMapRenderer();
 			image = new Image(texture);
 			image.setScaling(Scaling.stretch);
-			image.setWidth(map.getCellWidth());
-			image.setHeight(map.getCellHeight());
+			image.setWidth(mapRenderer.getCellWidth());
+			image.setHeight(mapRenderer.getCellHeight());
 			addActor(image);
 		}
 		

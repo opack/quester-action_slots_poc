@@ -93,8 +93,11 @@ public class Quester extends Game {
 		// Si le monde n'est pas encore créé, on le crée
 		if (worldMapScreen == null) {
 			// Création de la carte
+			Point areaSize = new Point(Config.asInt("world.areaWidth", 11), Config.asInt("world.areaHeight", 11));
 			MapBuilder builder = new WorldBuilder(Config.asInt("world.width", 11), Config.asInt("world.height", 11));
-			builder.createAreas(Config.asInt("world.areaWidth", 11), Config.asInt("world.areaHeight", 11), GRASS_DATA);
+			builder.createAreas(
+				areaSize, areaSize,
+				GRASS_DATA);
 			builder.placeMainEntrances();
 			worldMapScreen = new WorldScreen(hudRenderer, builder, Config.asInt("map.cellWidth", 96), Config.asInt("map.cellHeight", 96));
 			GameControler.instance.setScreen(worldMapScreen);
@@ -128,7 +131,7 @@ public class Quester extends Game {
 	
 	public void enterDungeon(
 			int dungeonWidth, int dungeonHeight,
-			int roomWidth, int roomHeight,
+			Point roomMinSize, Point roomMaxSize,
 			int difficulty) {
 		// Si un donjon existe déjà, on le supprime
 		if (dungeonScreen != null) {
@@ -137,7 +140,7 @@ public class Quester extends Game {
 		
 		// Construction de la carte
 		MapBuilder builder = new DungeonBuilder(dungeonWidth, dungeonHeight, difficulty);
-		builder.createAreas(roomWidth, roomHeight, GROUND_DATA);
+		builder.createAreas(roomMinSize, roomMaxSize, GROUND_DATA);
 		builder.placeMainEntrances();
 		dungeonScreen = new DungeonScreen(hudRenderer, builder, 96, 96);
 		GameControler.instance.setScreen(dungeonScreen);

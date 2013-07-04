@@ -75,7 +75,7 @@ public class GameScreen implements Screen {
 		currentRoom = new Point(entrance.getX(), entrance.getY());
 		
 		// Création des renderers
-		mapRenderer = new MapRenderer(builder.getAreaWidth(), builder.getAreaHeight(), worldCellWidth, worldCellHeight);
+		mapRenderer = new MapRenderer(worldCellWidth, worldCellHeight);
 		
 		// DBG Affichage du donjon en texte
 		builder.printMap();

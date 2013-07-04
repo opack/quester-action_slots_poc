@@ -19,7 +19,7 @@ public class EnterCastleAction extends AbstractAIAction {
 		CastleData castleData = castle.getData();
 		Quester.getInstance().enterDungeon(
 			castleData.dungeonWidth, castleData.dungeonHeight,
-			castleData.roomWidth, castleData.roomHeight,
+			castleData.roomMinSize, castleData.roomMaxSize,
 			castleData.difficulty);
 		
 		// L'action est consommée : réalisation de la prochaine action

@@ -50,17 +50,19 @@ public class GameControler implements CharacterListener {
 		currentArea.setXY(data.regionX, data.regionY);
 		screen.displayWorld(data);
 		
-		GameControler.instance.updateHasMoreEnemies();
+		if (characters != null) {
+			updateHasMoreEnemies();
 		
-		// Initialise l'IA de tous les personnages
-		for (CharacterControler character : characters) {
-			character.ai.init();
+			// Initialise l'IA de tous les personnages
+			for (CharacterControler character : characters) {
+				character.ai.init();
+			}
+		
+			// Débute le jeu avec le premier joueur
+			initCharacterOrder();
+			Quester.getInstance().updateHUD(currentArea);
+	        characters.get(curCharacterPlaying).setPlaying(true);
 		}
-		
-		// Débute le jeu avec le premier joueur
-		initCharacterOrder();
-		Quester.getInstance().updateHUD(currentArea);
-        characters.get(curCharacterPlaying).setPlaying(true);
 	}
 	
 	/**
@@ -195,16 +197,20 @@ public class GameControler implements CharacterListener {
 
 	public void setScreen(GameScreen screen) {
 		this.screen = screen;
-		this.characters = screen.getMap().getCharacters();
-		updateHasMoreEnemies();
+		if (screen.getMap() != null) {
+			this.characters = screen.getMap().getCharacters();
+			updateHasMoreEnemies();
+		}
 	}
 	
 	public void updateHasMoreEnemies() {
 		hasMoreEnemies = false;
-		for (CharacterControler character : characters) {
-			if (character.isHostile()) {
-				hasMoreEnemies = true;
-				break;
+		if (characters != null) {
+			for (CharacterControler character : characters) {
+				if (character.isHostile()) {
+					hasMoreEnemies = true;
+					break;
+				}
 			}
 		}
 	}
