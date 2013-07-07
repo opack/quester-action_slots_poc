@@ -183,7 +183,7 @@ public class DungeonBuilder extends MapBuilder {
    		 	}
         }
 		
-//		// Création de murs DANS la pièce
+		// Création de murs DANS la pièce
 //		for (int wallCount = 0; wallCount < 5; wallCount++) {
 //			// Choisit un emplacement vide pour ajouter le mur
 //   		 	int wallX = MathUtils.random(1, width - 2);
