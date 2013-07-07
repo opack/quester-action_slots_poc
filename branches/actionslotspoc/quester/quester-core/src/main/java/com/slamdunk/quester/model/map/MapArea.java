@@ -26,8 +26,6 @@ import com.slamdunk.quester.model.data.WorldElementData;
  * Données logiques d'une zone de la carte. Seule la structure de la zone
  * (sols, murs, portes) est retenue ; tout ce qui est éphémère (monstres,
  * trésors...) n'est pas indiqué.
- * @author Didier
- *
  */
 public class MapArea {
 	/**
