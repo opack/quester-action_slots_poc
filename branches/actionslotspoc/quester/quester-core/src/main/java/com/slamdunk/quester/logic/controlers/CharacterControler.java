@@ -22,31 +22,6 @@ import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.points.Point;
 
 public class CharacterControler extends WorldElementControler implements Damageable {
-
-	/**
-	 * Les 8 voisins autour
-	 */
-	public static int[][] NEIGHBORS_ALL = new int[][]{
-		new int[]{-1, -1},
-		new int[]{0, -1},
-		new int[]{+1, -1},
-		new int[]{-1, 0},
-		new int[]{+1, 0},
-		new int[]{-1, +1},
-		new int[]{0, +1},
-		new int[]{+1, +1},
-	};
-	
-	/**
-	 * Voisins en "+" : au-dessus, en-dessous, à gauche et à droite.
-	 */
-	public static int[][] NEIGHBORS_PLUS = new int[][]{
-		new int[]{0, -1},
-		new int[]{-1, 0},
-		new int[]{+1, 0},
-		new int[]{0, +1},
-	};
-	
 	/**
 	 * Objet choissant les actions à effectuer
 	 */

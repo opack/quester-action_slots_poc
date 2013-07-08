@@ -10,7 +10,7 @@ public class RabiteControler extends CharacterControler {
 
 	public RabiteControler(CharacterData data, RabiteActor body) {
 		super(data, body, new RabiteAI());
-		setDetectionArea(NEIGHBORS_ALL);
+		setDetectionArea(Neighbors.NEIGHBORS_ALL);
 	}
 
 	@Override

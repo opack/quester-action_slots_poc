@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.slamdunk.quester.display.map.ActorMap;
-import com.slamdunk.quester.logic.controlers.CharacterControler;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.Neighbors;
 import com.slamdunk.quester.model.points.Point;
 
 /**
@@ -23,7 +23,7 @@ public class RandomMoveAction extends AbstractAIAction {
 		final List<Point> emptyNeighbors = new ArrayList<Point>();
 		
 		// Choix des voisins valides
-		for (int[] neighbor : CharacterControler.NEIGHBORS_PLUS) {
+		for (int[] neighbor : Neighbors.NEIGHBORS_PLUS.values()) {
 			neighborX = x + neighbor[0];
 			neighborY = y + neighbor[1];
 			if (map.isEmpty(neighborX, neighborY)) {
