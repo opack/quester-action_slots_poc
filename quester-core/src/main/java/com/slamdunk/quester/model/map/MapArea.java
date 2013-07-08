@@ -174,7 +174,7 @@ public class MapArea {
 	}
 
 	private boolean containsPath(Set<PathData> set, MapElements path) {
-		for (PathData data : paths.get(TOP)) {
+		for (PathData data : set) {
 			if (data.element == path) {
 				return true;
 			}
