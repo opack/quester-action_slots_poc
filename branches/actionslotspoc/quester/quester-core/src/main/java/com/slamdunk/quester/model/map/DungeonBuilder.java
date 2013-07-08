@@ -1,6 +1,5 @@
 package com.slamdunk.quester.model.map;
 
-import static com.slamdunk.quester.model.data.WorldElementData.FOG_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.GROUND_DATA;
 import static com.slamdunk.quester.model.data.WorldElementData.WALL_DATA;
 import static com.slamdunk.quester.model.map.Borders.BOTTOM;
@@ -18,6 +17,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.PathData;
 import com.slamdunk.quester.model.data.WorldElementData;
+import com.slamdunk.quester.model.map.decorators.AreaDecorator;
+import com.slamdunk.quester.model.map.decorators.RandomWallDecorator;
 import com.slamdunk.quester.model.points.Point;
 
 public class DungeonBuilder extends MapBuilder {
@@ -178,53 +179,21 @@ public class DungeonBuilder extends MapBuilder {
 //   		 			pathfinder.setWalkable(col, row, false);
    		 		} else {
    		 			// Du brouillard dans la pièce
-   		 			area.setFogAt(col, row, FOG_DATA);
+   		 			//DBGarea.setFogAt(col, row, FOG_DATA);
    		 		}
    		 	}
         }
 		
 		// Création de murs DANS la pièce
-//		for (int wallCount = 0; wallCount < 5; wallCount++) {
-//			// Choisit un emplacement vide pour ajouter le mur
-//   		 	int wallX = MathUtils.random(1, width - 2);
-//   		 	int wallY = MathUtils.random(1, height - 2);
-//   		 	if (area.getObjectAt(wallX, wallY).element != EMPTY) {
-//   		 		continue;
-//   		 	}
-// 			
-//   		 	// Place le mur
-// 			area.setObjectAt(wallX, wallY, WALL_DATA);
-// 			pathfinder.setWalkable(wallX, wallY, false);
-//        }
-//		// On s'assure que toutes les cases sont accessibles depuis les 4 portes qui pourraient exister
-//		UnmutablePoint[] potentialDoors = new UnmutablePoint[]{
-//			new UnmutablePoint(width / 2, height - 1),
-//			new UnmutablePoint(width / 2, 0),
-//			new UnmutablePoint(0, height / 2),
-//			new UnmutablePoint(width - 1, height / 2),
-//		};
-//		List<UnmutablePoint> linked = new ArrayList<UnmutablePoint>();
-//		List<UnmutablePoint> blocked = new ArrayList<UnmutablePoint>();
-//		for (int col = 1; col < width - 1; col++) {
-//			for (int row = 1; row < height - 1; row++) {
-//				// Si la position est vide...
-//				if (area.getObjectAt(col, row).element == EMPTY) {
-//					UnmutablePoint pos = new UnmutablePoint(col, row);
-//					// ... alors on regarde si on peut l'atteindre depuis les portes
-//					for (UnmutablePoint door : potentialDoors) {
-//						if (pathfinder.findPath(door.getX(), door.getY(), col, row) == null) {
-//							// Cette case ne peut pas rejoindre au moins une des portes
-//							blocked.add(pos);
-//		   		 			break;
-//						}
-//					}
-//				}
-//			}
-//		}
-
+		createWalls(area);
+		
+		// On s'assure à présent que toutes les portes sont accessibles depuis les autres portes.
+		// Le cas échéant, on fait des trous dans les murs pour assurer un passage.
+		// TODO
+		
 		// Ajout des personnages
 		// TODO : Améliorer la gestion de la difficulté
-		int nbRobots = MathUtils.random(1, (int)(difficulty * 1.5) + 1);
+		int nbRobots = 0;//DBGMathUtils.random(1, (int)(difficulty * 1.5) + 1);
 		Point randomPos = new Point(-1, -1);
 		for (int count = 0; count < nbRobots; count++) {
 			// Recherche d'une position aléatoire disponible
@@ -238,12 +207,27 @@ public class DungeonBuilder extends MapBuilder {
 		}
 	}
 	
+	private void createWalls(MapArea area) {
+		// Choix d'un ou plusieurs décorateurs de zone
+		List<AreaDecorator> decorators = new ArrayList<AreaDecorator>();
+		int nbDecoratorsToCreate = MathUtils.random(3);
+		for (int curDecorator = 0; curDecorator < nbDecoratorsToCreate; curDecorator++) {
+			// DBG Pas très aléatoire comme choix ;)
+			decorators.add(new RandomWallDecorator());
+		}
+		
+		// Exécution des décorateurs
+		for (AreaDecorator decorator : decorators) {
+			decorator.decorate(area);
+		}
+	}
+
 	private void getRandomFreePos(Point posToFill, MapArea area) {
 	  	int col = -1;
 	  	int row = -1;
 	  	do {
-	        	col = MathUtils.random(area.getWidth() - 1);
-	        	row = MathUtils.random(area.getHeight() - 1);
+        	col = MathUtils.random(area.getWidth() - 1);
+        	row = MathUtils.random(area.getHeight() - 1);
 	  	} while (!area.isEmpty(MapLevels.OBJECTS, col, row) || !area.isEmpty(MapLevels.CHARACTERS, col, row));
 	  	posToFill.setXY(col, row);
 	}
