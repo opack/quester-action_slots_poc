@@ -92,7 +92,7 @@ public class MapRenderer implements CharacterListener {
 		map = new ActorMap(area.getWidth(), area.getHeight(), cellWidth, cellHeight);
         
         // Crée une couche de fond
-		MapLayer backgroundLayer = map.addLayer(MapLevels.GROUND);
+		MapLayer groundLayer = map.addLayer(MapLevels.GROUND);
         
         // Crée une couche avec les objets
 		MapLayer objectsLayer = map.addLayer(MapLevels.OBJECTS);
@@ -115,7 +115,7 @@ public class MapRenderer implements CharacterListener {
         // Création des éléments de la carte
 	 	for (int col = 0; col < area.getWidth(); col++) {
    		 	for (int row = 0; row < area.getHeight(); row++) {
-   		 		createActor(col, row, area.getGroundAt(col, row), backgroundLayer);
+   		 		createActor(col, row, area.getGroundAt(col, row), groundLayer);
    		 		createActor(col, row, area.getObjectAt(col, row), objectsLayer);
    	        	createActor(col, row, area.getCharacterAt(col, row), charactersLayer);
    		 		createActor(col, row, area.getFogAt(col, row), fogLayer);
