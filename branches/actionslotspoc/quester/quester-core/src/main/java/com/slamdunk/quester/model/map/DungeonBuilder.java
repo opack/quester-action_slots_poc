@@ -185,7 +185,7 @@ public class DungeonBuilder extends MapBuilder {
         }
 		
 		// Création de murs DANS la pièce
-		createWalls(area);
+		//DBGcreateWalls(area);
 		
 		// On s'assure à présent que toutes les portes sont accessibles depuis les autres portes.
 		// Le cas échéant, on fait des trous dans les murs pour assurer un passage.
@@ -193,15 +193,15 @@ public class DungeonBuilder extends MapBuilder {
 		
 		// Ajout des personnages
 		// TODO : Améliorer la gestion de la difficulté
-		int nbRobots = 0;//DBGMathUtils.random(1, (int)(difficulty * 1.5) + 1);
+		int nbRobots = MathUtils.random(2, (int)(difficulty * 1.5) + 2);
 		Point randomPos = new Point(-1, -1);
 		for (int count = 0; count < nbRobots; count++) {
 			// Recherche d'une position aléatoire disponible
 			getRandomFreePos(randomPos, area);			
 			CharacterData data = new CharacterData (
 				RABITE,
-				MathUtils.random(difficulty + 10, difficulty * 2 + 10),
-				MathUtils.random(difficulty + 1, (int)((difficulty + 1) * 1.5)));
+				MathUtils.random(difficulty + 9, difficulty * 2 + 10),
+				MathUtils.random(difficulty + 2, (int)((difficulty + 2) * 1.5)));
 			data.speed = 4;
 			area.setCharacterAt(randomPos.getX(), randomPos.getY(), data);
 		}
