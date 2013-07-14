@@ -10,13 +10,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL10;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.slamdunk.quester.Quester;
 import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
-import com.slamdunk.quester.display.camera.TouchGestureListener;
 import com.slamdunk.quester.display.hud.HUDRenderer;
 import com.slamdunk.quester.display.hud.actionslots.ActionSlots;
 import com.slamdunk.quester.display.map.ActorMap;
@@ -83,8 +81,8 @@ public class GameScreen implements Screen {
 		// Création du gestionnaire d'input
  		inputMultiplexer = new InputMultiplexer();
  		inputMultiplexer.addProcessor(hudRenderer);
-// 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
- 		inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
+ 		inputMultiplexer.addProcessor(mapRenderer.getStage());// DBG Les 2 Processors ci-dessous ne sont utilisés que pour le zoom et le pan.
+ 		//inputMultiplexer.addProcessor(new GestureDetector(new TouchGestureListener(mapRenderer)));
  		//DBGinputMultiplexer.addProcessor(new MouseScrollZoomProcessor(mapRenderer));
  		enableInputListeners(true);
 	}
@@ -266,9 +264,9 @@ public class GameScreen implements Screen {
 		GameControler.instance.getCurrentCharacter().act(delta);
 		
         // Dessine la scène et le hud
-        mapRenderer.render();
+        mapRenderer.render(delta);
         
-        fpsLogger.log();
+        //DBGfpsLogger.log();
 	}
 	
 	@Override

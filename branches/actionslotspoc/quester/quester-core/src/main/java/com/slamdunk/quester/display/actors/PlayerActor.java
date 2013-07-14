@@ -38,6 +38,8 @@ public class PlayerActor extends CharacterActor {
 		idleUpClip = createIdleClip("player-idle_up.png");
 		idleDownClip = createIdleClip("player-idle_down.png");
 		idleClip = idleDownClip;
+		
+		isDrawStats = false;
 	}
 	
 	private Clip createWalkClip(String spriteSheet) {

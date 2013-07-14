@@ -21,7 +21,7 @@ import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.WorldElementData;
 import com.slamdunk.quester.model.points.Point;
 
-public class CharacterControler extends WorldElementControler implements Damageable {
+public class CharacterControler extends SwitchControler implements Damageable {
 	/**
 	 * Objet choissant les actions à effectuer
 	 */

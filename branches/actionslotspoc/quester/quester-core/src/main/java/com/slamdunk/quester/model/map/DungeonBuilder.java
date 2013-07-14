@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.slamdunk.quester.logic.ai.QuesterActions;
+import com.slamdunk.quester.model.data.ActionItemHelper;
 import com.slamdunk.quester.model.data.CharacterData;
 import com.slamdunk.quester.model.data.PathData;
 import com.slamdunk.quester.model.data.WorldElementData;
@@ -204,6 +206,21 @@ public class DungeonBuilder extends MapBuilder {
 				MathUtils.random(difficulty + 2, (int)((difficulty + 2) * 1.5)));
 			data.speed = 4;
 			area.setCharacterAt(randomPos.getX(), randomPos.getY(), data);
+		}
+		
+		// DBG Ajout des items
+		for (int col=0; col < width; col++) {
+   		 	for (int row=0; row < height; row++) {
+   		 		if (area.isEmpty(MapLevels.OBJECTS, col, row)
+   		 		&& area.isEmpty(MapLevels.CHARACTERS, col, row)) {
+   		 			// Choix d'un item au hasard
+   		 			QuesterActions action = ActionItemHelper.getNextAction();
+   		 			WorldElementData elementData = ActionItemHelper.SLOT_DATAS.get(action).mapElementData;
+   		 		
+   		 			// Ajout de cet item
+   		 			area.setObjectAt(col, row, elementData);
+   		 		}
+   		 	}
 		}
 	}
 	

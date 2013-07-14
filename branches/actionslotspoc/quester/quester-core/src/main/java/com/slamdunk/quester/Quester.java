@@ -63,6 +63,8 @@ public class Quester extends Game {
 
 	@Override
 	public void resume () {
+		// Rechargement des assets
+		Assets.load();
 	}
 
 	@Override

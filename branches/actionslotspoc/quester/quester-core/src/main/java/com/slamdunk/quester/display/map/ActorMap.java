@@ -387,7 +387,16 @@ public class ActorMap extends Group {
 		WorldElementControler controler = actor.getControler();
 		MapLayer layer = getLayerContainingCell(String.valueOf(controler.getId()));
 		if (layer != null) {
-			layer.moveCell(oldCol,  oldRow,  newCol, newRow, false);
+			if (layer.getLevel() == MapLevels.OBJECTS) {
+				LayerCell cell1 = layer.getCell(oldCol,  oldRow);
+				System.out.printf("ActorMap.updateMapPosition() c1 %d %d %s\n", oldCol,  oldRow, (cell1 == null ? null : ((WorldElementActor)cell1.getActor()).getControler().getData().element));
+				LayerCell cell2 = layer.getCell(newCol, newRow);
+				System.out.printf("ActorMap.updateMapPosition() c2 %d %d %s\n", newCol, newRow, (cell2 == null ? null : ((WorldElementActor)cell2.getActor()).getControler().getData().element));
+			}
+			boolean dbg = layer.moveCell(oldCol,  oldRow,  newCol, newRow, false);
+			if (layer.getLevel() == MapLevels.OBJECTS) {
+				System.out.println("ActorMap.updateMapPosition() moveCell="+dbg);
+			}
 			// Mise à jour du pathfinder si l'objet appartenait à une couche d'obstacles
 			if (containsObstacles(layer.getLevel())) {
 				// On part du principe qu'il n'y a qu'un seul objet solide

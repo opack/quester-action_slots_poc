@@ -22,6 +22,7 @@ import com.slamdunk.quester.display.actors.PathMarkerActor;
 import com.slamdunk.quester.display.actors.PathToAreaActor;
 import com.slamdunk.quester.display.actors.PlayerActor;
 import com.slamdunk.quester.display.actors.RabiteActor;
+import com.slamdunk.quester.display.actors.SwitchActor;
 import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.logic.controlers.CastleControler;
 import com.slamdunk.quester.logic.controlers.CharacterControler;
@@ -32,6 +33,7 @@ import com.slamdunk.quester.logic.controlers.GroundControler;
 import com.slamdunk.quester.logic.controlers.PathMarkerControler;
 import com.slamdunk.quester.logic.controlers.PathToAreaControler;
 import com.slamdunk.quester.logic.controlers.RabiteControler;
+import com.slamdunk.quester.logic.controlers.SwitchControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
 import com.slamdunk.quester.model.data.CastleData;
 import com.slamdunk.quester.model.data.CharacterData;
@@ -150,7 +152,12 @@ public class MapRenderer implements CharacterListener {
 		 			(CastleData)data, 
 		 			new CastleActor(Assets.castle));		 		
 				break;
-			case COMMON_DOOR:
+		 	case CHEST:
+				controler = new SwitchControler(
+					data,
+					new SwitchActor(Assets.action_chest));
+				break;
+	 		case COMMON_DOOR:
 				controler = new DungeonDoorControler(
 					(PathData)data, 
 					new PathToAreaActor(Assets.commonDoor));
@@ -179,6 +186,16 @@ public class MapRenderer implements CharacterListener {
 	 			controler = new GroundControler(
 					data, 
 					new GroundActor(Assets.ground));
+				break;
+	 		case HEAL:
+				controler = new SwitchControler(
+					data,
+					new SwitchActor(Assets.action_heal));
+				break;
+	 		case MOVE:
+				controler = new SwitchControler(
+					data,
+					new SwitchActor(Assets.menu_move));
 				break;
 	 		case PATH_MARKER:
 	 			PathMarkerActor actor = null;
@@ -228,7 +245,22 @@ public class MapRenderer implements CharacterListener {
 					data, 
 					new WorldElementActor(Assets.rock));
 				break;
-	 		case VILLAGE:
+			case SHIELD:
+				controler = new SwitchControler(
+					data,
+					new SwitchActor(Assets.action_shield));
+				break;
+			case STAR:
+				controler = new SwitchControler(
+					data,
+					new SwitchActor(Assets.action_techspe));
+				break;
+	 		case SWORD:
+				controler = new SwitchControler(
+					data,
+					new SwitchActor(Assets.action_attack));
+				break;
+			case VILLAGE:
 	 			controler = new WorldElementControler(
 					data, 
 					new WorldElementActor(Assets.village));
@@ -451,7 +483,10 @@ public class MapRenderer implements CharacterListener {
 		removeFog(col + 1, row - 1, fog);
 	}
 
-	public void render() {
+	public void render(float delta) {
+		for (WorldElementActor actor : SwitchControler.getSwitchingActors()) {
+			actor.act(delta);
+		}
 		stage.draw();
 	}
 

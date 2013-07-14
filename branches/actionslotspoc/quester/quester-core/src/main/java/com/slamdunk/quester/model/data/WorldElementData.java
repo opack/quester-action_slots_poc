@@ -22,6 +22,13 @@ public class WorldElementData {
 	public static final WorldElementData ROCK_DATA = new ObstacleData(ROCK);
 	public static final WorldElementData VILLAGE_DATA = new ObstacleData(VILLAGE);
 	public static final WorldElementData WALL_DATA = new ObstacleData(WALL);
+	//DBG
+	public static final WorldElementData CHEST_DATA = new WorldElementData(MapElements.CHEST);
+	public static final WorldElementData HEAL_DATA = new WorldElementData(MapElements.HEAL);
+	public static final WorldElementData SHIELD_DATA = new WorldElementData(MapElements.SHIELD);
+	public static final WorldElementData MOVE_DATA = new WorldElementData(MapElements.MOVE);
+	public static final WorldElementData STAR_DATA = new WorldElementData(MapElements.STAR);
+	public static final WorldElementData SWORD_DATA = new WorldElementData(MapElements.SWORD);
 	
 	public MapElements element;
 	public boolean isSolid;
