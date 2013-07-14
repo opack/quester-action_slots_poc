@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry including="**/*.java" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="/quester-core"/>
-	<classpathentry kind="var" path="M2_REPO/com/badlogic/gdx/gdx/0.9.9-SNAPSHOT/gdx-0.9.9-SNAPSHOT.jar" sourcepath="M2_REPO/com/badlogic/gdx/gdx/0.9.9-SNAPSHOT/gdx-0.9.9-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/badlogic/gdx/gdx/0.9.9-SNAPSHOT/gdx-0.9.9-SNAPSHOT.jar" sourcepath="/M2_REPO/com/badlogic/gdx/gdx/0.9.9-SNAPSHOT/gdx-0.9.9-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/badlogic/gdx/gdx-backend-android/0.9.9-SNAPSHOT/gdx-backend-android-0.9.9-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/badlogic/gdx/gdx-platform/0.9.9-SNAPSHOT/gdx-platform-0.9.9-SNAPSHOT-natives-armeabi.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/badlogic/gdx/gdx-platform/0.9.9-SNAPSHOT/gdx-platform-0.9.9-SNAPSHOT-natives-armeabi-v7a.jar"/>

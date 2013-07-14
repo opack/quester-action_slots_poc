@@ -1,4 +1,4 @@
-package com.slamdunk.quester.display.hud.actionslots;
+package com.slamdunk.quester.model.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,18 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.slamdunk.quester.display.actors.ActionSlotActor;
+import com.slamdunk.quester.display.hud.actionslots.SlotData;
 import com.slamdunk.quester.logic.ai.QuesterActions;
-import com.slamdunk.quester.logic.controlers.ActionSlotControler;
-import com.slamdunk.quester.model.data.ActionSlotData;
+import com.slamdunk.quester.model.map.MapElements;
 import com.slamdunk.quester.utils.Assets;
 import com.slamdunk.quester.utils.Config;
 
-public class ActionSlotsHelper {
+public class ActionItemHelper {
 	private static final float APPEAR_RATE_TOTAL = Config.asFloat("action.appearRate.total", 6f);
 	private static final List<QuesterActions> NEXT_ACTIONS;
 	public static final Map<QuesterActions, SlotData> SLOT_DATAS;
+	private static final DoubleEntryArray<MapElements, Boolean> MATCHABLES;
+	private static final Map<String, AlignmentEffect> ALIGNMENT_EFFECTS;
 	
 	static {
 		// Création des données des slots pour chaque action possible
@@ -25,59 +25,65 @@ public class ActionSlotsHelper {
 		SLOT_DATAS.put(
 			QuesterActions.ATTACK,
 			new SlotData(
-				QuesterActions.ATTACK, 
-				null,//DBG Test switch items
+				QuesterActions.ATTACK,
+				WorldElementData.SWORD_DATA,
 				Config.asFloat("action.appearRate.attack", 1),
 				Assets.action_attack));
-		SLOT_DATAS.put(
-			QuesterActions.NONE,
-			new SlotData(
-				QuesterActions.NONE, 
-				null,//DBG Test switch items
-				0,
-				Assets.action_none));
 		SLOT_DATAS.put(
 			QuesterActions.MOVE,
 			new SlotData(
 				QuesterActions.MOVE, 
-				null,//DBG Test switch items
+				WorldElementData.MOVE_DATA,
 				Config.asFloat("action.appearRate.move", 0),
 				Assets.menu_move));
 		SLOT_DATAS.put(
 			QuesterActions.PROTECT,
 			new SlotData(
 				QuesterActions.PROTECT, 
-				null,//DBG Test switch items
+				WorldElementData.SHIELD_DATA,
 				Config.asFloat("action.appearRate.shield", 1),
 				Assets.action_shield));
 		SLOT_DATAS.put(
 			QuesterActions.CHEST,
 			new SlotData(
 				QuesterActions.CHEST, 
-				null,//DBG Test switch items
+				WorldElementData.CHEST_DATA,
 				Config.asFloat("action.appearRate.chest", 1),
 				Assets.action_chest));
 		SLOT_DATAS.put(
 			QuesterActions.TECHSPE,
 			new SlotData(
 				QuesterActions.TECHSPE, 
-				null,//DBG Test switch items
+				WorldElementData.STAR_DATA,
 				Config.asFloat("action.appearRate.techspe", 1),
 				Assets.action_techspe));
 		SLOT_DATAS.put(
 			QuesterActions.HEAL,
 			new SlotData(
 				QuesterActions.HEAL, 
-				null,//DBG Test switch items
+				WorldElementData.HEAL_DATA,
 				Config.asFloat("action.appearRate.heal", 1),
 				Assets.action_heal));
-		SLOT_DATAS.put(
-			QuesterActions.END_TURN,
-			new SlotData(
-				QuesterActions.END_TURN, 
-				null,//DBG Test switch items
-				Config.asFloat("action.appearRate.endturn", 1),
-				Assets.action_endturn));
+
+		// Création de la matrice d'items matchables
+		MATCHABLES = new DoubleEntryArray<MapElements, Boolean>();
+		addMatchables(MapElements.SWORD, MapElements.SWORD);
+		addMatchables(MapElements.SWORD, MapElements.RABITE);
+		addMatchables(MapElements.SWORD, MapElements.ENNEMY);
+		addMatchables(MapElements.MOVE, MapElements.MOVE);
+		addMatchables(MapElements.SHIELD, MapElements.SHIELD);
+		addMatchables(MapElements.CHEST, MapElements.CHEST);
+		addMatchables(MapElements.STAR, MapElements.STAR);
+		addMatchables(MapElements.HEAL, MapElements.HEAL);
+		
+		// Création de la table des recettes d'alignement
+		ALIGNMENT_EFFECTS = new HashMap<String, AlignmentEffect>();
+		ALIGNMENT_EFFECTS.put(
+			AlignmentEffect.buildRecipe(MapElements.SWORD, MapElements.SWORD, MapElements.SWORD),
+			new AttackAlignmentEffect());
+		ALIGNMENT_EFFECTS.put(
+			AlignmentEffect.buildRecipe(new MapElements[]{MapElements.SHIELD, MapElements.SHIELD, MapElements.SHIELD}),
+			new ShieldAlignmentEffect());
 		
 		// Création de la liste des prochaines actions
 		NEXT_ACTIONS = new ArrayList<QuesterActions>();
@@ -101,43 +107,28 @@ public class ActionSlotsHelper {
 		Collections.shuffle(NEXT_ACTIONS);
 	}
 	
-	public static void copySlot(ActionSlotActor from, ActionSlotActor to) {
-		SlotData data = SLOT_DATAS.get(from.getControler().getData().action);
-		setSlotData(data, to);
+	private static void addMatchables(MapElements element1, MapElements element2) {
+		MATCHABLES.put(element1, element2, Boolean.TRUE);
+		MATCHABLES.put(element2, element1, Boolean.TRUE);
 	}
-	
-	public static ActionSlotActor createEmptySlot() {
-		return createSlot(QuesterActions.NONE, Assets.action_none);
-	}
-	
-	public static ActionSlotActor createSlot(QuesterActions action, TextureRegion texture) {
-		ActionSlotData data = new ActionSlotData(action);
-		ActionSlotControler slotControler = new ActionSlotControler(data);
-		ActionSlotActor slotActor = new ActionSlotActor(texture);
-		
-		slotActor.setControler(slotControler);		
-		slotControler.setActor(slotActor);
-		
-		return slotActor;
-	}
-	
+
 	/**
 	 * Remplit ce slot avec la prochaine action prévue
 	 */
-	public static void fillActionSlot(ActionSlotActor slot) {
+	public static QuesterActions getNextAction() {
 		if (NEXT_ACTIONS.isEmpty()) {
 			chooseNextActions();
 		}
-		setSlotData(NEXT_ACTIONS.remove(0), slot);
-		slot.appear();
-	}
-	
-	public static void setSlotData(QuesterActions action, ActionSlotActor to) {
-		setSlotData(ActionSlotsHelper.SLOT_DATAS.get(action), to);
+		return NEXT_ACTIONS.remove(0);
 	}
 
-	public static void setSlotData(SlotData from, ActionSlotActor to) {
-		to.getControler().getData().action = from.action;
-		to.getImage().setDrawable(from.drawable);
+	public static boolean areMatchable(MapElements element1, MapElements element2) {
+		Boolean matchable = MATCHABLES.get(element1, element2);
+		return matchable != null && matchable.booleanValue();
+	}
+
+	public static AlignmentEffect getAlignmentEffect(List<MapElements> alignedElements) {
+		String recipe = AlignmentEffect.buildRecipe(alignedElements);
+		return ALIGNMENT_EFFECTS.get(recipe);
 	}
 }

@@ -38,6 +38,10 @@ public enum MapElements {
 	 */
 	GROUND,
 	/**
+	 * DBG Potion
+	 */
+	HEAL,
+	/**
 	 * Marqueur de chemin
 	 */
 	PATH_MARKER,
@@ -63,6 +67,10 @@ public enum MapElements {
 	 */
 	SHIELD,
 	/**
+	 * DBG Ennemi
+	 */
+	ENNEMY,
+	/**
 	 * DBG Recharge technique spéciale
 	 */
 	STAR,
@@ -70,6 +78,10 @@ public enum MapElements {
 	 * DBG Epée
 	 */
 	SWORD,
+	/**
+	 * DBG Déplacement
+	 */
+	MOVE,
 	/**
 	 * Village
 	 */

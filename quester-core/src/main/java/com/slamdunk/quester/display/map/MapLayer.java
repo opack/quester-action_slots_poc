@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.slamdunk.quester.display.actors.WorldElementActor;
 import com.slamdunk.quester.model.map.MapLevels;
 
 public class MapLayer extends Group {
@@ -174,12 +175,39 @@ public class MapLayer extends Group {
 		
 		// Mise à jour du tableau de cellules
 		cells[newX][newY] = cell;
-		cells[oldX][oldY] = null;		
+		cells[oldX][oldY] = null;
 		
 		// Mise à jour de la taille et position de la cellule
 		if (layoutCell) {
 			layoutCell(cell);
 		}
+		return true;
+	}
+	
+	public boolean switchCells(LayerCell cell1, LayerCell cell2, boolean layoutCell) {
+		if (cell1 == null || cell2 == null) {
+			return false;
+		}
+		
+		final int c1X = cell1.getX();
+		final int c1Y = cell1.getY();
+		
+		// Mise à jour des cellules
+		cell1.setX(cell2.getX());
+		cell1.setY(cell2.getY());
+		cell2.setX(c1X);
+		cell2.setY(c1Y);
+		
+		// Mise à jour du tableau de cellules
+		cells[cell1.getX()][cell1.getY()] = cell1;
+		cells[cell2.getX()][cell2.getY()] = cell2;
+		
+		// Mise à jour de la taille et position de la cellule
+		if (layoutCell) {
+			layoutCell(cell1);
+			layoutCell(cell2);
+		}
+		
 		return true;
 	}
 	
@@ -219,6 +247,9 @@ public class MapLayer extends Group {
 		addActor(cell.getActor());
 		
 		// Place la cellule dans la map et sur l'écran
+		if (level == MapLevels.OBJECTS) {
+			System.out.printf("MapLayer.setCell() %s %d %d %s\n", level,cell.getX(), cell.getY(), ((WorldElementActor)cell.getActor()).getControler().getData().element);
+		}
 		cells[cell.getX()][cell.getY()] = cell;
 		layoutCell(cell);
 	}

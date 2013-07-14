@@ -13,6 +13,7 @@ import com.slamdunk.quester.display.map.ActorMap;
 import com.slamdunk.quester.display.map.MapRenderer;
 import com.slamdunk.quester.logic.ai.QuesterActions;
 import com.slamdunk.quester.logic.controlers.GameControler;
+import com.slamdunk.quester.logic.controlers.SwitchControler;
 import com.slamdunk.quester.logic.controlers.WorldElementControler;
 
 /**
@@ -152,6 +153,10 @@ public class WorldElementActor extends Group {
 	}
 	
 	public void moveTo(int destinationX, int destinationY, float duration) {
+		moveTo(destinationX, destinationY, duration, null);
+	}
+	
+	public void moveTo(int destinationX, int destinationY, float duration, final SwitchControler controlerToNotify) {
 		ActorMap map = GameControler.instance.getScreen().getMap();
 		currentAction = QuesterActions.MOVE;
 		isLookingLeft = destinationX <= worldX;
@@ -181,19 +186,21 @@ public class WorldElementActor extends Group {
 //			}
 //		} else {
 			addAction(Actions.sequence(
-					Actions.moveTo(
-						destinationX * map.getCellWidth(),
-						destinationY * map.getCellHeight(),
-						duration),
-					new Action() {
-						@Override
-						public boolean act(float delta) {
-							WorldElementActor.this.currentAction = QuesterActions.NONE;
-							return true;
+				Actions.moveTo(
+					destinationX * map.getCellWidth(),
+					destinationY * map.getCellHeight(),
+					duration),
+				new Action() {
+					@Override
+					public boolean act(float delta) {
+						WorldElementActor.this.currentAction = QuesterActions.NONE;
+						if (controlerToNotify != null) {
+							controlerToNotify.checkAlignments();
 						}
+						return true;
 					}
-				)
-			);
+				}
+			));
 //		}
 	}
 	
@@ -231,7 +238,7 @@ public class WorldElementActor extends Group {
 	 * @param worldY
 	 */
 	public void setPositionInWorld(int newX, int newY) {
-//		map.updateMapPosition(
+//		GameControler.instance.getScreen().getMap().updateMapPosition(
 //			this,
 //			worldX, worldY,
 //			newX, newY);
