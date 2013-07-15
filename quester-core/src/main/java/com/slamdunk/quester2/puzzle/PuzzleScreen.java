@@ -10,7 +10,6 @@ public class PuzzleScreen implements Screen {
 	public PuzzleScreen() {
 		// Création du puzzle
 		puzzle = new Puzzle(Config.asInt("puzzle.width", 9), Config.asInt("puzzle.height", 9));
-		System.out.println("DBG PuzzleScreen.PuzzleScreen() \n" + puzzle);
 		// Création du stage chargé de dessiner le puzzle et interagir avec l'utilisateur
 		stage = new PuzzleStage(puzzle);
 	}
