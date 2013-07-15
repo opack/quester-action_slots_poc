@@ -103,6 +103,13 @@ public class Assets {
 	public static TextureRegion action_shield;
 	public static TextureRegion action_techspe;
 	
+	public static TextureRegion attribute_strength;
+	public static TextureRegion attribute_constitution;
+	public static TextureRegion attribute_dexterity;
+	public static TextureRegion attribute_focus;
+	public static TextureRegion attribute_will;
+	public static TextureRegion attribute_luck;
+	
 	//public static Animation playerWalkingRightAnimation;
 
 	public static BitmapFont characterFont;
@@ -215,6 +222,13 @@ public class Assets {
 		action_none = loadTexture("actions/action_none.png");
 		action_shield = loadTexture("actions/action_shield.png");
 		action_techspe = loadTexture("actions/action_techspe.png");
+		
+		attribute_strength = loadTexture("attributes/attribute_strength.png");
+		attribute_constitution = loadTexture("attributes/attribute_constitution.png");
+		attribute_dexterity = loadTexture("attributes/attribute_dexterity.png");
+		attribute_focus = loadTexture("attributes/attribute_focus.png");
+		attribute_will = loadTexture("attributes/attribute_will.png");
+		attribute_luck = loadTexture("attributes/attribute_luck.png");
 	}
 	
 	private static TextureRegion loadTexture(String file) {
