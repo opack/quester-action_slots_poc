@@ -1,14 +1,24 @@
 package com.slamdunk.quester2.puzzle;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
 
 /**
  * Gère la représentation logique du puzzle
  */
-public class Puzzle {
+public class Puzzle implements SwitchListener {
+	public interface PuzzleChangeListener {
+		/**
+		 * Appelée lorsque 2 attributs ont été échangés.
+		 */
+		void onAttributesSwitched(int firstX, int firstY, int secondX, int secondY);
+	}
+	
 	private int width;
 	private int height;
 	private PuzzleAttributes[][] puzzle;
+	
+	private PuzzleChangeListener listener;
 	
 	public Puzzle(int width, int height) {
 		this.width = width;
@@ -17,6 +27,10 @@ public class Puzzle {
 		// Création du puzzle
 		puzzle = new PuzzleAttributes[width][height];
 		initPuzzle();
+	}
+
+	public void setListener(PuzzleChangeListener listener) {
+		this.listener = listener;
 	}
 
 	/**
@@ -107,5 +121,19 @@ public class Puzzle {
 			return null;
 		}
 		return puzzle[x][y];
+	}
+
+	@Override
+	public void onPuzzleSwitch(int firstX, int firstY, int secondX, int secondY) {
+		// Inverse les 2 éléments aux positions indiquées
+		PuzzleAttributes tmp = puzzle[firstX][firstY];
+		puzzle[firstX][firstY] = puzzle[secondX][secondY];
+		puzzle[secondX][secondY] = tmp;
+		
+		// Prévient le listener afin de faire une jolie inversion
+		listener.onAttributesSwitched(firstX, firstY, secondX, secondY);
+		
+		// Recherche des éventuelles combinaisons
+		// TODO ...
 	}
 }
