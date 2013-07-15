@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.slamdunk.quester2.Quester2;
 
 public class QuesterActivity extends AndroidApplication {
 	/** Called when the activity is first created. */
@@ -15,6 +16,6 @@ public class QuesterActivity extends AndroidApplication {
 		config.useCompass = false;
 		config.useWakelock = true;
 		config.useGL20 = true;
-		initialize(new Quester(), config);
+		initialize(new Quester2(), config);
 	}
 }

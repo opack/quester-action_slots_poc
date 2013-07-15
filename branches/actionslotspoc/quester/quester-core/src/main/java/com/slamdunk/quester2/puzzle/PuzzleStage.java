@@ -6,6 +6,7 @@ import static com.slamdunk.quester2.Quester2.screenWidth;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,6 +22,7 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 	
 	private Puzzle puzzle;
 	private PuzzleImage[][]images;
+	private Vector2[][]tablePositions;
 	private Table puzzleTable;
 	
 	public PuzzleStage(Puzzle puzzle) {
@@ -57,13 +59,15 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 		images = new PuzzleImage[puzzle.getWidth()][puzzle.getHeight()];
 		final int imageWidth = Config.asInt("puzzle.item.width", 48);
 		final int imageHeight = Config.asInt("puzzle.item.height", 48);
+		PuzzleAttributes attribute;
+		PuzzleImage image;
 		for (int y = puzzle.getHeight() - 1; y > -1; y --) {
 			for (int x = 0; x < puzzle.getWidth(); x ++) {
 				// Récupération de l'attribut
-				PuzzleAttributes attribute = puzzle.get(x, y);
+				attribute = puzzle.get(x, y);
 				
 				// Création d'une image
-				PuzzleImage image = new PuzzleImage(attribute);
+				image = new PuzzleImage(attribute);
 				image.setPuzzleX(x);
 				image.setPuzzleY(y);
 				image.setScaling(Scaling.fit);
@@ -75,6 +79,15 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 			puzzleTable.row();
 		}
 		puzzleTable.pack();
+		
+		// Stockage des positions des images pour faciliter les animations
+		tablePositions = new Vector2[puzzle.getWidth()][puzzle.getHeight()];
+		for (int y = puzzle.getHeight() - 1; y > -1; y --) {
+			for (int x = 0; x < puzzle.getWidth(); x ++) {
+				image = images[x][y];
+				tablePositions[x][y] = new Vector2(image.getX(), image.getY());
+			}
+		}
 	}
 
 	public void render(float delta) {
@@ -91,14 +104,23 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 
 	@Override
 	public void onAttributesSwitched(int firstX, int firstY, int secondX, int secondY) {
-		// Faire une animation échangeant les images
+		// Récupération des images et de la position des cases dans lequelles ont doit les placer
 		PuzzleImage firstImage = images[firstX][firstY];
+		Vector2 firstPos = tablePositions[firstX][firstY];
 		PuzzleImage secondImage = images[secondX][secondY];
-		firstImage.addAction(Actions.moveTo(
-			secondImage.getX(), secondImage.getY(),
-			SWITCH_SPEED));
-		secondImage.addAction(Actions.moveTo(
-			firstImage.getX(), firstImage.getY(),
-			SWITCH_SPEED));
+		Vector2 secondPos = tablePositions[secondX][secondY];
+
+		// Faire une animation échangeant les images
+		firstImage.addAction(Actions.moveTo(secondPos.x, secondPos.y, SWITCH_SPEED));
+		secondImage.addAction(Actions.moveTo(firstPos.x, firstPos.y, SWITCH_SPEED));
+		
+		// Inversion effective des images dans le tableau d'images
+		images[firstX][firstY] = secondImage;
+		secondImage.setPuzzleX(firstX);
+		secondImage.setPuzzleY(firstY);
+		
+		images[secondX][secondY] = firstImage;
+		firstImage.setPuzzleX(secondX);
+		firstImage.setPuzzleY(secondY);
 	}
 }

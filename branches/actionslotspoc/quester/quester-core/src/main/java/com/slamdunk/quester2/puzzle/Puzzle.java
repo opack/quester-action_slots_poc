@@ -1,6 +1,10 @@
 package com.slamdunk.quester2.puzzle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.math.MathUtils;
+import com.slamdunk.quester.model.points.Point;
 import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
 
 /**
@@ -37,7 +41,7 @@ public class Puzzle implements SwitchListener {
 	 * Génère un puzzle de départ aléatoire
 	 */
 	private void initPuzzle() {
-		final PuzzleAttributes[] allAttributes = PuzzleAttributes.values();
+		final PuzzleAttributes[] allAttributes = PuzzleAttributesHelper.BASE_ATTRIBUTES;
 		final int randomMax = allAttributes.length - 1;
 		PuzzleAttributes attribute;
 		for (int y = height - 1; y > -1; y --) {
@@ -126,14 +130,128 @@ public class Puzzle implements SwitchListener {
 	@Override
 	public void onPuzzleSwitch(int firstX, int firstY, int secondX, int secondY) {
 		// Inverse les 2 éléments aux positions indiquées
+		if (!switchAttributes(firstX, firstY, secondX, secondY)) {
+			return;
+		}
+		
+		// Recherche des éventuelles combinaisons
+		boolean firstCreateAlignment = findAlignments(firstX, firstY);
+		boolean secondCreateAlignment = findAlignments(secondX, secondY);
+		
+		// Si aucune combinaison n'a été trouvée, on replace les items à leur position initiale
+		if (!firstCreateAlignment && !secondCreateAlignment) {
+			switchAttributes(firstX, firstY, secondX, secondY);
+		}
+	}
+
+	/**
+	 * Inverse les attributs aux positions indiquées
+	 */
+	private boolean switchAttributes(int firstX, int firstY, int secondX, int secondY) {
+		if (!isValidPos(firstX, firstY) || !isValidPos(secondX, secondY)) {
+			return false;
+		}
+		// Inverse les 2 éléments aux positions indiquées
 		PuzzleAttributes tmp = puzzle[firstX][firstY];
 		puzzle[firstX][firstY] = puzzle[secondX][secondY];
 		puzzle[secondX][secondY] = tmp;
 		
 		// Prévient le listener afin de faire une jolie inversion
 		listener.onAttributesSwitched(firstX, firstY, secondX, secondY);
+		return true;
+	}
+
+	/**
+	 * Vérifie la présence d'alignements comprenant la position indiquée
+	 */
+	private boolean findAlignments(int x, int y) {
+		if (!isValidPos(x, y)) {
+			return false;
+		}
+		PuzzleAttributes element = puzzle[x][y];
+		List<Point> hAlignedPos = new ArrayList<Point>();
+		List<PuzzleAttributes> hAlignedElements = new ArrayList<PuzzleAttributes>();
+		List<Point> vAlignedPos = new ArrayList<Point>();
+		List<PuzzleAttributes> vAlignedElements = new ArrayList<PuzzleAttributes>();
 		
-		// Recherche des éventuelles combinaisons
-		// TODO ...
+		// Vérifie si l'item participe à un alignement horizontal
+		for (int curCol = x; curCol > -1; curCol--) {
+			if (!match(curCol, y, element, hAlignedPos, hAlignedElements)) {
+				break;
+			}
+		}
+		// On commence à col+1 pour ne pas compter 2 fois la cellule à col;row
+		for (int curCol = x + 1; curCol < width; curCol++) {
+			if (!match(curCol, y, element, hAlignedPos, hAlignedElements)) {
+				break;
+			}
+		}
+		
+		// Vérifie si l'item participe à un alignement vertical
+		for (int curRow = y; curRow > -1; curRow--) {
+			if (!match(x, curRow, element, vAlignedPos, vAlignedElements)) {
+				break;
+			}
+		}
+		// On commence à row+1 pour ne pas compter 2 fois la cellule à col;row
+		for (int curRow = y + 1; curRow < height; curRow++) {
+			if (!match(x, curRow, element, vAlignedPos, vAlignedElements)) {
+				break;
+			}
+		}
+		
+		// On résoud l'alignement en privilégiant le plus long.
+		if (hAlignedPos.isEmpty() && vAlignedPos.isEmpty()) {
+			return false;
+		}
+		int hCount = hAlignedPos.size();
+		int vCount = vAlignedPos.size();
+		if (hCount == vCount) {
+			// Formation en coin
+			// ...
+			return false;
+		} else if (hCount > vCount) {
+			// Simple ligne horizontale
+			return resolveLineAlignment(hAlignedPos, hAlignedElements);
+		} else {
+			// Simple ligne verticale
+			return resolveLineAlignment(vAlignedPos, vAlignedElements);
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean match(int x, int y, PuzzleAttributes element, List<Point> alignedPosList, List<PuzzleAttributes> alignedElementsList) {
+		PuzzleAttributes neighborElement = puzzle[x][y];
+		if (PuzzleAttributesHelper.areMatchable(neighborElement, element)) {
+			alignedPosList.add(new Point(x, y));
+			alignedElementsList.add(neighborElement);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Effectue l'effet liée à la combinaison d'éléments indiquée
+	 */
+	private boolean resolveLineAlignment(List<Point> alignedPos, List<PuzzleAttributes> alignedElements) {
+		// Déclenchement de l'effet adéquat
+		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignedElements);
+		if (effect == null) {
+			return false;
+		}
+		effect.perform();
+		
+		// Suppression des éléments alignés
+		// ...
+		
+		// Chute des éléments supérieurs
+		// ...
+		
+		// Ajout de nouveaux éléments
+		// ...
+		
+		return true;
 	}
 }

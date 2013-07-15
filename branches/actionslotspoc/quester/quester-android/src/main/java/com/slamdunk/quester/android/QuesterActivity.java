@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.slamdunk.quester.Quester;
+import com.slamdunk.quester2.Quester2;
 
 public class QuesterActivity extends AndroidApplication {
 	
@@ -15,6 +15,6 @@ public class QuesterActivity extends AndroidApplication {
        config.useGL20 = true;
        config.useAccelerometer = false;
        config.useCompass = false;
-       initialize(new Quester(), config);
+       initialize(new Quester2(), config);
    }
 }
