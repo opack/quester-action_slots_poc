@@ -28,32 +28,50 @@ public class PuzzleAttributesHelper {
 	static {
 		// Création de la matrice d'items matchables
 		MATCHABLES = new DoubleEntryArray<PuzzleAttributes, Boolean>();
-		addMatchables(PuzzleAttributes.CONSTITUTION, PuzzleAttributes.CONSTITUTION);
-		addMatchables(PuzzleAttributes.DEXTERITY, PuzzleAttributes.DEXTERITY);
-		addMatchables(PuzzleAttributes.FOCUS, PuzzleAttributes.FOCUS);
-		addMatchables(PuzzleAttributes.LUCK, PuzzleAttributes.LUCK);
-		addMatchables(PuzzleAttributes.STRENGTH, PuzzleAttributes.STRENGTH);
-		addMatchables(PuzzleAttributes.WILL, PuzzleAttributes.WILL);
+		// Ajout du match d'un attribut vers le même attribut
+		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
+			addMatchables(attribute, attribute);
+		}
 		
 		// Création de la table des recettes d'alignement
 		ALIGNMENT_EFFECTS = new HashMap<String, PuzzleMatchEffect>();
-		ALIGNMENT_EFFECTS.put(
-			PuzzleMatchEffect.buildRecipe(PuzzleAttributes.STRENGTH, PuzzleAttributes.STRENGTH, PuzzleAttributes.STRENGTH),
-			new StrengthAlignmentEffect());
+		AttributeAlignmentEffect attributeAlignmentEffect = new AttributeAlignmentEffect();
+		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
+			addAlignmentEffect(attribute, attributeAlignmentEffect);
+		}
 	}
 	
-	public static boolean areMatchable(PuzzleAttributes element1, PuzzleAttributes element2) {
-		Boolean matchable = MATCHABLES.get(element1, element2);
+	public static boolean areMatchable(PuzzleAttributes attribute1, PuzzleAttributes attribute2) {
+		Boolean matchable = MATCHABLES.get(attribute1, attribute2);
 		return matchable != null && matchable.booleanValue();
 	}
 	
-	private static void addMatchables(PuzzleAttributes element1, PuzzleAttributes element2) {
-		MATCHABLES.put(element1, element2, Boolean.TRUE);
-		MATCHABLES.put(element2, element1, Boolean.TRUE);
+	private static void addAlignmentEffect(PuzzleAttributes attribute, AttributeAlignmentEffect alignmentEffect) {
+		// Ajout des combinaisons de 3 items
+		Map<PuzzleAttributes, Integer> recipe = new HashMap<PuzzleAttributes, Integer>();
+		recipe.put(attribute, 3);
+		ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
+		
+		// Ajout des combinaisons de 4 items
+		recipe.clear();
+		recipe.put(attribute, 4);
+		ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
+		
+		// Ajout des combinaisons de 5 items
+		recipe.clear();
+		recipe.put(attribute, 5);
+		ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
+	}
+
+	private static void addMatchables(PuzzleAttributes attribute1, PuzzleAttributes attribute2) {
+		MATCHABLES.put(attribute1, attribute2, Boolean.TRUE);
+		MATCHABLES.put(attribute2, attribute1, Boolean.TRUE);
 	}
 	
-	public static PuzzleMatchEffect getMatchEffect(List<PuzzleAttributes> elements) {
-		String recipe = PuzzleMatchEffect.buildRecipe(elements);
-		return ALIGNMENT_EFFECTS.get(recipe);
+	public static PuzzleMatchEffect getMatchEffect(List<PuzzleAttributes> attributes) {
+		// Récupération de l'effet correspondant à cette combinaison d'attributs
+		String recipe = PuzzleMatchEffect.buildRecipe(attributes);
+		PuzzleMatchEffect effect = ALIGNMENT_EFFECTS.get(recipe);
+		return effect;
 	}
 }
