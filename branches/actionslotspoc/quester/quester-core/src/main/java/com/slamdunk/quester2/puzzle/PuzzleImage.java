@@ -11,12 +11,13 @@ public class PuzzleImage extends Image {
 	private int puzzleY;
 	
 	public PuzzleImage(PuzzleAttributes attribute) {
-		super(attribute.getTexture());
+		super(attribute.getDrawable());
 		this.attribute = attribute;
 	}
 	
 	public void setAttribute(PuzzleAttributes attribute) {
 		this.attribute = attribute;
+		setDrawable(attribute.getDrawable());
 	}
 
 	public PuzzleAttributes getAttribute() {
