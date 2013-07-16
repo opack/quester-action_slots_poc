@@ -56,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -448,6 +448,9 @@
        height="50.507626"
        x="107.07617"
        y="66.4533"
-       transform="matrix(0.88616958,0,0,0.83921717,21.329337,15.319863)" />
+       transform="matrix(0.88616958,0,0,0.83921717,21.329337,15.319863)"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_unknown.png"
+       inkscape:export-xdpi="87"
+       inkscape:export-ydpi="87" />
   </g>
 </svg>
