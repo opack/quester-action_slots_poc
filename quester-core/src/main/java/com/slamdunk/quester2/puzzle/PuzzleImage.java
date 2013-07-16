@@ -15,6 +15,10 @@ public class PuzzleImage extends Image {
 		this.attribute = attribute;
 	}
 	
+	public void setAttribute(PuzzleAttributes attribute) {
+		this.attribute = attribute;
+	}
+
 	public PuzzleAttributes getAttribute() {
 		return attribute;
 	}
