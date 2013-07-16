@@ -12,6 +12,8 @@ public class PuzzleScreen implements Screen {
 		puzzle = new Puzzle(Config.asInt("puzzle.width", 9), Config.asInt("puzzle.height", 9));
 		// Création du stage chargé de dessiner le puzzle et interagir avec l'utilisateur
 		stage = new PuzzleStage(puzzle);
+		// Initialisation du puzzle
+		puzzle.init();
 	}
 
 	@Override

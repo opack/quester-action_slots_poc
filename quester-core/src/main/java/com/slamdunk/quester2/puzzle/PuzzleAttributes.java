@@ -1,6 +1,8 @@
 package com.slamdunk.quester2.puzzle;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.slamdunk.quester.utils.Assets;
 
 /**
@@ -8,6 +10,9 @@ import com.slamdunk.quester.utils.Assets;
  * leurs propriétés
  */
 public enum PuzzleAttributes {
+	// Attribut inconnu
+	UNKNOWN (Assets.attribute_unknown),
+	
 	// Attributs de base
 	STRENGTH (Assets.attribute_strength),
 	CONSTITUTION (Assets.attribute_constitution),
@@ -16,11 +21,11 @@ public enum PuzzleAttributes {
 	WILL (Assets.attribute_will),
 	LUCK (Assets.attribute_luck);
 	
-	private TextureRegion texture;
+	private Drawable texture;
 	private PuzzleAttributes(TextureRegion texture) {
-		this.texture = texture;
+		this.texture = new TextureRegionDrawable(texture);
 	}
-	public TextureRegion getTexture() {
+	public Drawable getDrawable() {
 		return texture;
 	}
 }

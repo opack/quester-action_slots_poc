@@ -5,17 +5,21 @@ import java.util.List;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.slamdunk.quester.model.points.Point;
-import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
 
 /**
  * Gère la représentation logique du puzzle
  */
-public class Puzzle implements SwitchListener {
+public class Puzzle {
 	public interface PuzzleChangeListener {
 		/**
 		 * Appelée lorsque 2 attributs ont été échangés.
 		 */
 		void onAttributesSwitched(int firstX, int firstY, int secondX, int secondY);
+		
+		/**
+		 * Appelée lorsqu'un attribut est créé.
+		 */
+		void onAttributeCreated(int x, int y, PuzzleAttributes attribute);
 		
 		/**
 		 * Appelée lorsqu'un attribut est supprimé
@@ -29,13 +33,15 @@ public class Puzzle implements SwitchListener {
 	
 	private PuzzleChangeListener listener;
 	
+	private boolean isSet;
+	
 	public Puzzle(int width, int height) {
 		this.width = width;
 		this.height = height;
 		
 		// Création du puzzle
 		puzzle = new PuzzleAttributes[width][height];
-		initPuzzle();
+		isSet = false;
 	}
 
 	public void setListener(PuzzleChangeListener listener) {
@@ -45,7 +51,7 @@ public class Puzzle implements SwitchListener {
 	/**
 	 * Génère un puzzle de départ aléatoire
 	 */
-	private void initPuzzle() {
+	public void init() {
 		final PuzzleAttributes[] allAttributes = PuzzleAttributesHelper.BASE_ATTRIBUTES;
 		final int randomMax = allAttributes.length - 1;
 		PuzzleAttributes attribute;
@@ -60,8 +66,14 @@ public class Puzzle implements SwitchListener {
 				
 				// Affectation de cet attribut au puzzle
 				puzzle[x][y] = attribute;
+				
+				// Notification du listener
+				if (listener != null) {
+					listener.onAttributeCreated(x, y, attribute);
+				}
 			}
 		}
+		isSet = true;
 	}
 
 	/**
@@ -139,45 +151,88 @@ public class Puzzle implements SwitchListener {
 		}
 		PuzzleAttributes removed = puzzle[x][y];
 		puzzle[x][y] = null;
-		listener.onAttributeRemoved(x, y);
+		if (listener != null) {
+			listener.onAttributeRemoved(x, y);
+		}
 		return removed;
 	}
 
-	@Override
-	public void onPuzzleSwitch(int firstX, int firstY, int secondX, int secondY) {
+	/**
+	 * Retourne true si le switch a été autorisé et effectué.
+	 */
+	public boolean switchAttributes(int firstX, int firstY, int secondX, int secondY) {
 		// Inverse les 2 éléments aux positions indiquées
-		if (!switchAttributes(firstX, firstY, secondX, secondY)) {
-			return;
+		if (!performSwitch(firstX, firstY, secondX, secondY)) {
+			return false;
 		}
 		
 		// Recherche des éventuelles combinaisons
 		boolean isFirstAligned = resolveAlignments(firstX, firstY);
 		boolean isSecondAligned = resolveAlignments(secondX, secondY);
 
-		if (isFirstAligned || isSecondAligned) {
-//			do {
-				// Chute des éléments supérieurs
-				// ...
-				
-				// Ajout de nouveaux éléments
-				// ...
-				
-				// Recherche d'éventuelles combinaisons
-				// pour chaque élément ajouté ou déplacé
-				// ...
-			
-			// Recommence tant qu'il y a des alignements
-//			} while (alignmentFound);
-		} else {
+		if (!isFirstAligned && !isSecondAligned) {
 			// Si aucune combinaison n'a été trouvée, on replace les items à leur position initiale
-			switchAttributes(firstX, firstY, secondX, secondY);
+			performSwitch(firstX, firstY, secondX, secondY);
+			return false;
 		}
+		return true;
+	}
+	
+	public void updatePuzzle() {
+//		do {
+			// Chute des éléments supérieurs
+			makeAttributesFall();
+			
+			// Ajout de nouveaux éléments
+			// ...
+			
+			// Recherche d'éventuelles combinaisons
+			// pour chaque élément ajouté ou déplacé
+			// ...
+		
+		// Recommence tant qu'il y a des alignements
+//		} while (alignmentFound);
+	}
+
+	/**
+	 * Fait chuter les attributs, en traitant les attributs depuis le bas du tableau
+	 * vers le haut
+	 */
+	private void makeAttributesFall() {
+//		boolean emptyRemains = false;
+//		do {
+//			emptyRemains = false;
+		boolean emptyFound = false;
+			for (int y = 0; y < height; y ++) {
+				for (int x = 0; x < width; x ++) {
+					if (puzzle[x][y] == null) {
+						// S'il y a un emplacement au-dessus, on switch
+						if (y + 1 < height) {
+							performSwitch(x, y, x, y + 1);
+//							emptyRemains = true;
+						}					
+						// Sinon, on est sur la dernière ligne : on ajoute un nouvel attribut
+						else {
+							puzzle[x][y] = PuzzleAttributesHelper.BASE_ATTRIBUTES[MathUtils.random(PuzzleAttributesHelper.BASE_ATTRIBUTES.length - 1)];
+							if (listener != null) {
+								listener.onAttributeCreated(x, y, puzzle[x][y]);
+							}
+						}
+						emptyFound = true;
+					}
+				}
+				// On ne fait descendre qu'une ligne à la fois
+				if (emptyFound) {
+					break;
+				}
+			}
+//		} while (emptyRemains);
 	}
 
 	/**
 	 * Inverse les attributs aux positions indiquées
 	 */
-	private boolean switchAttributes(int firstX, int firstY, int secondX, int secondY) {
+	private boolean performSwitch(int firstX, int firstY, int secondX, int secondY) {
 		if (!isValidPos(firstX, firstY) || !isValidPos(secondX, secondY)) {
 			return false;
 		}
@@ -187,7 +242,10 @@ public class Puzzle implements SwitchListener {
 		puzzle[secondX][secondY] = tmp;
 		
 		// Prévient le listener afin de faire une jolie inversion
-		listener.onAttributesSwitched(firstX, firstY, secondX, secondY);
+//		if (listener != null) {
+//			System.out.printf("Puzzle.switchAttributes() %d %d %d %d\n",firstX, firstY, secondX, secondY);
+//			listener.onAttributesSwitched(firstX, firstY, secondX, secondY);
+//		}
 		return true;
 	}
 
@@ -274,5 +332,14 @@ public class Puzzle implements SwitchListener {
 		effect.perform(this, alignedPos);
 		
 		return true;
+	}
+
+	/**
+	 * Renvoit true si le puzzle a été créé (donc que la méthode init() a été
+	 * appelée).
+	 * @return
+	 */
+	public boolean isSet() {
+		return isSet;
 	}
 }

@@ -8,23 +8,36 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Scaling;
 import com.slamdunk.quester.utils.Config;
 import com.slamdunk.quester2.puzzle.Puzzle.PuzzleChangeListener;
+import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
 
 /**
  * Gère l'UI (affichage, déplacement des items...) d'un puzzle
  */
-public class PuzzleStage extends Stage implements PuzzleChangeListener {
-	private static final float SWITCH_SPEED = Config.asFloat("puzzle.switchSpeed", 0.2f);
+public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchListener {
+	private static final float SWITCH_SPEED = 1;//DBGConfig.asFloat("puzzle.switchSpeed", 0.2f);
 	
 	private Puzzle puzzle;
 	private PuzzleImage[][]images;
 	private Vector2[][]tablePositions;
 	private Table puzzleTable;
+	
+	/**
+	 * Indique si le stage est dans un état stable. Si false, c'est qu'il y a une
+	 * animation en cours (apparition d'un attribut, chute ou switch d'un attribut...)
+	 */
+	private boolean isSteady;
+	/**
+	 * Indique si un switch à l'initiative de l'utilisateur est en cours
+	 */
+	private boolean isUserSwitching;
+	private int[] userSwitchingPos;
 	
 	public PuzzleStage(Puzzle puzzle) {
 		// Définition du puzzle
@@ -45,7 +58,11 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
  		Gdx.input.setInputProcessor(processor);
  		
  		// Ajout du Stage et du puzzle comme listeners de switch
- 		processor.addListener(puzzle);
+ 		processor.addListener(this);
+ 		
+ 		//
+ 		isUserSwitching = false;
+ 		userSwitchingPos = new int[4];
 	}
 
 	/**
@@ -60,12 +77,14 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 		images = new PuzzleImage[puzzle.getWidth()][puzzle.getHeight()];
 		final int imageWidth = Config.asInt("puzzle.item.width", 48);
 		final int imageHeight = Config.asInt("puzzle.item.height", 48);
-		PuzzleAttributes attribute;
+		PuzzleAttributes attribute = PuzzleAttributes.UNKNOWN;
 		PuzzleImage image;
 		for (int y = puzzle.getHeight() - 1; y > -1; y --) {
 			for (int x = 0; x < puzzle.getWidth(); x ++) {
-				// Récupération de l'attribut
-				attribute = puzzle.get(x, y);
+				if (puzzle.isSet()) {
+					// Récupération de l'attribut
+					attribute = puzzle.get(x, y);
+				}
 				
 				// Création d'une image
 				image = new PuzzleImage(attribute);
@@ -99,12 +118,63 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 		// Met à jour les acteurs
 		act(delta);
 		
+		// Si des animations sont en cours, on regarde si elles sont finies
+		if (!isSteady) {
+			isSteady = checkSteady();
+			if (isSteady) {
+				// Si le stage est de nouveau stable, on avertit le puzzle
+				updatePuzzle();
+			}
+		}
+		
 		// Dessine le résultat
 		draw();
 	}
 
+	private void updatePuzzle() {
+		if (isUserSwitching) {
+			if (!puzzle.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
+				// Si le switch a été interdit, on replace les éléments dans leur ordre original
+				switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
+			}
+			isUserSwitching = false;
+		} else {
+			puzzle.updatePuzzle();
+		}
+	}
+
+	/**
+	 * Vérifie si tous les acteurs ont achevé leur action et met la variable
+	 * isSteady à jour en conséquence.
+	 */
+	private boolean checkSteady() {
+		for (Actor actor : getActors()) {
+			if (actor.getActions().size > 0) {
+				// Si au moins un acteur n'a pas fini, alors le stage n'est pas stable.
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void onPuzzleSwitch(int firstX, int firstY, int secondX, int secondY) {
+		// Switch requis par l'utilisateur
+		isUserSwitching = true;
+		userSwitchingPos[0] = firstX;
+		userSwitchingPos[1] = firstY;
+		userSwitchingPos[2] = secondX;
+		userSwitchingPos[3] = secondY;
+		switchAttributes(firstX, firstY, secondX, secondY);
+	}
+	
 	@Override
 	public void onAttributesSwitched(int firstX, int firstY, int secondX, int secondY) {
+		// Switch requis par le puzzle
+		switchAttributes(firstX, firstY, secondX, secondY);
+	}
+	
+	private void switchAttributes(int firstX, int firstY, int secondX, int secondY) {
 		// Récupération des images et de la position des cases dans lequelles ont doit les placer
 		PuzzleImage firstImage = images[firstX][firstY];
 		Vector2 firstPos = tablePositions[firstX][firstY];
@@ -114,6 +184,7 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 		// Faire une animation échangeant les images
 		firstImage.addAction(Actions.moveTo(secondPos.x, secondPos.y, SWITCH_SPEED));
 		secondImage.addAction(Actions.moveTo(firstPos.x, firstPos.y, SWITCH_SPEED));
+		isSteady = false;
 		
 		// Inversion effective des images dans le tableau d'images
 		images[firstX][firstY] = secondImage;
@@ -128,7 +199,23 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 	@Override
 	public void onAttributeRemoved(int x, int y) {
 		// DBG Pour l'instant, on se contente de cacher l'image. En vérité, elle sera quasiment immédiatement remplacée.
-		images[x][y].setAttribute(null);
-		images[x][y].addAction(Actions.alpha(0, 0.3f, Interpolation.exp5));
+		images[x][y].setAttribute(PuzzleAttributes.UNKNOWN);
+		//images[x][y].addAction(Actions.alpha(0, 0.3f, Interpolation.exp5));
+		isSteady = false;
 	}
+
+	@Override
+	public void onAttributeCreated(int x, int y, PuzzleAttributes attribute) {
+		PuzzleImage image = images[x][y];
+		
+		// Affectation de l'attribut, et donc de l'image
+		image.setAttribute(attribute);
+		
+		// Jolie animation
+		image.getColor().a = 0;
+		image.addAction(Actions.alpha(1, 0.2f, Interpolation.exp5));
+		isSteady = false;
+	}
+	
+	
 }

@@ -16,7 +16,20 @@
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="attributes.svg">
   <defs
-     id="defs4" />
+     id="defs4">
+    <filter
+       inkscape:collect="always"
+       id="filter3912"
+       x="-0.27712045"
+       width="1.5542409"
+       y="-0.25495083"
+       height="1.5099017">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="5.3654004"
+         id="feGaussianBlur3914" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,15 +37,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="247.67763"
-     inkscape:cy="746.0537"
+     inkscape:zoom="1.979899"
+     inkscape:cx="117.94977"
+     inkscape:cy="898.7339"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="987"
-     inkscape:window-x="1432"
+     inkscape:window-width="1440"
+     inkscape:window-height="837"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
@@ -43,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -166,24 +179,8 @@
          y="372.80679"
          id="tspan3039">Goutte</tspan></text>
     <g
-       id="g3111"
-       transform="matrix(0.38075319,0,0,0.38075319,-50.476387,143.6022)">
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path3072-7"
-         d="m 331.69622,377.38569 73.97436,-103.65654 20.24761,34.57699 z"
-         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1" />
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path3072-7-4"
-         d="M 451.40946,200.59884 398.61538,308.0845 372.87503,274.51494 z"
-         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0.99999994;stroke-miterlimit:4;stroke-opacity:1" />
-    </g>
-    <g
        id="g3843"
-       transform="matrix(0.55923586,0,0,0.47281168,64.908225,134.18027)"
+       transform="matrix(0.55923586,0,0,0.47281168,36.623954,129.12951)"
        inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_strength.png"
        inkscape:export-xdpi="87"
        inkscape:export-ydpi="87">
@@ -425,5 +422,32 @@
          style="fill:#ffffff;fill-opacity:0.43438912;stroke:none"
          sodipodi:type="arc" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-size:9px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="122.17616"
+       y="41.385334"
+       id="text3009-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3011-7"
+         x="122.17616"
+         y="41.385334">Inconnu</tspan><tspan
+         sodipodi:role="line"
+         x="122.17616"
+         y="52.635334"
+         id="tspan3013-4">Gris</tspan><tspan
+         sodipodi:role="line"
+         x="122.17616"
+         y="63.885334"
+         id="tspan3015-0" /></text>
+    <rect
+       style="fill:#7d7d7d;fill-opacity:1;stroke:none;filter:url(#filter3912)"
+       id="rect3130"
+       width="46.467018"
+       height="50.507626"
+       x="107.07617"
+       y="66.4533"
+       transform="matrix(0.88616958,0,0,0.83921717,21.329337,15.319863)" />
   </g>
 </svg>
