@@ -8,13 +8,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+/**
+ * Détecte le geste requérant l'inversion de deux attributs
+ */
 public class PuzzleSwitchInputProcessor extends InputAdapter {
 	public interface SwitchListener {
 		void onPuzzleSwitch(int firstX, int firstY, int secondX, int secondY);
 	}
 	
-	private Actor firstSwitchedItem;
-	private Actor secondSwitchedItem;
+	private PuzzleImage firstSwitchedItem;
+	private PuzzleImage secondSwitchedItem;
 	private Table puzzleTable;
 	
 	private Vector2 screenCoords;
@@ -36,10 +39,12 @@ public class PuzzleSwitchInputProcessor extends InputAdapter {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		firstSwitchedItem = getSwitchItem(screenX, screenY);
+		Actor hit = getSwitchItem(screenX, screenY);
 		
-		// Si l'Actor sélectionné est la table, on annule
-		if (firstSwitchedItem == puzzleTable) {
+		if (hit instanceof PuzzleImage) {
+			firstSwitchedItem = (PuzzleImage)hit;
+		} else {
+			// Si l'Actor sélectionné n'est pas un PuzzleImage, on annule
 			reset();
 		}
 		return super.touchDown(screenX, screenY, pointer, button);
@@ -50,19 +55,38 @@ public class PuzzleSwitchInputProcessor extends InputAdapter {
 		if (firstSwitchedItem == null) {
 			return true;
 		}
-		secondSwitchedItem = getSwitchItem(screenX, screenY);
-		if (secondSwitchedItem == null) {
+		// Si la touche a eut lieu hors de la table, on annule
+		Actor hit = getSwitchItem(screenX, screenY);
+		if (hit == null) {
 			reset();
-		} else if (secondSwitchedItem != puzzleTable
-				&& firstSwitchedItem != secondSwitchedItem) {
-			performSwitch();
+		} else
+		// Si on on a bien touché un PuzzleImage autre que le premier
+		if (firstSwitchedItem != hit && hit instanceof PuzzleImage) {
+			secondSwitchedItem = (PuzzleImage)hit;
+			// On ne fait le switch que si les items sont côte à côte
+			// Si le joueur déplace très vite son doigt sur l'écran, 
+			// le hit peut en effet être un objet distant du premier.
+			if (areNeighbors(firstSwitchedItem, secondSwitchedItem)) {
+				notifySwitch();
+			}
 			reset();
-			return true;
 		}
 		return super.touchDragged(screenX, screenY, pointer);
 	}
 	
-	private void performSwitch() {
+	/**
+	 * Indique si les deux images sont côte à côte
+	 */
+	private boolean areNeighbors(PuzzleImage item1, PuzzleImage item2) {
+		final double dx = item1.getPuzzleX() - item2.getPuzzleX();
+		final double dy = item1.getPuzzleY() - item2.getPuzzleY();
+		return Math.sqrt(dx * dx + dy * dy) == 1.0;
+	}
+
+	/**
+	 * Informe les listeners que deux PuzzleImage ont été inversés
+	 */
+	private void notifySwitch() {
 		PuzzleImage firstImage = (PuzzleImage)firstSwitchedItem;
 		PuzzleImage secondImage = (PuzzleImage)secondSwitchedItem;
 		for (SwitchListener listener : listeners) {
