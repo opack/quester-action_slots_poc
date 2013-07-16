@@ -8,6 +8,7 @@ import com.slamdunk.quester.utils.Assets;
  * leurs propriétés
  */
 public enum PuzzleAttributes {
+	// Attributs de base
 	STRENGTH (Assets.attribute_strength),
 	CONSTITUTION (Assets.attribute_constitution),
 	DEXTERITY (Assets.attribute_dexterity),

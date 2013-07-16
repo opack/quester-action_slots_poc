@@ -135,11 +135,17 @@ public class Puzzle implements SwitchListener {
 		}
 		
 		// Recherche des éventuelles combinaisons
-		boolean firstCreateAlignment = findAlignments(firstX, firstY);
-		boolean secondCreateAlignment = findAlignments(secondX, secondY);
-		
-		// Si aucune combinaison n'a été trouvée, on replace les items à leur position initiale
-		if (!firstCreateAlignment && !secondCreateAlignment) {
+		boolean isFirstAligned = resolveAlignments(firstX, firstY);
+		boolean isSecondAligned = resolveAlignments(secondX, secondY);
+
+		if (isFirstAligned || isSecondAligned) {
+			// Chute des éléments supérieurs
+			// ...
+			
+			// Ajout de nouveaux éléments
+			// ...
+		} else {
+			// Si aucune combinaison n'a été trouvée, on replace les items à leur position initiale
 			switchAttributes(firstX, firstY, secondX, secondY);
 		}
 	}
@@ -164,7 +170,7 @@ public class Puzzle implements SwitchListener {
 	/**
 	 * Vérifie la présence d'alignements comprenant la position indiquée
 	 */
-	private boolean findAlignments(int x, int y) {
+	private boolean resolveAlignments(int x, int y) {
 		if (!isValidPos(x, y)) {
 			return false;
 		}
@@ -201,7 +207,7 @@ public class Puzzle implements SwitchListener {
 		}
 		
 		// On résoud l'alignement en privilégiant le plus long.
-		if (hAlignedPos.isEmpty() && vAlignedPos.isEmpty()) {
+		if (hAlignedPos.size() > 1 && vAlignedPos.size() > 1) {
 			return false;
 		}
 		int hCount = hAlignedPos.size();
@@ -241,15 +247,9 @@ public class Puzzle implements SwitchListener {
 		if (effect == null) {
 			return false;
 		}
-		effect.perform();
+		effect.perform(alignedElements);
 		
 		// Suppression des éléments alignés
-		// ...
-		
-		// Chute des éléments supérieurs
-		// ...
-		
-		// Ajout de nouveaux éléments
 		// ...
 		
 		return true;

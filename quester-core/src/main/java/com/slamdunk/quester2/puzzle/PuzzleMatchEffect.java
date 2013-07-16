@@ -2,6 +2,7 @@ package com.slamdunk.quester2.puzzle;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,21 +27,25 @@ public abstract class PuzzleMatchEffect {
 	
 	protected static String buildRecipe(Iterable<PuzzleAttributes> elements) {
 		// Compte les éléments par type
-		Map<PuzzleAttributes, Integer> count = new HashMap<PuzzleAttributes, Integer>();
+		Map<PuzzleAttributes, Integer> counts = new HashMap<PuzzleAttributes, Integer>();
 		Integer curCount;
 		for (PuzzleAttributes element : elements) {
-			curCount = count.get(element);
+			curCount = counts.get(element);
 			if (curCount == null) {
-				count.put(element, 1);
+				counts.put(element, 1);
 			} else {
-				count.put(element, curCount + 1);
+				counts.put(element, curCount + 1);
 			}
 		}
-		
+		return buildRecipe(counts);
+	}
+
+	protected static String buildRecipe(Map<PuzzleAttributes, Integer> elements) {
 		// Crée le code
+		Integer curCount;
 		StringBuilder sb = new StringBuilder();
 		for (PuzzleAttributes element : ELEMENTS_ORDER_IN_CODE) {
-			curCount = count.get(element);
+			curCount = elements.get(element);
 			if (curCount == null) {
 				sb.append(0);
 			} else {
@@ -54,5 +59,5 @@ public abstract class PuzzleMatchEffect {
 	/**
 	 * Effectue des choses en fonction de l'effet
 	 */
-	public abstract void perform();
+	public abstract void perform(List<PuzzleAttributes> attributes);
 }
