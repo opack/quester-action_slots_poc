@@ -16,6 +16,11 @@ public class Puzzle implements SwitchListener {
 		 * Appelée lorsque 2 attributs ont été échangés.
 		 */
 		void onAttributesSwitched(int firstX, int firstY, int secondX, int secondY);
+		
+		/**
+		 * Appelée lorsqu'un attribut est supprimé
+		 */
+		void onAttributeRemoved(int x, int y);
 	}
 	
 	private int width;
@@ -126,6 +131,17 @@ public class Puzzle implements SwitchListener {
 		}
 		return puzzle[x][y];
 	}
+	
+
+	public PuzzleAttributes remove(int x, int y) {
+		if (!isValidPos(x, y)) {
+			return null;
+		}
+		PuzzleAttributes removed = puzzle[x][y];
+		puzzle[x][y] = null;
+		listener.onAttributeRemoved(x, y);
+		return removed;
+	}
 
 	@Override
 	public void onPuzzleSwitch(int firstX, int firstY, int secondX, int secondY) {
@@ -139,11 +155,19 @@ public class Puzzle implements SwitchListener {
 		boolean isSecondAligned = resolveAlignments(secondX, secondY);
 
 		if (isFirstAligned || isSecondAligned) {
-			// Chute des éléments supérieurs
-			// ...
+//			do {
+				// Chute des éléments supérieurs
+				// ...
+				
+				// Ajout de nouveaux éléments
+				// ...
+				
+				// Recherche d'éventuelles combinaisons
+				// pour chaque élément ajouté ou déplacé
+				// ...
 			
-			// Ajout de nouveaux éléments
-			// ...
+			// Recommence tant qu'il y a des alignements
+//			} while (alignmentFound);
 		} else {
 			// Si aucune combinaison n'a été trouvée, on replace les items à leur position initiale
 			switchAttributes(firstX, firstY, secondX, secondY);
@@ -247,10 +271,7 @@ public class Puzzle implements SwitchListener {
 		if (effect == null) {
 			return false;
 		}
-		effect.perform(alignedElements);
-		
-		// Suppression des éléments alignés
-		// ...
+		effect.perform(this, alignedPos);
 		
 		return true;
 	}

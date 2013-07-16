@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.slamdunk.quester.model.points.Point;
+
 /**
  * Représente un effet d'alignement
  */
@@ -57,7 +59,9 @@ public abstract class PuzzleMatchEffect {
 	}
 
 	/**
-	 * Effectue des choses en fonction de l'effet
+	 * Effectue des actions (ajout de points d'attributs aux actions, suppression des
+	 * éléments d'une ligne, création d'un attribut super...) en fonction de l'effet
+	 * et des attributs alignés dont les positions sont indiquées.
 	 */
-	public abstract void perform(List<PuzzleAttributes> attributes);
+	public abstract void perform(Puzzle puzzle, List<Point> positions);
 }

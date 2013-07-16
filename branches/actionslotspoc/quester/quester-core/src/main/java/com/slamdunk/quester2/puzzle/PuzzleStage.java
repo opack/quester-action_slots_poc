@@ -6,6 +6,7 @@ import static com.slamdunk.quester2.Quester2.screenWidth;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -122,5 +123,12 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener {
 		images[secondX][secondY] = firstImage;
 		firstImage.setPuzzleX(secondX);
 		firstImage.setPuzzleY(secondY);
+	}
+	
+	@Override
+	public void onAttributeRemoved(int x, int y) {
+		// DBG Pour l'instant, on se contente de cacher l'image. En vérité, elle sera quasiment immédiatement remplacée.
+		images[x][y].setAttribute(null);
+		images[x][y].addAction(Actions.alpha(0, 0.3f, Interpolation.exp5));
 	}
 }
