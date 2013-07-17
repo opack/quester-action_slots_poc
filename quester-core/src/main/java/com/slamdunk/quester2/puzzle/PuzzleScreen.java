@@ -4,16 +4,13 @@ import com.badlogic.gdx.Screen;
 import com.slamdunk.quester.utils.Config;
 
 public class PuzzleScreen implements Screen {
-	private Puzzle puzzle;
 	private PuzzleStage stage;
 	
 	public PuzzleScreen() {
-		// Création du puzzle
-		puzzle = new Puzzle(Config.asInt("puzzle.width", 9), Config.asInt("puzzle.height", 9));
 		// Création du stage chargé de dessiner le puzzle et interagir avec l'utilisateur
-		stage = new PuzzleStage(puzzle);
+		stage = new PuzzleStage(Config.asInt("puzzle.width", 9), Config.asInt("puzzle.height", 9));
 		// Initialisation du puzzle
-		puzzle.init();
+		stage.initPuzzle();
 	}
 
 	@Override

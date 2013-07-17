@@ -14,17 +14,18 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Scaling;
 import com.slamdunk.quester.utils.Config;
-import com.slamdunk.quester2.puzzle.Puzzle.PuzzleChangeListener;
 import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
 
 /**
  * Gère l'UI (affichage, déplacement des items...) d'un puzzle
  */
-public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchListener {
+public class PuzzleStage extends Stage implements SwitchListener {
 	private static final float SWITCH_SPEED = 1;//DBGConfig.asFloat("puzzle.switchSpeed", 0.2f);
 	
-	private Puzzle puzzle;
-	private PuzzleImage[][]images;
+	private int puzzleWidth;
+	private int puzzleHeight;
+	private PuzzleLogic puzzleLogic;
+	private PuzzleImage[][]puzzleImages;
 	private Vector2[][]tablePositions;
 	private Table puzzleTable;
 	
@@ -39,13 +40,16 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchLi
 	private boolean isUserSwitching;
 	private int[] userSwitchingPos;
 	
-	public PuzzleStage(Puzzle puzzle) {
+	public PuzzleStage(int puzzleWidth, int puzzleHeight) {
 		// Définition du puzzle
-		this.puzzle = puzzle;
-		puzzle.setListener(this);
+		this.puzzleWidth = puzzleWidth;
+		this.puzzleHeight = puzzleHeight;
+		puzzleImages = new PuzzleImage[puzzleWidth][puzzleHeight];
+		this.puzzleLogic = new PuzzleLogic(this);
 		
-		// Création des images des attributs
-		initActors();
+		// Création de la table
+		puzzleTable = new Table();
+		addActor(puzzleTable);
 		
 		// Création de la caméra
 		OrthographicCamera camera = new OrthographicCamera();
@@ -64,47 +68,60 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchLi
  		isUserSwitching = false;
  		userSwitchingPos = new int[4];
 	}
+	
+	public int getPuzzleWidth() {
+		return puzzleWidth;
+	}
+
+	public void setPuzzleWidth(int puzzleWidth) {
+		this.puzzleWidth = puzzleWidth;
+	}
+
+	public int getPuzzleHeight() {
+		return puzzleHeight;
+	}
+
+	public void setPuzzleHeight(int puzzleHeight) {
+		this.puzzleHeight = puzzleHeight;
+	}
+	
+	public PuzzleImage[][] getPuzzleImages() {
+		return puzzleImages;
+	}
 
 	/**
 	 * Crée les acteurs du stage représentant le puzzle
 	 */
-	private void initActors() {
-		// Création de la table
-		puzzleTable = new Table();
-		addActor(puzzleTable);
+	public void initPuzzle() {
+		puzzleTable.clear();
 		
 		// Création des images qui remplissent la table
-		images = new PuzzleImage[puzzle.getWidth()][puzzle.getHeight()];
 		final int imageWidth = Config.asInt("puzzle.item.width", 48);
 		final int imageHeight = Config.asInt("puzzle.item.height", 48);
 		PuzzleAttributes attribute = PuzzleAttributes.UNKNOWN;
 		PuzzleImage image;
-		for (int y = puzzle.getHeight() - 1; y > -1; y --) {
-			for (int x = 0; x < puzzle.getWidth(); x ++) {
-				if (puzzle.isSet()) {
-					// Récupération de l'attribut
-					attribute = puzzle.get(x, y);
-				}
+		for (int y = puzzleHeight - 1; y > -1; y --) {
+			for (int x = 0; x < puzzleWidth; x ++) {
+				// Récupération de l'attribut
+				attribute = puzzleLogic.initAttribute(x, y);
 				
 				// Création d'une image
 				image = new PuzzleImage(attribute);
-				image.setPuzzleX(x);
-				image.setPuzzleY(y);
 				image.setScaling(Scaling.fit);
-				
+
 				// Ajout de l'image au stage
-				images[x][y] = image;
 				puzzleTable.add(image).size(imageWidth, imageHeight).pad(2);
+				setPuzzleImage(x, y, image);
 			}
 			puzzleTable.row();
 		}
 		puzzleTable.pack();
 		
 		// Stockage des positions des images pour faciliter les animations
-		tablePositions = new Vector2[puzzle.getWidth()][puzzle.getHeight()];
-		for (int y = puzzle.getHeight() - 1; y > -1; y --) {
-			for (int x = 0; x < puzzle.getWidth(); x ++) {
-				image = images[x][y];
+		tablePositions = new Vector2[puzzleWidth][puzzleHeight];
+		for (int y = puzzleHeight - 1; y > -1; y --) {
+			for (int x = 0; x < puzzleWidth; x ++) {
+				image = puzzleImages[x][y];
 				tablePositions[x][y] = new Vector2(image.getX(), image.getY());
 			}
 		}
@@ -133,13 +150,13 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchLi
 
 	private void updatePuzzle() {
 		if (isUserSwitching) {
-			if (!puzzle.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
+			if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
 				// Si le switch a été interdit, on replace les éléments dans leur ordre original
 				switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
 			}
 			isUserSwitching = false;
 		} else {
-			puzzle.updatePuzzle();
+			puzzleLogic.updatePuzzle();
 		}
 	}
 
@@ -168,17 +185,11 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchLi
 		switchAttributes(firstX, firstY, secondX, secondY);
 	}
 	
-	@Override
-	public void onAttributesSwitched(int firstX, int firstY, int secondX, int secondY) {
-		// Switch requis par le puzzle
-		switchAttributes(firstX, firstY, secondX, secondY);
-	}
-	
-	private void switchAttributes(int firstX, int firstY, int secondX, int secondY) {
+	public void switchAttributes(int firstX, int firstY, int secondX, int secondY) {
 		// Récupération des images et de la position des cases dans lequelles ont doit les placer
-		PuzzleImage firstImage = images[firstX][firstY];
+		PuzzleImage firstImage = puzzleImages[firstX][firstY];
 		Vector2 firstPos = tablePositions[firstX][firstY];
-		PuzzleImage secondImage = images[secondX][secondY];
+		PuzzleImage secondImage = puzzleImages[secondX][secondY];
 		Vector2 secondPos = tablePositions[secondX][secondY];
 
 		// Faire une animation échangeant les images
@@ -187,26 +198,27 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchLi
 		isSteady = false;
 		
 		// Inversion effective des images dans le tableau d'images
-		images[firstX][firstY] = secondImage;
-		secondImage.setPuzzleX(firstX);
-		secondImage.setPuzzleY(firstY);
-		
-		images[secondX][secondY] = firstImage;
-		firstImage.setPuzzleX(secondX);
-		firstImage.setPuzzleY(secondY);
+		setPuzzleImage(firstX, firstY, secondImage);
+		setPuzzleImage(secondX, secondY, firstImage);
 	}
 	
-	@Override
-	public void onAttributeRemoved(int x, int y) {
-		// DBG Pour l'instant, on se contente de cacher l'image. En vérité, elle sera quasiment immédiatement remplacée.
-		images[x][y].setAttribute(PuzzleAttributes.UNKNOWN);
-		//images[x][y].addAction(Actions.alpha(0, 0.3f, Interpolation.exp5));
-		isSteady = false;
+	private void setPuzzleImage(int x, int y, PuzzleImage image) {
+		puzzleImages[x][y] = image;
+		image.setPuzzleX(x);
+		image.setPuzzleY(y);
 	}
 
-	@Override
-	public void onAttributeCreated(int x, int y, PuzzleAttributes attribute) {
-		PuzzleImage image = images[x][y];
+	public PuzzleAttributes removeAttribute(int x, int y) {
+		PuzzleImage image = puzzleImages[x][y];
+		// DBG Pour l'instant, on se contente de cacher l'image. En vérité, elle sera quasiment immédiatement remplacée.
+		image.setAttribute(PuzzleAttributes.UNKNOWN);
+		image.addAction(Actions.alpha(0, 0.5f, Interpolation.exp5));
+		isSteady = false;
+		return image.getAttribute();
+	}
+
+	public void createAttribute(int x, int y, PuzzleAttributes attribute) {
+		PuzzleImage image = puzzleImages[x][y];
 		
 		// Affectation de l'attribut, et donc de l'image
 		image.setAttribute(attribute);
@@ -216,6 +228,4 @@ public class PuzzleStage extends Stage implements PuzzleChangeListener, SwitchLi
 		image.addAction(Actions.alpha(1, 0.2f, Interpolation.exp5));
 		isSteady = false;
 	}
-	
-	
 }
