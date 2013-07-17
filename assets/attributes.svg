@@ -38,14 +38,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="117.94977"
-     inkscape:cy="898.7339"
+     inkscape:cx="205.18057"
+     inkscape:cy="716.90644"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1440"
-     inkscape:window-height="837"
-     inkscape:window-x="-8"
+     inkscape:window-width="1680"
+     inkscape:window-height="987"
+     inkscape:window-x="1432"
      inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
@@ -329,7 +329,7 @@
     </g>
     <g
        id="g4095"
-       transform="matrix(0.42467559,0,0,0.42467559,89.16875,158.91506)"
+       transform="matrix(0.42467559,0,0,0.42467559,89.099833,158.91506)"
        inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_focus.png"
        inkscape:export-xdpi="87"
        inkscape:export-ydpi="87">
@@ -452,5 +452,89 @@
        inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_unknown.png"
        inkscape:export-xdpi="87"
        inkscape:export-ydpi="87" />
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="116.30187"
+       y="256.24258"
+       id="text3048"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_strength.png"
+       inkscape:export-xdpi="87"
+       inkscape:export-ydpi="87"><tspan
+         sodipodi:role="line"
+         id="tspan3050"
+         x="116.30187"
+         y="256.24258">STR</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="233.37199"
+       y="256.8924"
+       id="text3048-1"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_constitution.png"
+       inkscape:export-xdpi="87"
+       inkscape:export-ydpi="87"><tspan
+         sodipodi:role="line"
+         id="tspan3050-7"
+         x="233.37199"
+         y="256.8924">CON</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="344.08762"
+       y="251.8033"
+       id="text3048-4"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_dexterity.png"
+       inkscape:export-xdpi="87"
+       inkscape:export-ydpi="87"><tspan
+         sodipodi:role="line"
+         id="tspan3050-0"
+         x="344.08762"
+         y="251.8033">DEX</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="348.87549"
+       y="429.95483"
+       id="text3048-9"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_focus.png"
+       inkscape:export-xdpi="87"
+       inkscape:export-ydpi="87"><tspan
+         sodipodi:role="line"
+         id="tspan3050-4"
+         x="348.87549"
+         y="429.95483">FOC</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="241.79419"
+       y="440.59116"
+       id="text3048-8"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_will.png"
+       inkscape:export-xdpi="87"
+       inkscape:export-ydpi="87"><tspan
+         sodipodi:role="line"
+         id="tspan3050-8"
+         x="241.79419"
+         y="440.59116">WIL</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
+       x="123.50597"
+       y="426.82816"
+       id="text3048-2"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="E:\Projets\Programmes\quester\quester\assets\textures\attributes\attribute_luck.png"
+       inkscape:export-xdpi="89"
+       inkscape:export-ydpi="89"><tspan
+         sodipodi:role="line"
+         id="tspan3050-45"
+         x="123.50597"
+         y="426.82816">LUC</tspan></text>
   </g>
 </svg>

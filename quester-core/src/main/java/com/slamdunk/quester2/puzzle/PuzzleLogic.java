@@ -150,10 +150,10 @@ public class PuzzleLogic {
 	 * vers le haut
 	 */
 	private void makeAttributesFall() {
-		boolean emptyRemains = false;
-		do {
-			emptyRemains = false;
-//		boolean emptyFound = false;
+//		boolean emptyRemains = false;
+//		do {
+//			emptyRemains = false;
+		boolean emptyFound = false;
 			for (int y = 0; y < height; y ++) {
 				for (int x = 0; x < width; x ++) {
 					if (puzzleImages[x][y].getAttribute() == PuzzleAttributes.UNKNOWN) {
@@ -163,21 +163,21 @@ public class PuzzleLogic {
 							if (puzzleImages[x][y + 1].getAttribute() != PuzzleAttributes.UNKNOWN) {
 								puzzleStage.switchAttributes(x, y, x, y + 1);
 							}
-							emptyRemains = true;
+//							emptyRemains = true;
 						}					
 						// Sinon, on est sur la dernière ligne : on ajoute un nouvel attribut
 						else {
 							puzzleStage.createAttribute(x, y, PuzzleAttributesHelper.getRandomBaseAttribute());
 						}
-//						emptyFound = true;
+						emptyFound = true;
 					}
 				}
 				// On ne fait descendre qu'une ligne à la fois
-//				if (emptyFound) {
-//					break;
-//				}
+				if (emptyFound) {
+					break;
+				}
 			}
-		} while (emptyRemains);
+//		} while (emptyRemains);
 	}
 
 	/**

@@ -20,7 +20,7 @@ import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
  * Gère l'UI (affichage, déplacement des items...) d'un puzzle
  */
 public class PuzzleStage extends Stage implements SwitchListener {
-	private static final float SWITCH_SPEED = 1;//DBGConfig.asFloat("puzzle.switchSpeed", 0.2f);
+	private static final float SWITCH_SPEED = 0.3f;//DBGConfig.asFloat("puzzle.switchSpeed", 0.2f);
 	
 	private int puzzleWidth;
 	private int puzzleHeight;
@@ -107,6 +107,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 				
 				// Création d'une image
 				image = new PuzzleImage(attribute);
+				image.dbg = x*10+y;
 				image.setScaling(Scaling.fit);
 
 				// Ajout de l'image au stage
@@ -156,6 +157,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 			}
 			isUserSwitching = false;
 		} else {
+			System.out.println("PuzzleStage.updatePuzzle()");
 			puzzleLogic.updatePuzzle();
 		}
 	}
@@ -165,7 +167,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	 * isSteady à jour en conséquence.
 	 */
 	private boolean checkSteady() {
-		for (Actor actor : getActors()) {
+		for (Actor actor : puzzleTable.getChildren()) {
 			if (actor.getActions().size > 0) {
 				// Si au moins un acteur n'a pas fini, alors le stage n'est pas stable.
 				return false;
@@ -191,8 +193,14 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		Vector2 firstPos = tablePositions[firstX][firstY];
 		PuzzleImage secondImage = puzzleImages[secondX][secondY];
 		Vector2 secondPos = tablePositions[secondX][secondY];
+		System.out.printf("PuzzleStage.switchAttributes()LOG F%d %3s (%d;%d) S%d %3s (%d;%d)\n", 
+				firstImage.dbg, firstImage.getAttribute(), firstImage.getPuzzleX(), firstImage.getPuzzleY(),
+				secondImage.dbg, secondImage.getAttribute(), secondImage.getPuzzleX(), secondImage.getPuzzleY());
 
 		// Faire une animation échangeant les images
+		System.out.printf("PuzzleStage.switchAttributes()PHY F%d %3s (%.0f;%.0f)->(%.0f;%.0f) S%d %3s (%.0f;%.0f)->(%.0f;%.0f)\n",
+				firstImage.dbg, firstImage.getAttribute(), firstImage.getX(), firstImage.getY(), secondPos.x, secondPos.y,
+				secondImage.dbg, secondImage.getAttribute(), secondImage.getX(), secondImage.getY(), firstPos.x, firstPos.y);
 		firstImage.addAction(Actions.moveTo(secondPos.x, secondPos.y, SWITCH_SPEED));
 		secondImage.addAction(Actions.moveTo(firstPos.x, firstPos.y, SWITCH_SPEED));
 		isSteady = false;
