@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.slamdunk.quester.model.data.DoubleEntryArray;
 
 public class PuzzleAttributesHelper {
@@ -73,5 +74,9 @@ public class PuzzleAttributesHelper {
 		String recipe = PuzzleMatchEffect.buildRecipe(attributes);
 		PuzzleMatchEffect effect = ALIGNMENT_EFFECTS.get(recipe);
 		return effect;
+	}
+
+	public static PuzzleAttributes getRandomBaseAttribute() {
+		return BASE_ATTRIBUTES[MathUtils.random(BASE_ATTRIBUTES.length - 1)];
 	}
 }
