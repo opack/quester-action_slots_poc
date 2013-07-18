@@ -103,7 +103,7 @@ public class Assets {
 	public static TextureRegion action_shield;
 	public static TextureRegion action_techspe;
 	
-	public static TextureRegion attribute_unknown;
+	public static TextureRegion attribute_empty;
 	public static TextureRegion attribute_strength;
 	public static TextureRegion attribute_constitution;
 	public static TextureRegion attribute_dexterity;
@@ -224,7 +224,7 @@ public class Assets {
 		action_shield = loadTexture("actions/action_shield.png");
 		action_techspe = loadTexture("actions/action_techspe.png");
 		
-		attribute_unknown = loadTexture("attributes/attribute_unknown.png");
+		attribute_empty = loadTexture("attributes/attribute_empty.png");
 		attribute_strength = loadTexture("attributes/attribute_strength.png");
 		attribute_constitution = loadTexture("attributes/attribute_constitution.png");
 		attribute_dexterity = loadTexture("attributes/attribute_dexterity.png");

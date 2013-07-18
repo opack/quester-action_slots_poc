@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class PuzzleImage extends Image {
-	public int dbg;
 	private PuzzleAttributes attribute;
 	private int puzzleX;
 	private int puzzleY;

@@ -11,7 +11,7 @@ import com.slamdunk.quester.utils.Assets;
  */
 public enum PuzzleAttributes {
 	// Attribut inconnu
-	UNKNOWN (Assets.attribute_unknown),
+	EMPTY (Assets.attribute_empty),
 	
 	// Attributs de base
 	STRENGTH (Assets.attribute_strength),

@@ -1,7 +1,7 @@
 package com.slamdunk.quester2.puzzle;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.slamdunk.quester.model.points.Point;
 
@@ -9,39 +9,20 @@ import com.slamdunk.quester.model.points.Point;
  * Gère la représentation logique du puzzle
  */
 public class PuzzleLogic {
-	private class AlignmentData {
-		List<Point> positions;
-		List<PuzzleAttributes> attributes;
-		
-		public AlignmentData() {
-			positions = new ArrayList<Point>();
-			attributes = new ArrayList<PuzzleAttributes>();
-		}
-		
-		public void clear() {
-			positions.clear();
-			attributes.clear();
-		}
-
-		public int size() {
-			return positions.size();
-		}
-	}
-	
 	private int width;
 	private int height;
 	private PuzzleImage[][] puzzleImages;
 	private PuzzleStage puzzleStage;
 	
-	private AlignmentData hAlignData;
-	private AlignmentData vAlignData;
+	private Map<Point, PuzzleAttributes> hAlignData;
+	private Map<Point, PuzzleAttributes> vAlignData;
 	
 	public PuzzleLogic(PuzzleStage stage) {
 		this.width = stage.getPuzzleWidth();
 		this.height = stage.getPuzzleHeight();
 		
-		hAlignData = new AlignmentData();
-		vAlignData = new AlignmentData();
+		hAlignData = new HashMap<Point, PuzzleAttributes>();
+		vAlignData = new HashMap<Point, PuzzleAttributes>();
 		
 		// Création du puzzle
 		this.puzzleStage = stage;
@@ -132,7 +113,8 @@ public class PuzzleLogic {
 	public void updatePuzzle() {
 //		do {
 			// Chute des éléments supérieurs
-			makeAttributesFall();
+			//makeAttributesFall();
+			fall();
 			
 			// Ajout de nouveaux éléments
 			// ...
@@ -144,40 +126,51 @@ public class PuzzleLogic {
 		// Recommence tant qu'il y a des alignements
 //		} while (alignmentFound);
 	}
-
-	/**
-	 * Fait chuter les attributs, en traitant les attributs depuis le bas du tableau
-	 * vers le haut
-	 */
-	private void makeAttributesFall() {
-//		boolean emptyRemains = false;
-//		do {
-//			emptyRemains = false;
-		boolean emptyFound = false;
+	
+	private void fall() {
+		int yEmpty;
+		int yFall = 0;
+		int nbOutOfGrid;
+		
+		for (int x = 0; x < width; x ++) {
+			// Le prochain élément à éventuellement apparaître hors du tableau commencera juste
+			// au-dessus du tableau : hauteur - 1 + 1 = hauteur
+			nbOutOfGrid = 0;
 			for (int y = 0; y < height; y ++) {
-				for (int x = 0; x < width; x ++) {
-					if (puzzleImages[x][y].getAttribute() == PuzzleAttributes.UNKNOWN) {
-						// S'il y a un emplacement au-dessus, on switch
-						if (y + 1 < height) {
-							// Le switch n'a lieu que si l'attribut supérieur est connu
-							if (puzzleImages[x][y + 1].getAttribute() != PuzzleAttributes.UNKNOWN) {
-								puzzleStage.switchAttributes(x, y, x, y + 1);
+				if (puzzleImages[x][y].getAttribute() == PuzzleAttributes.EMPTY) {
+					yEmpty = y;
+					// Détermine l'emplacement du début de la chute en cherchant le prochain
+					// attribut non vide, qui va donc chuter.
+					if (nbOutOfGrid > 0) {
+						// S'il y a au moins un attribut à créer hors de la grille, alors tous
+						// les prochains seront forcément aussi à créer hors de de la grille
+						yFall = height + nbOutOfGrid;
+						nbOutOfGrid ++;
+					} else {
+						// Si on ne sait pas encore si des attributs peuvent chuter, on cherche
+						// le prochain attribut non vide
+						int curRow;
+						for (curRow = yEmpty + 1; curRow < height; curRow ++) {
+							if (puzzleImages[x][curRow].getAttribute() != PuzzleAttributes.EMPTY) {
+								yFall = curRow;
+								break;
 							}
-//							emptyRemains = true;
-						}					
-						// Sinon, on est sur la dernière ligne : on ajoute un nouvel attribut
-						else {
-							puzzleStage.createAttribute(x, y, PuzzleAttributesHelper.getRandomBaseAttribute());
 						}
-						emptyFound = true;
+						// Si on n'a pas trouvé d'élément non vide avant la fin du tableau, alors
+						// un nouvel élément devra être créé hors du tableau, juste au-dessus du dernier
+						// élément créé
+						if (curRow == height) {
+							yFall = height + nbOutOfGrid;
+							nbOutOfGrid ++;
+						}
 					}
-				}
-				// On ne fait descendre qu'une ligne à la fois
-				if (emptyFound) {
-					break;
+					
+					// Création d'un PuzzleImage pour faire une belle animation.
+					// A la fin de l'animation, l'attribut tombé sera affecté à l'image actuellement vide.
+					puzzleStage.createFallAnimation(x, yFall, yEmpty);
 				}
 			}
-//		} while (emptyRemains);
+		}
 	}
 
 	/**
@@ -218,7 +211,7 @@ public class PuzzleLogic {
 	 * @param y
 	 * @return
 	 */
-	private boolean match(int x, int y, AlignmentData hAlignData, AlignmentData vAlignData) {
+	private boolean match(int x, int y, Map<Point, PuzzleAttributes> hAlignData, Map<Point, PuzzleAttributes> vAlignData) {
 		PuzzleAttributes element = puzzleImages[x][y].getAttribute();
 		
 		// Vérifie si l'item participe à un alignement horizontal
@@ -253,11 +246,10 @@ public class PuzzleLogic {
 	 * Recherche si l'attribut à la position indiquée est matchable avec l'élément
 	 * spécifié.
 	 */
-	private boolean match(int x, int y, PuzzleAttributes element, AlignmentData alignData) {
+	private boolean match(int x, int y, PuzzleAttributes element, Map<Point, PuzzleAttributes> alignData) {
 		PuzzleAttributes neighborElement = puzzleImages[x][y].getAttribute();
 		if (PuzzleAttributesHelper.areMatchable(neighborElement, element)) {
-			alignData.positions.add(new Point(x, y));
-			alignData.attributes.add(neighborElement);
+			alignData.put(new Point(x, y), neighborElement);
 			return true;
 		}
 		return false;
@@ -266,14 +258,13 @@ public class PuzzleLogic {
 	/**
 	 * Effectue l'effet liée à la combinaison d'éléments indiquée
 	 */
-	private boolean resolveLineAlignment(AlignmentData alignData) {
+	private boolean resolveLineAlignment(Map<Point, PuzzleAttributes> alignData) {
 		// Déclenchement de l'effet adéquat
-		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.attributes);
+		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.values());
 		if (effect == null) {
 			return false;
 		}
-		effect.perform(puzzleStage, alignData.positions);
-		
+		effect.perform(puzzleStage, alignData);
 		return true;
 	}
 }

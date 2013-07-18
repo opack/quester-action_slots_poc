@@ -1,7 +1,7 @@
 package com.slamdunk.quester2.puzzle;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -69,7 +69,7 @@ public class PuzzleAttributesHelper {
 		MATCHABLES.put(attribute2, attribute1, Boolean.TRUE);
 	}
 	
-	public static PuzzleMatchEffect getMatchEffect(List<PuzzleAttributes> attributes) {
+	public static PuzzleMatchEffect getMatchEffect(Collection<PuzzleAttributes> attributes) {
 		// Récupération de l'effet correspondant à cette combinaison d'attributs
 		String recipe = PuzzleMatchEffect.buildRecipe(attributes);
 		PuzzleMatchEffect effect = ALIGNMENT_EFFECTS.get(recipe);

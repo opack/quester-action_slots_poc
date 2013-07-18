@@ -7,7 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -20,13 +20,12 @@ import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
  * Gère l'UI (affichage, déplacement des items...) d'un puzzle
  */
 public class PuzzleStage extends Stage implements SwitchListener {
-	private static final float SWITCH_SPEED = 0.3f;//DBGConfig.asFloat("puzzle.switchSpeed", 0.2f);
+	private static final float SWITCH_SPEED = Config.asFloat("puzzle.switchSpeed", 0.2f);
 	
 	private int puzzleWidth;
 	private int puzzleHeight;
 	private PuzzleLogic puzzleLogic;
 	private PuzzleImage[][]puzzleImages;
-	private Vector2[][]tablePositions;
 	private Table puzzleTable;
 	
 	/**
@@ -39,6 +38,13 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	 */
 	private boolean isUserSwitching;
 	private int[] userSwitchingPos;
+
+	private float tableRowHeight;
+
+	private float tableColWidth;
+
+	private final int puzzleItemWidth;
+	private final int puzzleItemHeight;
 	
 	public PuzzleStage(int puzzleWidth, int puzzleHeight) {
 		// Définition du puzzle
@@ -48,6 +54,8 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		this.puzzleLogic = new PuzzleLogic(this);
 		
 		// Création de la table
+		puzzleItemWidth = Config.asInt("puzzle.item.width", 48);
+		puzzleItemHeight = Config.asInt("puzzle.item.height", 48);
 		puzzleTable = new Table();
 		addActor(puzzleTable);
 		
@@ -96,9 +104,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		puzzleTable.clear();
 		
 		// Création des images qui remplissent la table
-		final int imageWidth = Config.asInt("puzzle.item.width", 48);
-		final int imageHeight = Config.asInt("puzzle.item.height", 48);
-		PuzzleAttributes attribute = PuzzleAttributes.UNKNOWN;
+		PuzzleAttributes attribute = PuzzleAttributes.EMPTY;
 		PuzzleImage image;
 		for (int y = puzzleHeight - 1; y > -1; y --) {
 			for (int x = 0; x < puzzleWidth; x ++) {
@@ -106,26 +112,28 @@ public class PuzzleStage extends Stage implements SwitchListener {
 				attribute = puzzleLogic.initAttribute(x, y);
 				
 				// Création d'une image
-				image = new PuzzleImage(attribute);
-				image.dbg = x*10+y;
-				image.setScaling(Scaling.fit);
+				image = createPuzzleImage(x, y, attribute, false);
 
 				// Ajout de l'image au stage
-				puzzleTable.add(image).size(imageWidth, imageHeight).pad(2);
-				setPuzzleImage(x, y, image);
+				puzzleTable.add(image).size(puzzleItemWidth, puzzleItemHeight).pad(2);
+				puzzleImages[x][y] = image;
 			}
 			puzzleTable.row();
 		}
 		puzzleTable.pack();
 		
 		// Stockage des positions des images pour faciliter les animations
-		tablePositions = new Vector2[puzzleWidth][puzzleHeight];
-		for (int y = puzzleHeight - 1; y > -1; y --) {
-			for (int x = 0; x < puzzleWidth; x ++) {
-				image = puzzleImages[x][y];
-				tablePositions[x][y] = new Vector2(image.getX(), image.getY());
-			}
-		}
+//		tablePositions = new Vector2[puzzleWidth][puzzleHeight];
+//		for (int y = puzzleHeight - 1; y > -1; y --) {
+//			for (int x = 0; x < puzzleWidth; x ++) {
+//				image = puzzleImages[x][y];
+//				tablePositions[x][y] = new Vector2(image.getX(), image.getY());
+//			}
+//		}
+//		tableColWidth = tablePositions[1][0].x - tablePositions[0][0].x;
+//		tableRowHeight = tablePositions[0][1].y - tablePositions[0][0].y;
+		tableColWidth = puzzleImages[1][0].getX() - puzzleImages[0][0].getX() ;
+		tableRowHeight = puzzleImages[0][1].getY() - puzzleImages[0][0].getY();
 	}
 
 	public void render(float delta) {
@@ -151,15 +159,17 @@ public class PuzzleStage extends Stage implements SwitchListener {
 
 	private void updatePuzzle() {
 		if (isUserSwitching) {
+			isUserSwitching = false;
 			if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
 				// Si le switch a été interdit, on replace les éléments dans leur ordre original
 				switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
-			}
-			isUserSwitching = false;
-		} else {
-			System.out.println("PuzzleStage.updatePuzzle()");
-			puzzleLogic.updatePuzzle();
+				return;
+			}			
 		}
+		
+		// Regarde s'il n'y aurait pas des pièces à faire tomber
+		// ou de nouvelles combinaisons à valider
+		puzzleLogic.updatePuzzle();
 	}
 
 	/**
@@ -167,9 +177,15 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	 * isSteady à jour en conséquence.
 	 */
 	private boolean checkSteady() {
+		// Vérifie si au moins un acteur du stage est en action
+		for (Actor actor : getActors()) {
+			if (actor.getActions().size > 0) {
+				return false;
+			}
+		}
+		// Vérifie si au moins un acteur de la table est en action
 		for (Actor actor : puzzleTable.getChildren()) {
 			if (actor.getActions().size > 0) {
-				// Si au moins un acteur n'a pas fini, alors le stage n'est pas stable.
 				return false;
 			}
 		}
@@ -188,41 +204,24 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	}
 	
 	public void switchAttributes(int firstX, int firstY, int secondX, int secondY) {
-		// Récupération des images et de la position des cases dans lequelles ont doit les placer
+		// Récupère les 2 images
 		PuzzleImage firstImage = puzzleImages[firstX][firstY];
-		Vector2 firstPos = tablePositions[firstX][firstY];
 		PuzzleImage secondImage = puzzleImages[secondX][secondY];
-		Vector2 secondPos = tablePositions[secondX][secondY];
-		System.out.printf("PuzzleStage.switchAttributes()LOG F%d %3s (%d;%d) S%d %3s (%d;%d)\n", 
-				firstImage.dbg, firstImage.getAttribute(), firstImage.getPuzzleX(), firstImage.getPuzzleY(),
-				secondImage.dbg, secondImage.getAttribute(), secondImage.getPuzzleX(), secondImage.getPuzzleY());
-
-		// Faire une animation échangeant les images
-		System.out.printf("PuzzleStage.switchAttributes()PHY F%d %3s (%.0f;%.0f)->(%.0f;%.0f) S%d %3s (%.0f;%.0f)->(%.0f;%.0f)\n",
-				firstImage.dbg, firstImage.getAttribute(), firstImage.getX(), firstImage.getY(), secondPos.x, secondPos.y,
-				secondImage.dbg, secondImage.getAttribute(), secondImage.getX(), secondImage.getY(), firstPos.x, firstPos.y);
-		firstImage.addAction(Actions.moveTo(secondPos.x, secondPos.y, SWITCH_SPEED));
-		secondImage.addAction(Actions.moveTo(firstPos.x, firstPos.y, SWITCH_SPEED));
-		isSteady = false;
 		
-		// Inversion effective des images dans le tableau d'images
-		setPuzzleImage(firstX, firstY, secondImage);
-		setPuzzleImage(secondX, secondY, firstImage);
+		// Anime l'échange
+		createSwitchAnimation(firstImage, secondImage);
+		
+		// Effectue l'échange des attributs
+		PuzzleAttributes tmp = firstImage.getAttribute();
+		firstImage.setAttribute(secondImage.getAttribute());
+		secondImage.setAttribute(tmp);
 	}
 	
-	private void setPuzzleImage(int x, int y, PuzzleImage image) {
-		puzzleImages[x][y] = image;
-		image.setPuzzleX(x);
-		image.setPuzzleY(y);
-	}
-
 	public PuzzleAttributes removeAttribute(int x, int y) {
 		PuzzleImage image = puzzleImages[x][y];
-		// DBG Pour l'instant, on se contente de cacher l'image. En vérité, elle sera quasiment immédiatement remplacée.
-		image.setAttribute(PuzzleAttributes.UNKNOWN);
-		image.addAction(Actions.alpha(0, 0.5f, Interpolation.exp5));
-		isSteady = false;
-		return image.getAttribute();
+		PuzzleAttributes removed = image.getAttribute();
+		image.setAttribute(PuzzleAttributes.EMPTY);
+		return removed;
 	}
 
 	public void createAttribute(int x, int y, PuzzleAttributes attribute) {
@@ -235,5 +234,146 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		image.getColor().a = 0;
 		image.addAction(Actions.alpha(1, 0.2f, Interpolation.exp5));
 		isSteady = false;
+	}
+
+	/**
+	 * Crée un PuzzleImage et le fait descendre vers sa destination. Une fois arrivé,
+	 * il assigne son attribut
+	 * @param x
+	 * @param yFall
+	 * @param yEmpty
+	 */
+	public void createFallAnimation(int x, int yFall, int yEmpty) {
+		final PuzzleImage animImage;
+		if (yFall < puzzleHeight) {
+			// Création de l'image avec l'attribut qui va tomber
+			// au-dessus de l'image actuelle avec vidage de cette image
+			animImage = createPuzzleImage(puzzleImages[x][yFall], true);
+		} else {
+			// Création de l'image avec un attribut au hasard
+			animImage = createPuzzleImage(x, yFall, null, true);
+			animImage.setPosition(x * tableColWidth, yFall * tableRowHeight);
+		}
+		
+		// Animation de l'image vers la position à combler
+		final PuzzleImage emptyImage = puzzleImages[x][yEmpty];
+		animImage.addAction(Actions.sequence(
+			Actions.moveTo(emptyImage.getX(), emptyImage.getY(), SWITCH_SPEED * (yFall - yEmpty)),
+			new Action() {
+				@Override
+				public boolean act(float arg0) {
+					// Suppression de l'image
+					animImage.remove();
+					
+					// Assignation de l'attribut tombé à l'image destination
+					emptyImage.setAttribute(animImage.getAttribute());
+					return false;
+				}
+			})
+		);
+		//isSteady = false;
+		addActor(animImage);
+	}
+	
+	public void createSwitchAnimation(final PuzzleImage firstImage, final PuzzleImage secondImage) {
+		firstImage.setVisible(false);
+		final PuzzleImage firstAnim = createPuzzleImage(firstImage, false);
+		firstAnim.addAction(Actions.sequence(
+			Actions.moveTo(secondImage.getX(), secondImage.getY(), SWITCH_SPEED),
+			new Action() {
+				@Override
+				public boolean act(float delta) {
+					firstImage.setVisible(true);
+					firstAnim.remove();
+					return false;
+				}
+			}
+		));
+		addActor(firstAnim);
+
+		secondImage.setVisible(false);
+		final PuzzleImage secondAnim = createPuzzleImage(secondImage, false);
+		secondAnim.addAction(Actions.sequence(
+			Actions.moveTo(firstImage.getX(), firstImage.getY(), SWITCH_SPEED),
+			new Action() {
+				@Override
+				public boolean act(float delta) {
+					secondImage.setVisible(true);
+					secondAnim.remove();
+					return false;
+				}
+			}
+		));
+		addActor(secondAnim);
+		
+		isSteady = false;
+	}
+	
+	/**
+	 * Crée un nouveau PuzzleImage en en copiant un autre. La position et la taille sont
+	 * également copiés.
+	 * @param model
+	 * @param shouldEmptyModel
+	 * @return
+	 */
+	private PuzzleImage createPuzzleImage(PuzzleImage model, boolean shouldEmptyModel) {
+		PuzzleImage image = new PuzzleImage(model.getAttribute());
+		
+		image.setPuzzleX(model.getPuzzleX());
+		image.setPuzzleY(model.getPuzzleY());
+		image.setX(model.getX());
+		image.setY(model.getY());
+		
+		image.setWidth(model.getWidth());
+		image.setHeight(model.getHeight());
+		image.setScaling(Scaling.fit);
+		
+		if (shouldEmptyModel) {
+			model.setAttribute(PuzzleAttributes.EMPTY);
+		}
+		return image;
+	}
+	
+	/**
+	 * Crée un nouveau PuzzleImage à partir d'un attribut.
+	 * @param x
+	 * @param y
+	 * @param attribute Si null, un attribut de base est choisit aléatoirement
+	 * @param shouldAnimateApperance Si true, l'image apparaît progressivement
+	 * @return
+	 */
+	private PuzzleImage createPuzzleImage(int x, int y,	PuzzleAttributes attribute, boolean shouldAnimateApperance) {
+		// Si aucun attribut n'a été spécifié, on en choisit un aléatoirement
+		if (attribute == null) {
+			attribute = PuzzleAttributesHelper.getRandomBaseAttribute();
+		}
+		
+		PuzzleImage image = new PuzzleImage(attribute);
+		
+		image.setPuzzleX(x);
+		image.setPuzzleY(y);
+		
+		image.setScaling(Scaling.fit);
+		image.setSize(puzzleItemWidth, puzzleItemHeight);
+		
+		// Animation d'apparition
+		if (shouldAnimateApperance) {
+			image.getColor().a = 0;
+			image.addAction(Actions.alpha(1, 0.2f, Interpolation.exp5));
+		}
+		return image;
+	}
+
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int y=puzzleHeight-1; y > -1; y--) {
+			for (int x = 0; x < puzzleWidth; x++) {
+				sb.append(puzzleImages[x][y].getAttribute().toString().substring(0, 3)).append(" ");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 }
