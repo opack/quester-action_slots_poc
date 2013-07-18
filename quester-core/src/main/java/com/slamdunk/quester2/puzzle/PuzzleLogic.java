@@ -1,9 +1,7 @@
 package com.slamdunk.quester2.puzzle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.slamdunk.quester.model.points.Point;
 
@@ -11,21 +9,66 @@ import com.slamdunk.quester.model.points.Point;
  * Gère la représentation logique du puzzle
  */
 public class PuzzleLogic {
+	public class AlignmentData {
+		public List<Point> positions;
+		public List<PuzzleAttributes> attributes;
+		/**
+		 * Indique si l'alignement est horizontal ou vertical
+		 */
+		public boolean isHorizontal;
+		/**
+		 * Indice de l'attribut à la source de l'alignement
+		 */
+		public int alignSourceAttributeIndex;
+		
+		public AlignmentData() {
+			positions = new ArrayList<Point>();
+			attributes = new ArrayList<PuzzleAttributes>();
+		}
+		
+		public void clear() {
+			positions.clear();
+			attributes.clear();
+			alignSourceAttributeIndex = -1;
+		}
+		
+		public void add(Point position, PuzzleAttributes attribute) {
+			positions.add(position);
+			attributes.add(attribute);
+		}
+		
+		public int size() {
+			return attributes.size();
+		}
+
+		public void updateSourceIndex(int x, int y) {
+			alignSourceAttributeIndex = -1;
+			Point pos;
+			for (int cur = 0; cur < positions.size(); cur ++) {
+				pos = positions.get(cur);
+				if (pos.getX() == x && pos.getY() == y) {
+					alignSourceAttributeIndex = cur;
+					break;
+				}
+			}
+		}
+	}
+	
 	private int width;
 	private int height;
 	private PuzzleImage[][] puzzleImages;
 	private PuzzleStage puzzleStage;
 	
-	private Map<Point, PuzzleAttributes> hAlignData;
-	private Map<Point, PuzzleAttributes> vAlignData;
+	private AlignmentData hAlignData;
+	private AlignmentData vAlignData;
 	private List<Point> lastFallen;
 	
 	public PuzzleLogic(PuzzleStage stage) {
 		this.width = stage.getPuzzleWidth();
 		this.height = stage.getPuzzleHeight();
 		
-		hAlignData = new HashMap<Point, PuzzleAttributes>();
-		vAlignData = new HashMap<Point, PuzzleAttributes>();
+		hAlignData = new AlignmentData();
+		vAlignData = new AlignmentData();
 		lastFallen = new ArrayList<Point>();
 		
 		// Création du puzzle
@@ -201,15 +244,15 @@ public class PuzzleLogic {
 		// Recherche des alignements
 		hAlignData.clear();
 		vAlignData.clear();
-		if (!match(x, y, hAlignData, vAlignData)) {
-			System.out.printf("PuzzleLogic.resolveAlignments(%d,%d)=false\n", x, y);
+		if (!match(x, y)) {
 			return false;
 		}
+		hAlignData.updateSourceIndex(x, y);
+		vAlignData.updateSourceIndex(x, y);
 		
 		// On résoud l'alignement en privilégiant le plus long.
 		int hCount = hAlignData.size();
 		int vCount = vAlignData.size();
-		System.out.printf("PuzzleLogic.resolveAlignments(%d,%d) trouvés H%d V%d\n", x, y, hCount, vCount);
 		if (hCount == vCount) {
 			// Formation en coin
 			// ...
@@ -230,7 +273,7 @@ public class PuzzleLogic {
 	 * @param y
 	 * @return
 	 */
-	private boolean match(int x, int y, Map<Point, PuzzleAttributes> hAlignData, Map<Point, PuzzleAttributes> vAlignData) {
+	private boolean match(int x, int y) {
 		PuzzleAttributes element = puzzleImages[x][y].getAttribute();
 		
 		// Vérifie si l'item participe à un alignement horizontal
@@ -265,10 +308,10 @@ public class PuzzleLogic {
 	 * Recherche si l'attribut à la position indiquée est matchable avec l'élément
 	 * spécifié.
 	 */
-	private boolean match(int x, int y, PuzzleAttributes element, Map<Point, PuzzleAttributes> alignData) {
+	private boolean match(int x, int y, PuzzleAttributes element, AlignmentData alignData) {
 		PuzzleAttributes neighborElement = puzzleImages[x][y].getAttribute();
 		if (PuzzleAttributesHelper.areMatchable(neighborElement, element)) {
-			alignData.put(new Point(x, y), neighborElement);
+			alignData.add(new Point(x, y), neighborElement);
 			return true;
 		}
 		return false;
@@ -277,9 +320,9 @@ public class PuzzleLogic {
 	/**
 	 * Effectue l'effet liée à la combinaison d'éléments indiquée
 	 */
-	private boolean resolveLineAlignment(Map<Point, PuzzleAttributes> alignData) {
+	private boolean resolveLineAlignment(AlignmentData alignData) {
 		// Déclenchement de l'effet adéquat
-		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.values());
+		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.attributes);
 		if (effect == null) {
 			return false;
 		}
