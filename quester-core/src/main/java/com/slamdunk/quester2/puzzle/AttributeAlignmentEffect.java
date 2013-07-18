@@ -22,6 +22,9 @@ public class AttributeAlignmentEffect extends PuzzleMatchEffect {
 			// s'il est super on va déclencher un autre effet.
 			attribute = align.getValue();
 			System.out.println("DBG AttributeAlignmentEffect.perform() ADD " + attribute);
+			
+			// Fait tomber les attributs
+			puzzle.fall();
 		}
 		
 		// Si on avait plus de 3 éléments alignés, on ajoute un bonus.

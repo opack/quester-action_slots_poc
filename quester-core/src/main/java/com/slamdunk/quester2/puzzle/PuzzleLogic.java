@@ -1,6 +1,8 @@
 package com.slamdunk.quester2.puzzle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.slamdunk.quester.model.points.Point;
@@ -16,6 +18,7 @@ public class PuzzleLogic {
 	
 	private Map<Point, PuzzleAttributes> hAlignData;
 	private Map<Point, PuzzleAttributes> vAlignData;
+	private List<Point> lastFallen;
 	
 	public PuzzleLogic(PuzzleStage stage) {
 		this.width = stage.getPuzzleWidth();
@@ -23,6 +26,7 @@ public class PuzzleLogic {
 		
 		hAlignData = new HashMap<Point, PuzzleAttributes>();
 		vAlignData = new HashMap<Point, PuzzleAttributes>();
+		lastFallen = new ArrayList<Point>();
 		
 		// Création du puzzle
 		this.puzzleStage = stage;
@@ -114,20 +118,28 @@ public class PuzzleLogic {
 //		do {
 			// Chute des éléments supérieurs
 			//makeAttributesFall();
-			fall();
-			
-			// Ajout de nouveaux éléments
-			// ...
-			
-			// Recherche d'éventuelles combinaisons
-			// pour chaque élément ajouté ou déplacé
-			// ...
+			if (!fall()) {
+				// Si rien n'est tombé, alors on est dans une situation stable.
+				// On va donc rechercher d'éventuelles combinaisons.
+				match();
+			}
 		
 		// Recommence tant qu'il y a des alignements
 //		} while (alignmentFound);
 	}
 	
-	private void fall() {
+	public void match() {
+		if (lastFallen.isEmpty()) {
+			return;
+		}
+		for (Point fallen : lastFallen) {
+			resolveAlignments(fallen.getX(), fallen.getY());
+		}
+		lastFallen.clear();
+	}
+
+	public boolean fall() {
+		lastFallen.clear();
 		int yEmpty;
 		int yFall = 0;
 		int nbOutOfGrid;
@@ -168,9 +180,14 @@ public class PuzzleLogic {
 					// Création d'un PuzzleImage pour faire une belle animation.
 					// A la fin de l'animation, l'attribut tombé sera affecté à l'image actuellement vide.
 					puzzleStage.createFallAnimation(x, yFall, yEmpty);
+					
+					// Mémorise le point de chute de l'attribut pour tester ensuite s'il participe à
+					// une combinaison une fois le tableau stabilisé.
+					lastFallen.add(new Point(x, yEmpty));
 				}
 			}
 		}
+		return !lastFallen.isEmpty();
 	}
 
 	/**
@@ -185,12 +202,14 @@ public class PuzzleLogic {
 		hAlignData.clear();
 		vAlignData.clear();
 		if (!match(x, y, hAlignData, vAlignData)) {
+			System.out.printf("PuzzleLogic.resolveAlignments(%d,%d)=false\n", x, y);
 			return false;
 		}
 		
 		// On résoud l'alignement en privilégiant le plus long.
 		int hCount = hAlignData.size();
 		int vCount = vAlignData.size();
+		System.out.printf("PuzzleLogic.resolveAlignments(%d,%d) trouvés H%d V%d\n", x, y, hCount, vCount);
 		if (hCount == vCount) {
 			// Formation en coin
 			// ...
