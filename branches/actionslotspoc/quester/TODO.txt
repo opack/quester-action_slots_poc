@@ -1,5 +1,3 @@
-- DBG : Tracer (sysout) précisément quel attribut est déplacé d'où à où et quand pour avoir un listing et comprendre les choses bizarres qui se passent.
-
 - Faire des murs et portes fins 
 - Ajouter des murs dans la pièce
 - Faire un nettoyage du code : retirer le code commenté et les DBG

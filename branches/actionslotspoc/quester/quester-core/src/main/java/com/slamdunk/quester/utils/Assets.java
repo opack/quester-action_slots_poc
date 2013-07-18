@@ -105,11 +105,23 @@ public class Assets {
 	
 	public static TextureRegion attribute_empty;
 	public static TextureRegion attribute_strength;
+	public static TextureRegion attribute_strength_superh;
+	public static TextureRegion attribute_strength_superv;
 	public static TextureRegion attribute_constitution;
+	public static TextureRegion attribute_constitution_superh;
+	public static TextureRegion attribute_constitution_superv;
 	public static TextureRegion attribute_dexterity;
+	public static TextureRegion attribute_dexterity_superh;
+	public static TextureRegion attribute_dexterity_superv;
 	public static TextureRegion attribute_focus;
+	public static TextureRegion attribute_focus_superh;
+	public static TextureRegion attribute_focus_superv;
 	public static TextureRegion attribute_will;
+	public static TextureRegion attribute_will_superh;
+	public static TextureRegion attribute_will_superv;
 	public static TextureRegion attribute_luck;
+	public static TextureRegion attribute_luck_superh;
+	public static TextureRegion attribute_luck_superv;
 	
 	//public static Animation playerWalkingRightAnimation;
 
@@ -226,11 +238,23 @@ public class Assets {
 		
 		attribute_empty = loadTexture("attributes/attribute_empty.png");
 		attribute_strength = loadTexture("attributes/attribute_strength.png");
+		attribute_strength_superh = loadTexture("attributes/attribute_strength_superh.png");
+		attribute_strength_superv = loadTexture("attributes/attribute_strength_superv.png");
 		attribute_constitution = loadTexture("attributes/attribute_constitution.png");
+		attribute_constitution_superh = loadTexture("attributes/attribute_constitution_superh.png");
+		attribute_constitution_superv = loadTexture("attributes/attribute_constitution_superv.png");
 		attribute_dexterity = loadTexture("attributes/attribute_dexterity.png");
+		attribute_dexterity_superh = loadTexture("attributes/attribute_dexterity_superh.png");
+		attribute_dexterity_superv = loadTexture("attributes/attribute_dexterity_superv.png");
 		attribute_focus = loadTexture("attributes/attribute_focus.png");
+		attribute_focus_superh = loadTexture("attributes/attribute_focus_superh.png");
+		attribute_focus_superv = loadTexture("attributes/attribute_focus_superv.png");
 		attribute_will = loadTexture("attributes/attribute_will.png");
+		attribute_will_superh = loadTexture("attributes/attribute_will_superh.png");
+		attribute_will_superv = loadTexture("attributes/attribute_will_superv.png");
 		attribute_luck = loadTexture("attributes/attribute_luck.png");
+		attribute_luck_superh = loadTexture("attributes/attribute_luck_superh.png");
+		attribute_luck_superv = loadTexture("attributes/attribute_luck_superv.png");
 	}
 	
 	private static TextureRegion loadTexture(String file) {
