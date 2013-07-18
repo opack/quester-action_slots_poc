@@ -34,6 +34,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	 * animation en cours (apparition d'un attribut, chute ou switch d'un attribut...)
 	 */
 	private boolean isSteady;
+	private boolean isFallRequested;
+	private boolean isMatchRequested;
+	
 	/**
 	 * Indique si un switch à l'initiative de l'utilisateur est en cours
 	 */
@@ -111,6 +114,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 			for (int x = 0; x < puzzleWidth; x ++) {
 				// Récupération de l'attribut
 				attribute = puzzleLogic.initAttribute(x, y);
+				//DBG attribute = PuzzleAttributes.valueOf(Config.asString("puzzle." + x + "." + y, "EMPTY"));
 				
 				// Création d'une image
 				image = createPuzzleImage(x, y, attribute, false);
@@ -124,15 +128,6 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		puzzleTable.pack();
 		
 		// Stockage des positions des images pour faciliter les animations
-//		tablePositions = new Vector2[puzzleWidth][puzzleHeight];
-//		for (int y = puzzleHeight - 1; y > -1; y --) {
-//			for (int x = 0; x < puzzleWidth; x ++) {
-//				image = puzzleImages[x][y];
-//				tablePositions[x][y] = new Vector2(image.getX(), image.getY());
-//			}
-//		}
-//		tableColWidth = tablePositions[1][0].x - tablePositions[0][0].x;
-//		tableRowHeight = tablePositions[0][1].y - tablePositions[0][0].y;
 		tableColWidth = puzzleImages[1][0].getX() - puzzleImages[0][0].getX() ;
 		tableRowHeight = puzzleImages[0][1].getY() - puzzleImages[0][0].getY();
 	}
@@ -145,14 +140,34 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		// Met à jour les acteurs
 		act(delta);
 		
-		// Si des animations sont en cours, on regarde si elles sont finies
-		if (!isSteady) {
-			isSteady = checkSteady();
-			if (isSteady) {
-				// Si le stage est de nouveau stable, on avertit le puzzle
-				updatePuzzle();
+		if (checkSteady()) {
+			// Si le tableau est stable, alors on regarde s'il faut le mettre à jour
+			if (isUserSwitching) {
+				isUserSwitching = false;
+				if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
+					// Si le switch a été interdit, on replace les éléments dans leur ordre original
+					switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
+				}			
+			} else if (isFallRequested) {
+				isFallRequested = false;
+				// Il faut faire un match si des attributs sont tombés ou qu'on avait déjà demandé d'en faire un
+				isMatchRequested |= puzzleLogic.fall();
+			} else if (isMatchRequested) {
+				isMatchRequested = false;
+				puzzleLogic.match();
 			}
 		}
+		
+//		// Si des animations sont en cours, on regarde si elles sont finies
+//		if (!isSteady) {
+//			isSteady = checkSteady();
+//			if (isSteady) {
+//				// Si le stage est de nouveau stable, on avertit le puzzle
+//				updatePuzzle();
+//			}
+//		} else {
+//			puzzleLogic.match();
+//		}
 		
 		// Dessine le résultat
 		draw();
@@ -376,5 +391,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	public void fall() {
+		isFallRequested = true;
 	}
 }

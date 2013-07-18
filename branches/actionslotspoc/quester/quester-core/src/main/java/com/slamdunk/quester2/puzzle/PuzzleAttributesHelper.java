@@ -33,6 +33,8 @@ public class PuzzleAttributesHelper {
 		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
 			addMatchables(attribute, attribute);
 		}
+		// En revanche, EMPTY n'est pas matchable
+		MATCHABLES.put(PuzzleAttributes.EMPTY, PuzzleAttributes.EMPTY, Boolean.FALSE);
 		
 		// Création de la table des recettes d'alignement
 		ALIGNMENT_EFFECTS = new HashMap<String, PuzzleMatchEffect>();
