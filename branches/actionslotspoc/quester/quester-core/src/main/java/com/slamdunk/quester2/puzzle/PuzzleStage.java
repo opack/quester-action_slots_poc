@@ -21,6 +21,7 @@ import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
  */
 public class PuzzleStage extends Stage implements SwitchListener {
 	private static final float SWITCH_SPEED = Config.asFloat("puzzle.switchSpeed", 0.2f);
+	private static final float FALL_SPEED = Config.asFloat("puzzle.fallSpeed", 0.2f);
 	
 	private int puzzleWidth;
 	private int puzzleHeight;
@@ -258,7 +259,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		// Animation de l'image vers la position à combler
 		final PuzzleImage emptyImage = puzzleImages[x][yEmpty];
 		animImage.addAction(Actions.sequence(
-			Actions.moveTo(emptyImage.getX(), emptyImage.getY(), SWITCH_SPEED * (yFall - yEmpty)),
+			Actions.moveTo(emptyImage.getX(), emptyImage.getY(), FALL_SPEED * (yFall - yEmpty)),
 			new Action() {
 				@Override
 				public boolean act(float arg0) {
