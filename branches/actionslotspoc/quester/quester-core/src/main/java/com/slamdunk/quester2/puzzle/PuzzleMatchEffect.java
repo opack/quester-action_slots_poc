@@ -2,7 +2,6 @@ package com.slamdunk.quester2.puzzle;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.slamdunk.quester.model.points.Point;
@@ -63,5 +62,5 @@ public abstract class PuzzleMatchEffect {
 	 * éléments d'une ligne, création d'un attribut super...) en fonction de l'effet
 	 * et des attributs alignés dont les positions sont indiquées.
 	 */
-	public abstract void perform(PuzzleStage puzzle, List<Point> positions);
+	public abstract void perform(PuzzleStage puzzle, Map<Point, PuzzleAttributes> alignment);
 }
