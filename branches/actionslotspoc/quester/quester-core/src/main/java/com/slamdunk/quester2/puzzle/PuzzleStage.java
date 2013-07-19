@@ -70,7 +70,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
  		setCamera(camera);
  		
  		// Définition du stage comme gérant lui-même les input
- 		PuzzleSwitchInputProcessor processor = new PuzzleSwitchInputProcessor(puzzleTable);
+ 		PuzzleSwitchInputProcessor processor = new PuzzleSwitchInputProcessor(this, puzzleTable);
  		Gdx.input.setInputProcessor(processor);
  		
  		// Ajout du Stage et du puzzle comme listeners de switch
@@ -113,8 +113,8 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		for (int y = puzzleHeight - 1; y > -1; y --) {
 			for (int x = 0; x < puzzleWidth; x ++) {
 				// Récupération de l'attribut
-				//DBG attribute = puzzleLogic.initAttribute(x, y);
-				attribute = PuzzleAttributes.valueOf(Config.asString("puzzle." + x + "." + y, "EMPTY"));
+				attribute = puzzleLogic.initAttribute(x, y);
+				//DBG attribute = PuzzleAttributes.valueOf(Config.asString("puzzle." + x + "." + y, "EMPTY"));
 				
 				// Création d'une image
 				image = createPuzzleImage(x, y, attribute, false);
@@ -166,10 +166,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	}
 
 	/**
-	 * Vérifie si tous les acteurs ont achevé leur action et met la variable
-	 * isSteady à jour en conséquence.
+	 * Vérifie si tous les acteurs ont achevé leur action
 	 */
-	private boolean checkSteady() {
+	public boolean checkSteady() {
 		// Vérifie si au moins un acteur du stage est en action
 		for (Actor actor : getActors()) {
 			if (actor.getActions().size > 0) {
@@ -211,18 +210,26 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	}
 	
 	public void removeAttribute(int x, int y) {
-		final PuzzleImage image = puzzleImages[x][y];
-		image.setAttribute(PuzzleAttributes.EMPTY);
-		image.addAction(Actions.sequence(
+		createRemoveAnimation(puzzleImages[x][y]);
+	}
+
+	private void createRemoveAnimation(final PuzzleImage image) {
+		image.setVisible(false);
+		final PuzzleImage animImage = createPuzzleImage(image, true);
+		animImage.addAction(Actions.sequence(
 			Actions.alpha(0, REMOVE_SPEED),
 			new Action() {
 				@Override
 				public boolean act(float delta) {
-					image.getColor().a = 1;
+					System.out
+							.println("PuzzleStage.createRemoveAnimation(...).new Action() {...}.act()");
+					image.setVisible(true);
+					animImage.remove();
 					return true;
 				}
 			}
 		));
+		addActor(animImage);
 	}
 
 	public void createAttribute(int x, int y, final PuzzleAttributes attribute) {
@@ -280,7 +287,6 @@ public class PuzzleStage extends Stage implements SwitchListener {
 				}
 			})
 		);
-		//isSteady = false;
 		addActor(animImage);
 	}
 	

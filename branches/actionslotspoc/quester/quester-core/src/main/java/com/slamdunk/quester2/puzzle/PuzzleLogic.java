@@ -407,37 +407,4 @@ public class PuzzleLogic {
 		}
 		return false;
 	}
-	
-//	/**
-//	 * Effectue l'effet liée à la combinaison d'éléments indiquée
-//	 */
-//	private boolean resolveLineAlignment(AlignmentData alignData) {
-//		// Déclenchement de l'effet adéquat
-//		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.attributes);
-//		if (effect == null) {
-//			return false;
-//		}
-//		effect.perform(puzzleStage, alignData);
-//		return true;
-//	}
-	
-//	/**
-//	 * Effectue l'effet liée à la combinaison d'éléments indiquée
-//	 */
-//	private boolean resolveCornerAlignment(AlignmentData hAlignData, AlignmentData vAlignData) {
-//		// Création d'un nouveau AlignmentData
-//		AlignmentData corner = new AlignmentData();
-//		// On met tous les attributs H
-//		for (int cur = 0; cur < hAlignData.size(); cur++) {
-//			corner.add(hAlignData.positions.get(cur), hAlignData.attributes.get(cur));
-//		}
-//		// On met tous les attributs V, sauf le source, puisqu'en toute logique il était déjà dans H
-//		for (int cur = 0; cur < vAlignData.size(); cur++) {
-//			if (cur == vAlignData.alignSourceAttributeIndex) {
-//				continue;
-//			}
-//			corner.add(vAlignData.positions.get(cur), vAlignData.attributes.get(cur));
-//		}
-//		return resolveLineAlignment(corner);
-//	}
 }

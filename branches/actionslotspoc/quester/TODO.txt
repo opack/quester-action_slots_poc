@@ -1,3 +1,8 @@
+- S'il n'y a pas de solution possible, renouveler la grille
+- Utiliser un pointManager pour éviter les new Point
+- Utiliser un pool pour éviter de créer de nouveaux PuzzleImage à chaque animation
+- Utiliser une TileMap pour le background
+
 - Faire des murs et portes fins 
 - Ajouter des murs dans la pièce
 - Faire un nettoyage du code : retirer le code commenté et les DBG

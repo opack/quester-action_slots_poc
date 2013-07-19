@@ -31,7 +31,7 @@ public abstract class PuzzleMatchEffect {
 		
 		// Pour chaque attribut, s'il est simple on ajoute des points,
 		// s'il est super on va déclencher un autre effet.
-		System.out.println("DBG AttributeAlignmentEffect.perform() ADD " + attribute);
+		System.out.printf("DBG AttributeAlignmentEffect.perform() ADD %d %d %s\n", x, y, attribute);
 		if (performBonusEffect) {
 			switch (attribute.getType()) {
 			case SUPER:

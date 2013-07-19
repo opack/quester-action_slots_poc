@@ -33,10 +33,5 @@ public class SupersMatchEffect extends PuzzleMatchEffect {
 		
 		// Ajout d'un petit bonus
 		System.out.println("DBG AttributeAlignmentEffect.perform() ADD BONUS CROSS " + matchData.getSource().attribute);
-
-		// Création d'un super attribut
-		PuzzleAttributes superAttribute = PuzzleAttributesHelper.getSuper(matchData.getSource().attribute, matchData.getOrientation());
-		Point sourcePos = matchData.getSource().position;
-		puzzle.createAttribute(sourcePos.getX(), sourcePos.getY(), superAttribute);
 	}
 }

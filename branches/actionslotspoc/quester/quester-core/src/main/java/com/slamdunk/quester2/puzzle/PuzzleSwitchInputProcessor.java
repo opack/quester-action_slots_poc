@@ -18,13 +18,15 @@ public class PuzzleSwitchInputProcessor extends InputAdapter {
 	
 	private PuzzleImage firstSwitchedItem;
 	private PuzzleImage secondSwitchedItem;
+	private PuzzleStage puzzleStage;
 	private Table puzzleTable;
 	
 	private Vector2 screenCoords;
 	
 	private List<SwitchListener> listeners;
 	
-	public PuzzleSwitchInputProcessor(Table puzzleTable) {
+	public PuzzleSwitchInputProcessor(PuzzleStage puzzleStage, Table puzzleTable) {
+		this.puzzleStage = puzzleStage;
 		this.puzzleTable = puzzleTable;
 		// Création du vecteur de travail
 		screenCoords = new Vector2();
@@ -39,6 +41,12 @@ public class PuzzleSwitchInputProcessor extends InputAdapter {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		// Si la grille est en mouvement, le joueur ne peut pas tenter un autre switch
+		if (!puzzleStage.checkSteady()) {
+			System.out.println("DBG PuzzleSwitchInputProcessor.touchDown() pas steady");
+			return false;
+		}
+		
 		Actor hit = getSwitchItem(screenX, screenY);
 		
 		if (hit instanceof PuzzleImage) {
