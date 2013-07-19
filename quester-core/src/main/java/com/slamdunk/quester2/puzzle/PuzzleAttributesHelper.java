@@ -22,12 +22,10 @@ public class PuzzleAttributesHelper {
 	private static final DoubleEntryArray<PuzzleAttributes, PuzzleAttributes, Boolean> MATCHABLES;
 	
 	static {
-		// Création du tableau d'attributs de base et super
 		BASE_ATTRIBUTES = new ArrayList<PuzzleAttributes>();
-		
-		// Création de la matrice d'items matchables
 		MATCHABLES = new DoubleEntryArray<PuzzleAttributes, PuzzleAttributes, Boolean>();
 		SUPER_ATTRIBUTES = new DoubleEntryArray<PuzzleAttributes, AlignmentOrientation, PuzzleAttributes>();
+		KeyListMap<PuzzleAttributes, PuzzleAttributes> supersByBaseAttribute = new KeyListMap<PuzzleAttributes, PuzzleAttributes>();
 		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
 			// Rien à faire avec EMPTY
 			if (attribute == PuzzleAttributes.EMPTY) {
@@ -46,6 +44,17 @@ public class PuzzleAttributesHelper {
 			else if (attribute.getType() == AttributeTypes.SUPER) {
 				addMatchables(attribute, attribute.getBaseAttribute());
 				SUPER_ATTRIBUTES.put(attribute.getBaseAttribute(), attribute.getOrientation(), attribute);
+				supersByBaseAttribute.putValue(attribute.getBaseAttribute(), attribute);
+			}
+		}
+		
+		// Ajout d'un match entre tous les supers d'un même type
+		for (PuzzleAttributes baseAttribute : BASE_ATTRIBUTES) {
+			List<PuzzleAttributes> supers = supersByBaseAttribute.get(baseAttribute);
+			for (PuzzleAttributes superAttribute1 : supers) {
+				for (PuzzleAttributes superAttribute2 : supers) {
+					addMatchables(superAttribute1, superAttribute2);
+				}
 			}
 		}
 	}
