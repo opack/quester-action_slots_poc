@@ -94,13 +94,10 @@ public class PuzzleMatchData {
 				if (count == 2) {
 					// 2 Super
 					if (getMatchCount(AttributeTypes.SUPER) == 2){
-						System.out.println("DBG PuzzleMatchEffectBuilder.build() SuperMatchEffect !");
-	//					return new SuperMatchEffect();
-						return null;
+						return new SupersMatchEffect();
 					}
 					// 1 Hyper + 1 autre
 					else if (getMatchCount(AttributeTypes.HYPER) > 0){
-						System.out.println("DBG PuzzleMatchEffectBuilder.build() HyperMatchEffect !");
 						return new HyperMatchEffect();
 					}
 				}

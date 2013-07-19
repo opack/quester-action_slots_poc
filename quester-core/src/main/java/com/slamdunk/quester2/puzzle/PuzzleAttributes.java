@@ -36,6 +36,13 @@ public enum PuzzleAttributes {
 	SUPER_WILL_V (Assets.attribute_will_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, WILL),
 	SUPER_LUCK_V (Assets.attribute_luck_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, LUCK),
 	
+	SUPER_STRENGTH_X (Assets.attribute_strength_superx, AttributeTypes.SUPER, AlignmentOrientation.CROSS, STRENGTH),
+	SUPER_CONSTITUTION_X (Assets.attribute_constitution_superx, AttributeTypes.SUPER, AlignmentOrientation.CROSS, CONSTITUTION),
+	SUPER_DEXTERITY_X (Assets.attribute_dexterity_superx, AttributeTypes.SUPER, AlignmentOrientation.CROSS, DEXTERITY),
+	SUPER_FOCUS_X (Assets.attribute_focus_superx, AttributeTypes.SUPER, AlignmentOrientation.CROSS, FOCUS),
+	SUPER_WILL_X (Assets.attribute_will_superx, AttributeTypes.SUPER, AlignmentOrientation.CROSS, WILL),
+	SUPER_LUCK_X (Assets.attribute_luck_superx, AttributeTypes.SUPER, AlignmentOrientation.CROSS, LUCK),
+	
 	// Attribut hyper
 	HYPER (Assets.attribute_hyper, AttributeTypes.HYPER, AlignmentOrientation.WHOLE);
 	

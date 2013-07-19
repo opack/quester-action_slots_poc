@@ -22,6 +22,7 @@ import com.slamdunk.quester2.puzzle.PuzzleSwitchInputProcessor.SwitchListener;
 public class PuzzleStage extends Stage implements SwitchListener {
 	private static final float SWITCH_SPEED = Config.asFloat("puzzle.switchSpeed", 0.2f);
 	private static final float FALL_SPEED = Config.asFloat("puzzle.fallSpeed", 0.2f);
+	private static final float REMOVE_SPEED = Config.asFloat("puzzle.removeSpeed", 0.2f);
 	
 	private int puzzleWidth;
 	private int puzzleHeight;
@@ -112,8 +113,8 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		for (int y = puzzleHeight - 1; y > -1; y --) {
 			for (int x = 0; x < puzzleWidth; x ++) {
 				// Récupération de l'attribut
-				attribute = puzzleLogic.initAttribute(x, y);
-				//DBG attribute = PuzzleAttributes.valueOf(Config.asString("puzzle." + x + "." + y, "EMPTY"));
+				//DBG attribute = puzzleLogic.initAttribute(x, y);
+				attribute = PuzzleAttributes.valueOf(Config.asString("puzzle." + x + "." + y, "EMPTY"));
 				
 				// Création d'une image
 				image = createPuzzleImage(x, y, attribute, false);
@@ -160,35 +161,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 			}
 		}
 		
-//		// Si des animations sont en cours, on regarde si elles sont finies
-//		if (!isSteady) {
-//			isSteady = checkSteady();
-//			if (isSteady) {
-//				// Si le stage est de nouveau stable, on avertit le puzzle
-//				updatePuzzle();
-//			}
-//		} else {
-//			puzzleLogic.match();
-//		}
-		
 		// Dessine le résultat
 		draw();
 	}
-
-//	private void updatePuzzle() {
-//		if (isUserSwitching) {
-//			isUserSwitching = false;
-//			if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
-//				// Si le switch a été interdit, on replace les éléments dans leur ordre original
-//				switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
-//				return;
-//			}			
-//		}
-//		
-//		// Regarde s'il n'y aurait pas des pièces à faire tomber
-//		// ou de nouvelles combinaisons à valider
-//		puzzleLogic.updatePuzzle();
-//	}
 
 	/**
 	 * Vérifie si tous les acteurs ont achevé leur action et met la variable
@@ -237,12 +212,12 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	
 	public void removeAttribute(int x, int y) {
 		final PuzzleImage image = puzzleImages[x][y];
+		image.setAttribute(PuzzleAttributes.EMPTY);
 		image.addAction(Actions.sequence(
-			Actions.alpha(0, 0.3f),
+			Actions.alpha(0, REMOVE_SPEED),
 			new Action() {
 				@Override
 				public boolean act(float delta) {
-					image.setAttribute(PuzzleAttributes.EMPTY);
 					image.getColor().a = 1;
 					return true;
 				}
@@ -415,9 +390,5 @@ public class PuzzleStage extends Stage implements SwitchListener {
 
 	public PuzzleAttributes getAttribute(int x, int y) {
 		return puzzleImages[x][y].getAttribute();
-	}
-
-	public boolean isUserSwitching() {
-		return isUserSwitching;
 	}
 }
