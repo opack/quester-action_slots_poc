@@ -172,9 +172,8 @@ public class PuzzleLogic {
 		}
 		
 		// Recherche des éventuelles combinaisons
-		// Si l'un des deux attributs est un hyper, alors on ne cherche pas à
-		// matcher plus que ces deux là
-		if (matchHyper(firstX, firstY, secondX, secondY)) {
+		// Si le switch des 2 attributs déclenche un super effet, on le traite
+		if (resolveSupers(firstX, firstY, secondX, secondY)) {
 			return true;
 		}
 		
@@ -189,6 +188,16 @@ public class PuzzleLogic {
 		return true;
 	}
 	
+	private boolean resolveSupers(int firstX, int firstY, int secondX, int secondY) {
+		// Teste si on échange un hyper avec autre chose
+		if (matchHyper(firstX, firstY, secondX, secondY)
+		// Teste si on échange entre eux 2 supers
+		|| matchSupers(firstX, firstY, secondX, secondY)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Vérifie si un switch avec un hyper a été fait, et dans ce cas, déclenche l'effet
 	 * adéquat.
@@ -206,22 +215,43 @@ public class PuzzleLogic {
 		builder.setSource(new AttributeData(new Point(firstX, firstY), firstAttribute));
 		builder.add(new AttributeData(new Point(secondX, secondY), secondAttribute));
 		PuzzleMatchEffect effect = builder.buildMatchEffect();
-		effect.perform(puzzleStage, builder);
-		return true;
+		if (effect != null) {
+			effect.perform(puzzleStage, builder);
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Vérifie si un switch entre 2 supers a été fait, et dans ce cas, déclenche l'effet
+	 * adéquat.
+	 */
+	private boolean matchSupers(int firstX, int firstY, int secondX, int secondY) {
+		// On s'assure qu'au moins un des deux attributs est un HYPER
+		PuzzleAttributes firstAttribute = puzzleImages[firstX][firstY].getAttribute();
+		PuzzleAttributes secondAttribute = puzzleImages[secondX][secondY].getAttribute();
+		if (firstAttribute.getType() != AttributeTypes.SUPER || secondAttribute.getType() != AttributeTypes.SUPER) {
+			return false;
+		}
+		
+		// Déclenche l'effet adéquat
+		PuzzleMatchData builder = new PuzzleMatchData();
+		builder.setSource(new AttributeData(new Point(firstX, firstY), firstAttribute));
+		builder.add(new AttributeData(new Point(secondX, secondY), secondAttribute));
+		PuzzleMatchEffect effect = builder.buildMatchEffect();
+		if (effect != null) {
+			effect.perform(puzzleStage, builder);
+			return true;
+		}
+		return false;
 	}
 
 	public void updatePuzzle() {
-//		do {
-			// Chute des éléments supérieurs
-			//makeAttributesFall();
-			if (!fall()) {
-				// Si rien n'est tombé, alors on est dans une situation stable.
-				// On va donc rechercher d'éventuelles combinaisons.
-				match();
-			}
-		
-		// Recommence tant qu'il y a des alignements
-//		} while (alignmentFound);
+		if (!fall()) {
+			// Si rien n'est tombé, alors on est dans une situation stable.
+			// On va donc rechercher d'éventuelles combinaisons.
+			match();
+		}
 	}
 	
 	public void match() {
@@ -362,7 +392,7 @@ public class PuzzleLogic {
 				break;
 			}
 		}
-		return hAlignData.size() >= 0 || vAlignData.size() >= 0;
+		return hAlignData.size() > 0 || vAlignData.size() > 0;
 	}
 	
 	/**
