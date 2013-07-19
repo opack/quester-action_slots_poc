@@ -11,40 +11,43 @@ import com.slamdunk.quester.utils.Assets;
  */
 public enum PuzzleAttributes {
 	// Attribut inconnu
-	EMPTY (Assets.attribute_empty, AttributeTypes.EMPTY, AttributeOrientation.SELF),
+	EMPTY (Assets.attribute_empty, AttributeTypes.EMPTY, AlignmentOrientation.SELF),
 	
 	// Attributs de base
-	STRENGTH (Assets.attribute_strength, AttributeTypes.BASE, AttributeOrientation.SELF),
-	CONSTITUTION (Assets.attribute_constitution, AttributeTypes.BASE, AttributeOrientation.SELF),
-	DEXTERITY (Assets.attribute_dexterity, AttributeTypes.BASE, AttributeOrientation.SELF),
-	FOCUS (Assets.attribute_focus, AttributeTypes.BASE, AttributeOrientation.SELF),
-	WILL (Assets.attribute_will, AttributeTypes.BASE, AttributeOrientation.SELF),
-	LUCK (Assets.attribute_luck, AttributeTypes.BASE, AttributeOrientation.SELF),
+	STRENGTH (Assets.attribute_strength, AttributeTypes.BASE, AlignmentOrientation.SELF),
+	CONSTITUTION (Assets.attribute_constitution, AttributeTypes.BASE, AlignmentOrientation.SELF),
+	DEXTERITY (Assets.attribute_dexterity, AttributeTypes.BASE, AlignmentOrientation.SELF),
+	FOCUS (Assets.attribute_focus, AttributeTypes.BASE, AlignmentOrientation.SELF),
+	WILL (Assets.attribute_will, AttributeTypes.BASE, AlignmentOrientation.SELF),
+	LUCK (Assets.attribute_luck, AttributeTypes.BASE, AlignmentOrientation.SELF),
 	
 	// Attributs super
-	SUPER_STRENGTH_H (Assets.attribute_strength_superh, AttributeTypes.SUPER, AttributeOrientation.HORIZONTAL, STRENGTH),
-	SUPER_CONSTITUTION_H (Assets.attribute_constitution_superh, AttributeTypes.SUPER, AttributeOrientation.HORIZONTAL, CONSTITUTION),
-	SUPER_DEXTERITY_H (Assets.attribute_dexterity_superh, AttributeTypes.SUPER, AttributeOrientation.HORIZONTAL, DEXTERITY),
-	SUPER_FOCUS_H (Assets.attribute_focus_superh, AttributeTypes.SUPER, AttributeOrientation.HORIZONTAL, FOCUS),
-	SUPER_WILL_H (Assets.attribute_will_superh, AttributeTypes.SUPER, AttributeOrientation.HORIZONTAL, WILL),
-	SUPER_LUCK_H (Assets.attribute_luck_superh, AttributeTypes.SUPER, AttributeOrientation.HORIZONTAL, LUCK),
+	SUPER_STRENGTH_H (Assets.attribute_strength_superh, AttributeTypes.SUPER, AlignmentOrientation.HORIZONTAL, STRENGTH),
+	SUPER_CONSTITUTION_H (Assets.attribute_constitution_superh, AttributeTypes.SUPER, AlignmentOrientation.HORIZONTAL, CONSTITUTION),
+	SUPER_DEXTERITY_H (Assets.attribute_dexterity_superh, AttributeTypes.SUPER, AlignmentOrientation.HORIZONTAL, DEXTERITY),
+	SUPER_FOCUS_H (Assets.attribute_focus_superh, AttributeTypes.SUPER, AlignmentOrientation.HORIZONTAL, FOCUS),
+	SUPER_WILL_H (Assets.attribute_will_superh, AttributeTypes.SUPER, AlignmentOrientation.HORIZONTAL, WILL),
+	SUPER_LUCK_H (Assets.attribute_luck_superh, AttributeTypes.SUPER, AlignmentOrientation.HORIZONTAL, LUCK),
 	
-	SUPER_STRENGTH_V (Assets.attribute_strength_superv, AttributeTypes.SUPER, AttributeOrientation.VERTICAL, STRENGTH),
-	SUPER_CONSTITUTION_V (Assets.attribute_constitution_superv, AttributeTypes.SUPER, AttributeOrientation.VERTICAL, CONSTITUTION),
-	SUPER_DEXTERITY_V (Assets.attribute_dexterity_superv, AttributeTypes.SUPER, AttributeOrientation.VERTICAL, DEXTERITY),
-	SUPER_FOCUS_V (Assets.attribute_focus_superv, AttributeTypes.SUPER, AttributeOrientation.VERTICAL, FOCUS),
-	SUPER_WILL_V (Assets.attribute_will_superv, AttributeTypes.SUPER, AttributeOrientation.VERTICAL, WILL),
-	SUPER_LUCK_V (Assets.attribute_luck_superv, AttributeTypes.SUPER, AttributeOrientation.VERTICAL, LUCK);
+	SUPER_STRENGTH_V (Assets.attribute_strength_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, STRENGTH),
+	SUPER_CONSTITUTION_V (Assets.attribute_constitution_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, CONSTITUTION),
+	SUPER_DEXTERITY_V (Assets.attribute_dexterity_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, DEXTERITY),
+	SUPER_FOCUS_V (Assets.attribute_focus_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, FOCUS),
+	SUPER_WILL_V (Assets.attribute_will_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, WILL),
+	SUPER_LUCK_V (Assets.attribute_luck_superv, AttributeTypes.SUPER, AlignmentOrientation.VERTICAL, LUCK),
+	
+	// Attribut hyper
+	HYPER (Assets.attribute_hyper, AttributeTypes.HYPER, AlignmentOrientation.WHOLE);
 	
 	private Drawable texture;
 	private AttributeTypes type;
 	private PuzzleAttributes baseAttribute;
-	private AttributeOrientation orientation;
+	private AlignmentOrientation orientation;
 	
-	private PuzzleAttributes(TextureRegion texture, AttributeTypes type, AttributeOrientation orientation) {
+	private PuzzleAttributes(TextureRegion texture, AttributeTypes type, AlignmentOrientation orientation) {
 		this(texture, type, orientation, null);
 	}
-	private PuzzleAttributes(TextureRegion texture, AttributeTypes type, AttributeOrientation orientation, PuzzleAttributes baseAttribute) {
+	private PuzzleAttributes(TextureRegion texture, AttributeTypes type, AlignmentOrientation orientation, PuzzleAttributes baseAttribute) {
 		this.texture = new TextureRegionDrawable(texture);
 		this.type = type;
 		this.orientation = orientation;
@@ -59,7 +62,7 @@ public enum PuzzleAttributes {
 	public PuzzleAttributes getBaseAttribute() {
 		return baseAttribute;
 	}
-	public AttributeOrientation getOrientation() {
+	public AlignmentOrientation getOrientation() {
 		return orientation;
 	}
 }

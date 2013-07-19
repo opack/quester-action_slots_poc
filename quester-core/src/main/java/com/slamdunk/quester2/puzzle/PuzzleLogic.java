@@ -9,32 +9,53 @@ import com.slamdunk.quester.model.points.Point;
  * Gère la représentation logique du puzzle
  */
 public class PuzzleLogic {
+	public class AttributeData {
+		public PuzzleAttributes attribute;
+		public Point position;
+		public AttributeData(Point position, PuzzleAttributes attribute) {
+			if (position == null || attribute == null) {
+				throw new IllegalStateException("Tried to create an AttributeData with no position or no attribute : pos=" + position + ", attribute=" + attribute);
+			}
+			this.attribute = attribute;
+			this.position = position;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof AttributeData)) {
+				return false;
+			}
+			AttributeData other = (AttributeData)obj;
+			return other.attribute.equals(attribute)
+				&& other.position.equals(position);
+		}
+		
+		@Override
+		public int hashCode() {
+			return position.hashCode() ^ attribute.hashCode();
+		}
+	}
 	public class AlignmentData {
-		public List<Point> positions;
-		public List<PuzzleAttributes> attributes;
+		public List<AttributeData> attributes;
 		/**
 		 * Indique si l'alignement est horizontal ou vertical
 		 */
-		public AttributeOrientation orientation;
+		public AlignmentOrientation orientation;
 		/**
 		 * Indice de l'attribut à la source de l'alignement
 		 */
 		public int alignSourceAttributeIndex;
 		
 		public AlignmentData() {
-			positions = new ArrayList<Point>();
-			attributes = new ArrayList<PuzzleAttributes>();
+			attributes = new ArrayList<AttributeData>();
 		}
 		
 		public void clear() {
-			positions.clear();
 			attributes.clear();
 			alignSourceAttributeIndex = -1;
 		}
 		
 		public void add(Point position, PuzzleAttributes attribute) {
-			positions.add(position);
-			attributes.add(attribute);
+			attributes.add(new AttributeData(position, attribute));
 		}
 		
 		public int size() {
@@ -44,8 +65,9 @@ public class PuzzleLogic {
 		public void updateSourceIndex(int x, int y) {
 			alignSourceAttributeIndex = -1;
 			Point pos;
-			for (int cur = 0; cur < positions.size(); cur ++) {
-				pos = positions.get(cur);
+			final int count = attributes.size();
+			for (int cur = 0; cur < count; cur ++) {
+				pos = attributes.get(cur).position;
 				if (pos.getX() == x && pos.getY() == y) {
 					alignSourceAttributeIndex = cur;
 					break;
@@ -68,9 +90,9 @@ public class PuzzleLogic {
 		this.height = stage.getPuzzleHeight();
 		
 		hAlignData = new AlignmentData();
-		hAlignData.orientation = AttributeOrientation.HORIZONTAL;
+		hAlignData.orientation = AlignmentOrientation.HORIZONTAL;
 		vAlignData = new AlignmentData();
-		vAlignData.orientation = AttributeOrientation.VERTICAL;
+		vAlignData.orientation = AlignmentOrientation.VERTICAL;
 		lastFallen = new ArrayList<Point>();
 		
 		// Création du puzzle
@@ -255,17 +277,25 @@ public class PuzzleLogic {
 		// On résoud l'alignement en privilégiant le plus long.
 		int hCount = hAlignData.size();
 		int vCount = vAlignData.size();
+		PuzzleMatchData builder = new PuzzleMatchData();
+		builder.setSource(hAlignData.attributes.get(hAlignData.alignSourceAttributeIndex));
 		if (hCount == vCount) {
-			// Formation en coin
-			// ...
-			return false;
+			// Les deux lignes font la même taille
+			builder.add(hAlignData.attributes);
+			builder.add(vAlignData.attributes);
 		} else if (hCount > vCount) {
-			// Simple ligne horizontale
-			return resolveLineAlignment(hAlignData);
+			// La ligne horizontale est plus longue
+			builder.add(hAlignData.attributes);
 		} else {
-			// Simple ligne verticale
-			return resolveLineAlignment(vAlignData);
+			// La ligne verticale est plus longue
+			builder.add(vAlignData.attributes);
 		}
+		PuzzleMatchEffect effect = builder.buildMatchEffect();
+		if (effect == null) {
+			return false;
+		}
+		effect.perform(puzzleStage, builder);
+		return true;
 	}
 	
 	/**
@@ -319,16 +349,36 @@ public class PuzzleLogic {
 		return false;
 	}
 	
-	/**
-	 * Effectue l'effet liée à la combinaison d'éléments indiquée
-	 */
-	private boolean resolveLineAlignment(AlignmentData alignData) {
-		// Déclenchement de l'effet adéquat
-		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.attributes);
-		if (effect == null) {
-			return false;
-		}
-		effect.perform(puzzleStage, alignData);
-		return true;
-	}
+//	/**
+//	 * Effectue l'effet liée à la combinaison d'éléments indiquée
+//	 */
+//	private boolean resolveLineAlignment(AlignmentData alignData) {
+//		// Déclenchement de l'effet adéquat
+//		PuzzleMatchEffect effect = PuzzleAttributesHelper.getMatchEffect(alignData.attributes);
+//		if (effect == null) {
+//			return false;
+//		}
+//		effect.perform(puzzleStage, alignData);
+//		return true;
+//	}
+	
+//	/**
+//	 * Effectue l'effet liée à la combinaison d'éléments indiquée
+//	 */
+//	private boolean resolveCornerAlignment(AlignmentData hAlignData, AlignmentData vAlignData) {
+//		// Création d'un nouveau AlignmentData
+//		AlignmentData corner = new AlignmentData();
+//		// On met tous les attributs H
+//		for (int cur = 0; cur < hAlignData.size(); cur++) {
+//			corner.add(hAlignData.positions.get(cur), hAlignData.attributes.get(cur));
+//		}
+//		// On met tous les attributs V, sauf le source, puisqu'en toute logique il était déjà dans H
+//		for (int cur = 0; cur < vAlignData.size(); cur++) {
+//			if (cur == vAlignData.alignSourceAttributeIndex) {
+//				continue;
+//			}
+//			corner.add(vAlignData.positions.get(cur), vAlignData.attributes.get(cur));
+//		}
+//		return resolveLineAlignment(corner);
+//	}
 }

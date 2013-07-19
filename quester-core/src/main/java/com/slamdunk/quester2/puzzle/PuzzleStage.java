@@ -172,20 +172,20 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		draw();
 	}
 
-	private void updatePuzzle() {
-		if (isUserSwitching) {
-			isUserSwitching = false;
-			if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
-				// Si le switch a été interdit, on replace les éléments dans leur ordre original
-				switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
-				return;
-			}			
-		}
-		
-		// Regarde s'il n'y aurait pas des pièces à faire tomber
-		// ou de nouvelles combinaisons à valider
-		puzzleLogic.updatePuzzle();
-	}
+//	private void updatePuzzle() {
+//		if (isUserSwitching) {
+//			isUserSwitching = false;
+//			if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
+//				// Si le switch a été interdit, on replace les éléments dans leur ordre original
+//				switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
+//				return;
+//			}			
+//		}
+//		
+//		// Regarde s'il n'y aurait pas des pièces à faire tomber
+//		// ou de nouvelles combinaisons à valider
+//		puzzleLogic.updatePuzzle();
+//	}
 
 	/**
 	 * Vérifie si tous les acteurs ont achevé leur action et met la variable
@@ -232,21 +232,38 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		secondImage.setAttribute(tmp);
 	}
 	
-	public PuzzleAttributes removeAttribute(int x, int y) {
-		PuzzleImage image = puzzleImages[x][y];
-		PuzzleAttributes removed = image.getAttribute();
-		image.setAttribute(PuzzleAttributes.EMPTY);
-		return removed;
+	public void removeAttribute(int x, int y) {
+		final PuzzleImage image = puzzleImages[x][y];
+		image.addAction(Actions.sequence(
+			Actions.alpha(0, 0.3f),
+			new Action() {
+				@Override
+				public boolean act(float delta) {
+					image.setAttribute(PuzzleAttributes.EMPTY);
+					image.getColor().a = 1;
+					return true;
+				}
+			}
+		));
 	}
 
-	public void createAttribute(int x, int y, PuzzleAttributes attribute) {
-		PuzzleImage image = puzzleImages[x][y];
+	public void createAttribute(int x, int y, final PuzzleAttributes attribute) {
+		final PuzzleImage image = puzzleImages[x][y];
 		
 		// Affectation de l'attribut, et donc de l'image
-		image.setAttribute(attribute);
+		image.addAction(new Action() {
+			@Override
+			public boolean act(float delta) {
+				// Affecte l'image
+				image.setAttribute(attribute);
+				
+				// Cache l'image, pour la faire apparaître avec un joli alpha
+				image.getColor().a = 0;
+				return true;
+			}
+		});
 		
 		// Jolie animation
-		image.getColor().a = 0;
 		image.addAction(Actions.alpha(1, 0.2f, Interpolation.exp5));
 	}
 
@@ -281,7 +298,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 					
 					// Assignation de l'attribut tombé à l'image destination
 					emptyImage.setAttribute(animImage.getAttribute());
-					return false;
+					return true;
 				}
 			})
 		);
@@ -299,7 +316,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 				public boolean act(float delta) {
 					firstImage.setVisible(true);
 					firstAnim.remove();
-					return false;
+					return true;
 				}
 			}
 		));
@@ -314,7 +331,7 @@ public class PuzzleStage extends Stage implements SwitchListener {
 				public boolean act(float delta) {
 					secondImage.setVisible(true);
 					secondAnim.remove();
-					return false;
+					return true;
 				}
 			}
 		));
