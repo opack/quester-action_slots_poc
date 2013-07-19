@@ -30,12 +30,18 @@ public abstract class PuzzleMatchEffect {
 		// Compte les éléments par type
 		Map<PuzzleAttributes, Integer> counts = new HashMap<PuzzleAttributes, Integer>();
 		Integer curCount;
+		PuzzleAttributes baseAttribute;
 		for (PuzzleAttributes element : elements) {
-			curCount = counts.get(element);
+			baseAttribute = element.getBaseAttribute();
+			if (baseAttribute == null) {
+				// S'il n'y a pas d'attribut de base, alors l'élément est un attribut de base
+				baseAttribute = element;
+			}
+			curCount = counts.get(baseAttribute);
 			if (curCount == null) {
-				counts.put(element, 1);
+				counts.put(baseAttribute, 1);
 			} else {
-				counts.put(element, curCount + 1);
+				counts.put(baseAttribute, curCount + 1);
 			}
 		}
 		return buildRecipe(counts);

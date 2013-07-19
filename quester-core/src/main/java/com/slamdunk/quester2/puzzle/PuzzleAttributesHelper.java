@@ -1,7 +1,9 @@
 package com.slamdunk.quester2.puzzle;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -9,72 +11,60 @@ import com.slamdunk.quester.model.data.DoubleEntryArray;
 import com.slamdunk.quester2.puzzle.PuzzleLogic.AlignmentData;
 
 public class PuzzleAttributesHelper {
-	public static final PuzzleAttributes[] BASE_ATTRIBUTES;
-	public static final Map<PuzzleAttributes, PuzzleAttributes> SUPER_ATTRIBUTES_H;
-	public static final Map<PuzzleAttributes, PuzzleAttributes> SUPER_ATTRIBUTES_V;
-	
+	/**
+	 * Liste les attributs de base
+	 */
+	public static final List<PuzzleAttributes> BASE_ATTRIBUTES;
+	/**
+	 * Tableau à double entrée indiquant l'attribut Super pour un PuzzleAttributes 
+	 * et une orientation (true = horizontal) donnés.
+	 */
+	public static final DoubleEntryArray<PuzzleAttributes, AttributeOrientation, PuzzleAttributes> SUPER_ATTRIBUTES;
 	/**
 	 * Tableau à double entrée indiquant si un couple de PuzzleAttributes est matchable
 	 */
-	private static final DoubleEntryArray<PuzzleAttributes, Boolean> MATCHABLES;
+	private static final DoubleEntryArray<PuzzleAttributes, PuzzleAttributes, Boolean> MATCHABLES;
 	/**
 	 * Table associant une recette d'attributs à un effet d'alignement
 	 */
 	private static final Map<String, PuzzleMatchEffect> ALIGNMENT_EFFECTS;
 	
 	static {
-		// Création du tableau d'attributs de base
-		BASE_ATTRIBUTES = new PuzzleAttributes[]{
-			PuzzleAttributes.CONSTITUTION,
-			PuzzleAttributes.DEXTERITY,
-			PuzzleAttributes.FOCUS,
-			PuzzleAttributes.LUCK,
-			PuzzleAttributes.STRENGTH,
-			PuzzleAttributes.WILL
-		};
-		
-		// Création des tables d'attributs super
-		SUPER_ATTRIBUTES_H = new HashMap<PuzzleAttributes, PuzzleAttributes>();
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.CONSTITUTION, PuzzleAttributes.SUPER_CONSTITUTION_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.SUPER_CONSTITUTION_H, PuzzleAttributes.SUPER_CONSTITUTION_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.DEXTERITY, PuzzleAttributes.SUPER_DEXTERITY_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.SUPER_DEXTERITY_H, PuzzleAttributes.SUPER_DEXTERITY_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.FOCUS, PuzzleAttributes.SUPER_FOCUS_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.SUPER_FOCUS_H, PuzzleAttributes.SUPER_FOCUS_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.LUCK, PuzzleAttributes.SUPER_LUCK_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.SUPER_LUCK_H, PuzzleAttributes.SUPER_LUCK_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.STRENGTH, PuzzleAttributes.SUPER_STRENGTH_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.SUPER_STRENGTH_H, PuzzleAttributes.SUPER_STRENGTH_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.WILL, PuzzleAttributes.SUPER_WILL_H);
-		SUPER_ATTRIBUTES_H.put(PuzzleAttributes.SUPER_WILL_H, PuzzleAttributes.SUPER_WILL_H);
-		SUPER_ATTRIBUTES_V = new HashMap<PuzzleAttributes, PuzzleAttributes>();
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.CONSTITUTION, PuzzleAttributes.SUPER_CONSTITUTION_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.SUPER_CONSTITUTION_V, PuzzleAttributes.SUPER_CONSTITUTION_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.DEXTERITY, PuzzleAttributes.SUPER_DEXTERITY_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.SUPER_DEXTERITY_V, PuzzleAttributes.SUPER_DEXTERITY_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.FOCUS, PuzzleAttributes.SUPER_FOCUS_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.SUPER_FOCUS_V, PuzzleAttributes.SUPER_FOCUS_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.LUCK, PuzzleAttributes.SUPER_LUCK_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.SUPER_LUCK_V, PuzzleAttributes.SUPER_LUCK_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.STRENGTH, PuzzleAttributes.SUPER_STRENGTH_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.SUPER_STRENGTH_V, PuzzleAttributes.SUPER_STRENGTH_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.WILL, PuzzleAttributes.SUPER_WILL_V);
-		SUPER_ATTRIBUTES_V.put(PuzzleAttributes.SUPER_WILL_V, PuzzleAttributes.SUPER_WILL_V);
+		// Création du tableau d'attributs de base et super
+		BASE_ATTRIBUTES = new ArrayList<PuzzleAttributes>();
 		
 		// Création de la matrice d'items matchables
-		// Ajout du match d'un attribut vers le même attribut. En revanche, EMPTY n'est pas matchable
-		MATCHABLES = new DoubleEntryArray<PuzzleAttributes, Boolean>();
-		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
-			addMatchables(attribute, attribute);
-		}
-		MATCHABLES.put(PuzzleAttributes.EMPTY, PuzzleAttributes.EMPTY, Boolean.FALSE);
-		
-		// Création de la table des recettes d'alignement
+		MATCHABLES = new DoubleEntryArray<PuzzleAttributes, PuzzleAttributes, Boolean>();
+		SUPER_ATTRIBUTES = new DoubleEntryArray<PuzzleAttributes, AttributeOrientation, PuzzleAttributes>();
 		ALIGNMENT_EFFECTS = new HashMap<String, PuzzleMatchEffect>();
 		AttributeAlignmentEffect attributeAlignmentEffect = new AttributeAlignmentEffect();
 		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
-			addAlignmentEffect(attribute, attributeAlignmentEffect);
+			// Rien à faire avec EMPTY
+			if (attribute == PuzzleAttributes.EMPTY) {
+				continue;
+			}
+			
+			// Ajout du match d'un attribut vers le même attribut.
+			addMatchables(attribute, attribute);
+			
+			if (attribute.getType() == AttributeTypes.BASE) {
+				// Ajout de l'attribut aux attributs de base
+				BASE_ATTRIBUTES.add(attribute);
+				// Création des recette provoquant un simple alignement d'attributs
+				addAlignmentEffect(attribute, attributeAlignmentEffect);
+			}
+			// Ajout du match d'un super vers son attribut de base
+			// Remplissage de la matrice indiquant quel super est créé à partir d'un attribut de base
+			else if (attribute.getType() == AttributeTypes.SUPER) {
+				addMatchables(attribute, attribute.getBaseAttribute());
+				SUPER_ATTRIBUTES.put(attribute.getBaseAttribute(), attribute.getOrientation(), attribute);
+			}
 		}
+		
+		// Création des recettes pour l'échange entre eux de 2 attributs super
+		// ...
+		// Création des recettes pour l'échange d'un hyper avec n'importe quoi
+		// ...
 	}
 	
 	public static boolean areMatchable(PuzzleAttributes attribute1, PuzzleAttributes attribute2) {
@@ -83,20 +73,12 @@ public class PuzzleAttributesHelper {
 	}
 	
 	private static void addAlignmentEffect(PuzzleAttributes attribute, AttributeAlignmentEffect alignmentEffect) {
-		// Ajout des combinaisons de 3 items
 		Map<PuzzleAttributes, Integer> recipe = new HashMap<PuzzleAttributes, Integer>();
-		recipe.put(attribute, 3);
-		ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
-		
-		// Ajout des combinaisons de 4 items
-		recipe.clear();
-		recipe.put(attribute, 4);
-		ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
-		
-		// Ajout des combinaisons de 5 items
-		recipe.clear();
-		recipe.put(attribute, 5);
-		ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
+		for (int nbAttributesInRecipe = 3; nbAttributesInRecipe <= 5; nbAttributesInRecipe++) {
+			recipe.clear();
+			recipe.put(attribute, nbAttributesInRecipe);
+			ALIGNMENT_EFFECTS.put(PuzzleMatchEffect.buildRecipe(recipe), alignmentEffect);
+		}
 	}
 
 	private static void addMatchables(PuzzleAttributes attribute1, PuzzleAttributes attribute2) {
@@ -112,17 +94,12 @@ public class PuzzleAttributesHelper {
 	}
 
 	public static PuzzleAttributes getRandomBaseAttribute() {
-		return BASE_ATTRIBUTES[MathUtils.random(BASE_ATTRIBUTES.length - 1)];
+		int random = MathUtils.random(BASE_ATTRIBUTES.size() - 1);
+		return BASE_ATTRIBUTES.get(random);
 	}
 
 	public static PuzzleAttributes getSuper(AlignmentData alignment) {
-		PuzzleAttributes attribute = alignment.attributes.get(0);
-		PuzzleAttributes superAttribute;
-		if (alignment.isHorizontal) {
-			superAttribute = SUPER_ATTRIBUTES_H.get(attribute);
-		} else {
-			superAttribute = SUPER_ATTRIBUTES_V.get(attribute);
-		}
-		return superAttribute;
+		PuzzleAttributes attribute = alignment.attributes.get(alignment.alignSourceAttributeIndex);
+		return SUPER_ATTRIBUTES.get(attribute, alignment.orientation);
 	}
 }

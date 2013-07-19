@@ -33,7 +33,6 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	 * Indique si le stage est dans un état stable. Si false, c'est qu'il y a une
 	 * animation en cours (apparition d'un attribut, chute ou switch d'un attribut...)
 	 */
-	private boolean isSteady;
 	private boolean isFallRequested;
 	private boolean isMatchRequested;
 	
@@ -249,7 +248,6 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		// Jolie animation
 		image.getColor().a = 0;
 		image.addAction(Actions.alpha(1, 0.2f, Interpolation.exp5));
-		isSteady = false;
 	}
 
 	/**
@@ -321,8 +319,6 @@ public class PuzzleStage extends Stage implements SwitchListener {
 			}
 		));
 		addActor(secondAnim);
-		
-		isSteady = false;
 	}
 	
 	/**
@@ -395,5 +391,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 
 	public void fall() {
 		isFallRequested = true;
+	}
+
+	public PuzzleAttributes getAttribute(int x, int y) {
+		return puzzleImages[x][y].getAttribute();
 	}
 }

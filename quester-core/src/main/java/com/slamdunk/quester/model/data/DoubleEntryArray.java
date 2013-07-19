@@ -7,24 +7,24 @@ import java.util.Map;
  * Cette classe permet de gérer un tableau à double entrée dont chaque entrée
  * est de type EntryType, et dont la valeur est de type ValueType.
  */
-public class DoubleEntryArray<EntryType, ValueType> {
-	private Map<EntryType, Map<EntryType, ValueType>> data;
+public class DoubleEntryArray<Entry1Type, Entry2Type, ValueType> {
+	private Map<Entry1Type, Map<Entry2Type, ValueType>> data;
 	
 	public DoubleEntryArray() {
-		data = new HashMap<EntryType, Map<EntryType, ValueType>>();
+		data = new HashMap<Entry1Type, Map<Entry2Type, ValueType>>();
 	}
 	
-	public void put(EntryType entry1, EntryType entry2, ValueType value) {
-		Map<EntryType, ValueType> values = data.get(entry1);
+	public void put(Entry1Type entry1, Entry2Type entry2, ValueType value) {
+		Map<Entry2Type, ValueType> values = data.get(entry1);
 		if (values == null) {
-			values = new HashMap<EntryType, ValueType>();
+			values = new HashMap<Entry2Type, ValueType>();
 			data.put(entry1, values);
 		}
 		values.put(entry2, value);
 	}
 	
-	public ValueType get(EntryType entry1, EntryType entry2) {
-		Map<EntryType, ValueType> values = data.get(entry1);
+	public ValueType get(Entry1Type entry1, Entry2Type entry2) {
+		Map<Entry2Type, ValueType> values = data.get(entry1);
 		if (values == null) {
 			return null;
 		}

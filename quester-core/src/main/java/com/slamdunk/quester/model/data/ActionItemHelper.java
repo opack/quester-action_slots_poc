@@ -16,7 +16,7 @@ public class ActionItemHelper {
 	private static final float APPEAR_RATE_TOTAL = Config.asFloat("action.appearRate.total", 6f);
 	private static final List<QuesterActions> NEXT_ACTIONS;
 	public static final Map<QuesterActions, SlotData> SLOT_DATAS;
-	private static final DoubleEntryArray<MapElements, Boolean> MATCHABLES;
+	private static final DoubleEntryArray<MapElements, MapElements, Boolean> MATCHABLES;
 	private static final Map<String, AlignmentEffect> ALIGNMENT_EFFECTS;
 	
 	static {
@@ -66,7 +66,7 @@ public class ActionItemHelper {
 				Assets.action_heal));
 
 		// Création de la matrice d'items matchables
-		MATCHABLES = new DoubleEntryArray<MapElements, Boolean>();
+		MATCHABLES = new DoubleEntryArray<MapElements, MapElements, Boolean>();
 		addMatchables(MapElements.SWORD, MapElements.SWORD);
 		addMatchables(MapElements.SWORD, MapElements.RABITE);
 		addMatchables(MapElements.SWORD, MapElements.ENNEMY);
