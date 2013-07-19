@@ -1,72 +1,101 @@
 package com.slamdunk.quester2.puzzle;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.slamdunk.quester2.puzzle.PuzzleLogic.AlignmentData;
+import com.slamdunk.quester.model.points.Point;
 
 /**
  * Représente un effet d'alignement
  */
 public abstract class PuzzleMatchEffect {
+	protected PuzzleStage puzzle;
+	protected int puzzleWidth;
+	protected int puzzleHeight;
+	
+	public void setPuzzle(PuzzleStage puzzle) {
+		this.puzzle = puzzle;
+		puzzleWidth = puzzle.getPuzzleWidth();
+		puzzleHeight = puzzle.getPuzzleHeight();
+	}
+	
 	/**
-	 * Ordre d'apparition du nombre d'éléments requis dans le code
+	 * Consomme un attribut
+	 * @param alignment
+	 * @param cur
 	 */
-	private static final PuzzleAttributes[] ELEMENTS_ORDER_IN_CODE = {
-		PuzzleAttributes.CONSTITUTION,
-		PuzzleAttributes.DEXTERITY,
-		PuzzleAttributes.FOCUS,
-		PuzzleAttributes.LUCK,
-		PuzzleAttributes.STRENGTH,
-		PuzzleAttributes.WILL
-	};
-	
-	protected static String buildRecipe(PuzzleAttributes... elements) {
-		return buildRecipe(Arrays.asList(elements));
-	}
-	
-	protected static String buildRecipe(Iterable<PuzzleAttributes> elements) {
-		// Compte les éléments par type
-		Map<PuzzleAttributes, Integer> counts = new HashMap<PuzzleAttributes, Integer>();
-		Integer curCount;
-		PuzzleAttributes baseAttribute;
-		for (PuzzleAttributes element : elements) {
-			baseAttribute = element.getBaseAttribute();
-			if (baseAttribute == null) {
-				// S'il n'y a pas d'attribut de base, alors l'élément est un attribut de base
-				baseAttribute = element;
-			}
-			curCount = counts.get(baseAttribute);
-			if (curCount == null) {
-				counts.put(baseAttribute, 1);
-			} else {
-				counts.put(baseAttribute, curCount + 1);
-			}
-		}
-		return buildRecipe(counts);
-	}
-
-	protected static String buildRecipe(Map<PuzzleAttributes, Integer> elements) {
-		// Crée le code
-		Integer curCount;
-		StringBuilder sb = new StringBuilder();
-		for (PuzzleAttributes element : ELEMENTS_ORDER_IN_CODE) {
-			curCount = elements.get(element);
-			if (curCount == null) {
-				sb.append(0);
-			} else {
-				sb.append(curCount);
-			}
-		}
+	protected void eat(Point pos, PuzzleAttributes attribute, boolean performBonusEffect) {
+		// Suppression des éléments alignés
+		puzzle.removeAttribute(pos.getX(), pos.getY());
 		
-		return sb.toString();
+		// Pour chaque attribut, s'il est simple on ajoute des points,
+		// s'il est super on va déclencher un autre effet.
+		System.out.println("DBG AttributeAlignmentEffect.perform() ADD " + attribute);
+		if (performBonusEffect) {
+			switch (attribute.getType()) {
+			case SUPER:
+				switch (attribute.getOrientation()) {
+				case HORIZONTAL:
+					performSuperH(pos.getY());
+					break;
+				case VERTICAL:
+					performSuperV(pos.getX());
+					break;
+				}
+				break;
+			case HYPER:
+				performHyper();
+				break;
+			default:
+				// BASE ou EMPTY : pas d'effet bonus
+				break;
+			}
+		}
 	}
 
+	/**
+	 * Effectue l'effet hyper avec l'attribut source
+	 */
+	private void performHyper() {
+		// TODO ...
+	}
+
+	/**
+	 * Supprime et comptabilise tous les attributs de la ligne
+	 * @param y
+	 */
+	private void performSuperH(int row) {
+		PuzzleAttributes attribute;
+		boolean doBonus;
+		for (int x = 0; x < puzzleWidth; x++) {
+			attribute = puzzle.getAttribute(x, row);
+			// Si on tombe sur un SuperH, on ne l'appelle pas car on le fait déjà
+			doBonus = attribute.getType() != AttributeTypes.SUPER || attribute.getOrientation() != AlignmentOrientation.HORIZONTAL;
+			eat(new Point(x, row), attribute, doBonus);
+		}
+	}
+	
+	/**
+	 * Supprime et comptabilise tous les attributs de la ligne
+	 * @param y
+	 */
+	private void performSuperV(int col) {
+		PuzzleAttributes attribute;
+		boolean doBonus;
+		for (int y = 0; y < puzzleHeight; y++) {
+			attribute = puzzle.getAttribute(col, y);
+			// Si on tombe sur un SuperV, on ne l'appelle pas car on le fait déjà
+			doBonus = attribute.getType() != AttributeTypes.SUPER || attribute.getOrientation() != AlignmentOrientation.VERTICAL;
+			eat(new Point(col, y), attribute, doBonus);
+		}
+	}
+	
+	public void perform(PuzzleStage puzzle, PuzzleMatchData matchData) {
+		setPuzzle(puzzle);
+		perform(matchData);
+	}
+	
 	/**
 	 * Effectue des actions (ajout de points d'attributs aux actions, suppression des
 	 * éléments d'une ligne, création d'un attribut super...) en fonction de l'effet
 	 * et des attributs alignés dont les positions sont indiquées.
 	 */
-	public abstract void perform(PuzzleStage puzzle, AlignmentData alignData);
+	public abstract void perform(PuzzleMatchData matchData);
 }

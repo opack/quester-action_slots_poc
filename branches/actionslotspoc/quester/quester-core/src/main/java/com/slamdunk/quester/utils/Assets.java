@@ -122,6 +122,7 @@ public class Assets {
 	public static TextureRegion attribute_luck;
 	public static TextureRegion attribute_luck_superh;
 	public static TextureRegion attribute_luck_superv;
+	public static TextureRegion attribute_hyper;
 	
 	//public static Animation playerWalkingRightAnimation;
 
@@ -255,6 +256,7 @@ public class Assets {
 		attribute_luck = loadTexture("attributes/attribute_luck.png");
 		attribute_luck_superh = loadTexture("attributes/attribute_luck_superh.png");
 		attribute_luck_superv = loadTexture("attributes/attribute_luck_superv.png");
+		attribute_hyper = loadTexture("attributes/attribute_hyper.png");
 	}
 	
 	private static TextureRegion loadTexture(String file) {
