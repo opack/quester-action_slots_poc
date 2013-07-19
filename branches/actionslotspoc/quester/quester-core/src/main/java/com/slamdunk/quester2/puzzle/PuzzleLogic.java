@@ -15,7 +15,7 @@ public class PuzzleLogic {
 		/**
 		 * Indique si l'alignement est horizontal ou vertical
 		 */
-		public boolean isHorizontal;
+		public AttributeOrientation orientation;
 		/**
 		 * Indice de l'attribut à la source de l'alignement
 		 */
@@ -68,7 +68,9 @@ public class PuzzleLogic {
 		this.height = stage.getPuzzleHeight();
 		
 		hAlignData = new AlignmentData();
+		hAlignData.orientation = AttributeOrientation.HORIZONTAL;
 		vAlignData = new AlignmentData();
+		vAlignData.orientation = AttributeOrientation.VERTICAL;
 		lastFallen = new ArrayList<Point>();
 		
 		// Création du puzzle
