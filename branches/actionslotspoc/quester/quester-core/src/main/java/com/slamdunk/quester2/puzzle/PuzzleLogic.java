@@ -172,6 +172,14 @@ public class PuzzleLogic {
 		}
 		
 		// Recherche des éventuelles combinaisons
+		// Si l'un des deux attributs est un hyper, alors on ne cherche pas à
+		// matcher plus que ces deux là
+		if (matchHyper(firstX, firstY, secondX, secondY)) {
+			return true;
+		}
+		
+		// Si on n'a pas inversé un hyper avec autre chose, alors on regarde
+		// si l'inversion a provoqué l'apparition de combinaisons
 		boolean isFirstAligned = resolveAlignments(firstX, firstY);
 		boolean isSecondAligned = resolveAlignments(secondX, secondY);
 
@@ -181,6 +189,27 @@ public class PuzzleLogic {
 		return true;
 	}
 	
+	/**
+	 * Vérifie si un switch avec un hyper a été fait, et dans ce cas, déclenche l'effet
+	 * adéquat.
+	 */
+	private boolean matchHyper(int firstX, int firstY, int secondX, int secondY) {
+		// On s'assure qu'au moins un des deux attributs est un HYPER
+		PuzzleAttributes firstAttribute = puzzleImages[firstX][firstY].getAttribute();
+		PuzzleAttributes secondAttribute = puzzleImages[secondX][secondY].getAttribute();
+		if (firstAttribute != PuzzleAttributes.HYPER && secondAttribute != PuzzleAttributes.HYPER) {
+			return false;
+		}
+		
+		// Déclenche l'effet adéquat
+		PuzzleMatchData builder = new PuzzleMatchData();
+		builder.setSource(new AttributeData(new Point(firstX, firstY), firstAttribute));
+		builder.add(new AttributeData(new Point(secondX, secondY), secondAttribute));
+		PuzzleMatchEffect effect = builder.buildMatchEffect();
+		effect.perform(puzzleStage, builder);
+		return true;
+	}
+
 	public void updatePuzzle() {
 //		do {
 			// Chute des éléments supérieurs
@@ -333,7 +362,7 @@ public class PuzzleLogic {
 				break;
 			}
 		}
-		return hAlignData.size() >= 3 || vAlignData.size() >= 3;
+		return hAlignData.size() >= 0 || vAlignData.size() >= 0;
 	}
 	
 	/**

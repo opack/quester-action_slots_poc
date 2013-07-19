@@ -68,4 +68,12 @@ public class PuzzleAttributesHelper {
 	public static PuzzleAttributes getSuper(PuzzleAttributes attribute, AlignmentOrientation orientation) {
 		return SUPER_ATTRIBUTES.get(attribute, orientation);
 	}
+
+	public static PuzzleAttributes getBaseAttribute(PuzzleAttributes attribute) {
+		PuzzleAttributes baseAttribute = attribute.getBaseAttribute();
+		if (baseAttribute == null) {
+			return attribute;
+		}
+		return baseAttribute;
+	}
 }

@@ -14,6 +14,8 @@ public class PuzzleMatchData {
 	private AlignmentOrientation orientation;
 	private Set<AttributeData> attributes;
 	private Map<AttributeTypes, Integer> typesMeter;
+	private int countHorizontals;
+	private int countVerticals;
 	
 	public PuzzleMatchData() {
 		attributes = new HashSet<AttributeData>();
@@ -23,6 +25,9 @@ public class PuzzleMatchData {
 	public boolean setSource(AttributeData data) {
 		if (add(data, false)) {
 			source = data;
+			// Dès qu'il y a un attribut, il y a forcément 1 attribut en vertical et 1 en horizontal
+			countHorizontals = 1;
+			countVerticals = 1;
 			return true;
 		}
 		return false;
@@ -42,61 +47,77 @@ public class PuzzleMatchData {
 		}
 		
 		// Ajout de l'attribut
-		attributes.add(data);
-		
-		// Mise à jour de l'orientation
-		if (updateOrientation) {
-			AlignmentOrientation thisOrientation = AlignmentOrientation.WHOLE;
-			Point thisPosition = data.position;
-			if (thisPosition.getX() == source.position.getX()) {
-				thisOrientation = AlignmentOrientation.VERTICAL;
-			} else if (thisPosition.getY() == source.position.getY()) {
-				thisOrientation = AlignmentOrientation.HORIZONTAL;
+		if (attributes.add(data)) {
+			// Mise à jour de l'orientation
+			if (updateOrientation) {
+				AlignmentOrientation thisOrientation = AlignmentOrientation.WHOLE;
+				Point thisPosition = data.position;
+				if (thisPosition.getX() == source.position.getX()) {
+					thisOrientation = AlignmentOrientation.VERTICAL;
+					countVerticals++;
+				} else if (thisPosition.getY() == source.position.getY()) {
+					thisOrientation = AlignmentOrientation.HORIZONTAL;
+					countHorizontals++;
+				}
+				if (orientation == null) {
+					// L'orientation globale est celle entre cet élément et la source
+					orientation = thisOrientation;
+				} else if ((orientation == AlignmentOrientation.VERTICAL && thisOrientation == AlignmentOrientation.HORIZONTAL)
+						|| (orientation == AlignmentOrientation.HORIZONTAL && thisOrientation == AlignmentOrientation.VERTICAL)) {
+					// Si on était déjà vertical ou horizontal et que là on est dans l'autre cas
+					// alors finalement on est en corner
+					orientation = AlignmentOrientation.CROSS;
+				}
 			}
-			if ( (orientation == AlignmentOrientation.VERTICAL && thisOrientation == AlignmentOrientation.HORIZONTAL)
-			|| (orientation == AlignmentOrientation.HORIZONTAL && thisOrientation == AlignmentOrientation.VERTICAL) ) {
-				// Si on était déjà vertical ou horizontal et que là on est dans l'autre cas
-				// alors finalement on est en corner
-				orientation = AlignmentOrientation.CROSS;
-			} else {
-				// Dans les autres cas, l'orientation globale est celle entre cet élément et la source
-				orientation = thisOrientation;
-			}
+			
+			// Mise à jour du compteur de types
+			AttributeTypes type = data.attribute.getType();
+			typesMeter.put(type, getMatchCount(type) + 1);
+			
+			return true;
 		}
-		
-		// Mise à jour du compteur de types
-		AttributeTypes type = data.attribute.getType();
-		typesMeter.put(type, getMatchCount(type) + 1);
-		return true;
+		return false;
 	}
 	
+	/**
+	 * Crée un PuzzleMatchEffect qui sera chargé de faire ce qu'il faut en
+	 * fonction des attributs matchables ajoutés via add().
+	 * @return
+	 */
 	public PuzzleMatchEffect buildMatchEffect() {
-		switch (orientation) {
-		case HORIZONTAL:
-		case VERTICAL:
-			// S'il n'y a que des supers, on a un match entre 2 supers
-			// Sinon on fait a un simple match en ligne (contenant éventuellement des supers)
-			if (getMatchCount(AttributeTypes.SUPER) > 0 && getMatchCount(AttributeTypes.BASE) == 0) {
-				System.out.println("DBG PuzzleMatchEffectBuilder.build() SuperMatchEffect !");
-//				return new SuperMatchEffect();
-			} else {
-				return new LineMatchEffect();
+		if (orientation != null) {
+			int count = count();
+			switch (orientation) {
+			case HORIZONTAL:
+			case VERTICAL:
+				// 2 attributs alignés
+				if (count == 2) {
+					// 2 Super
+					if (getMatchCount(AttributeTypes.SUPER) == 2){
+						System.out.println("DBG PuzzleMatchEffectBuilder.build() SuperMatchEffect !");
+	//					return new SuperMatchEffect();
+						return null;
+					}
+					// 1 Hyper + 1 autre
+					else if (getMatchCount(AttributeTypes.HYPER) > 0){
+						System.out.println("DBG PuzzleMatchEffectBuilder.build() HyperMatchEffect !");
+						return new HyperMatchEffect();
+					}
+				}
+				// Au moins 3 attributs en ligne
+				else if (count >= 3){
+					return new LineMatchEffect();
+				}
+				break;
+			case CROSS:
+				if (countHorizontals == 3 && countVerticals == 3) {
+					System.out.println("DBG PuzzleMatchEffectBuilder.build() CrossMatchEffect !");
+					return new CrossMatchEffect();
+				}
+				break;
+			default:
+				return null;
 			}
-			break;
-		case CROSS:
-			System.out.println("DBG PuzzleMatchEffectBuilder.build() CrossMatchEffect !");
-//			return new CrossMatchEffect();
-			return null;
-		case WHOLE:
-			PuzzleAttributes baseAttribute = source.attribute.getBaseAttribute();
-			if (baseAttribute == null) {
-				baseAttribute = source.attribute;
-			}
-			System.out.println("DBG PuzzleMatchEffectBuilder.build() WholeGridMatchEffect ! " + baseAttribute);
-//			return new WholeGridMatchEffect(baseAttribute);
-			return null;
-		case SELF:
-			return null;
 		}
 		return null;
 	}

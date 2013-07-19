@@ -142,11 +142,14 @@ public class PuzzleStage extends Stage implements SwitchListener {
 		if (checkSteady()) {
 			// Si le tableau est stable, alors on regarde s'il faut le mettre à jour
 			if (isUserSwitching) {
-				isUserSwitching = false;
 				if (!puzzleLogic.switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3])) {
 					// Si le switch a été interdit, on replace les éléments dans leur ordre original
 					switchAttributes(userSwitchingPos[0], userSwitchingPos[1], userSwitchingPos[2], userSwitchingPos[3]);
-				}			
+				}
+				// Reset le flag APRES l'appel à puzzleLogic, car si un MatchEffect est déclenché
+				// il voudra peut-être savoir si l'utilisateur est à l'origine du match ou si
+				// c'est à cause d'une chute
+				isUserSwitching = false;
 			} else if (isFallRequested) {
 				isFallRequested = false;
 				// Il faut faire un match si des attributs sont tombés ou qu'on avait déjà demandé d'en faire un
@@ -412,5 +415,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 
 	public PuzzleAttributes getAttribute(int x, int y) {
 		return puzzleImages[x][y].getAttribute();
+	}
+
+	public boolean isUserSwitching() {
+		return isUserSwitching;
 	}
 }
