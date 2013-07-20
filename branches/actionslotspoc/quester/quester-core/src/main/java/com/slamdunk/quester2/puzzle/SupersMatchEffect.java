@@ -32,6 +32,6 @@ public class SupersMatchEffect extends PuzzleMatchEffect {
 		}
 		
 		// Ajout d'un petit bonus
-		System.out.println("DBG AttributeAlignmentEffect.perform() ADD BONUS CROSS " + matchData.getSource().attribute);
+		System.out.println("DBG SupersMatchEffect.perform() ADD BONUS SUPERS " + matchData.getSource().attribute);
 	}
 }

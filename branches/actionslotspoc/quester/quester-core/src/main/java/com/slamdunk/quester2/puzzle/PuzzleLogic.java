@@ -366,6 +366,10 @@ public class PuzzleLogic {
 	 */
 	private boolean match(int x, int y) {
 		PuzzleAttributes element = puzzleImages[x][y].getAttribute();
+		// Rien ne match avec EMPTY
+		if (element == PuzzleAttributes.EMPTY) {
+			return false;
+		}
 		
 		// Vérifie si l'item participe à un alignement horizontal
 		for (int curCol = x; curCol > -1; curCol--) {

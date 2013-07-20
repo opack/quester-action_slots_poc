@@ -24,16 +24,17 @@ public class LineMatchEffect extends PuzzleMatchEffect {
 		// Création des attributs super
 		if (count == 4) {
 			// Ajout d'un petit bonus
-			System.out.println("DBG AttributeAlignmentEffect.perform() ADD BONUSx4 " + matchData.getSource().attribute);
+			System.out.println("DBG LineMatchEffect.perform() ADD BONUSx4 " + matchData.getSource().attribute);
 			
 			// Création d'un super attribut
-			PuzzleAttributes baseAttribute = PuzzleAttributesHelper.getBaseAttribute(matchData.getSource().attribute);
-			PuzzleAttributes superAttribute = PuzzleAttributesHelper.getSuper(baseAttribute, matchData.getOrientation());
-			Point sourcePos = matchData.getSource().position;
-			puzzle.createAttribute(sourcePos.getX(), sourcePos.getY(), superAttribute);
+			PuzzleAttributes superAttribute = PuzzleAttributesHelper.getSuperAttribute(matchData.getSource().attribute, matchData.getOrientation());
+			if (superAttribute != null) {
+				Point sourcePos = matchData.getSource().position;
+				puzzle.createAttribute(sourcePos.getX(), sourcePos.getY(), superAttribute);
+			}
 		} else if (count == 5) {
 			// Ajout d'un petit bonus
-			System.out.println("DBG AttributeAlignmentEffect.perform() ADD BONUSx5 " + matchData.getSource().attribute);
+			System.out.println("DBG LineMatchEffect.perform() ADD BONUSx5 " + matchData.getSource().attribute);
 			
 			// Création d'un hyper attribut
 			Point sourcePos = matchData.getSource().position;
