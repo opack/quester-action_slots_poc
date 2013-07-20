@@ -26,12 +26,17 @@ public abstract class PuzzleMatchEffect {
 	 * @param cur
 	 */
 	protected void eat(int x, int y, PuzzleAttributes attribute, boolean performBonusEffect) {
+		// S'il n'y a rien à manger, on repart
+		if (attribute == PuzzleAttributes.EMPTY) {
+			return;
+		}
+		
 		// Suppression de l'attribut "mangé"
 		puzzle.removeAttribute(x, y);
 		
 		// Pour chaque attribut, s'il est simple on ajoute des points,
 		// s'il est super on va déclencher un autre effet.
-		System.out.printf("DBG AttributeAlignmentEffect.perform() ADD %d %d %s\n", x, y, attribute);
+		System.out.printf("DBG PuzzleMatchEffect.perform() ADD %d %d %s\n", x, y, attribute);
 		if (performBonusEffect) {
 			switch (attribute.getType()) {
 			case SUPER:

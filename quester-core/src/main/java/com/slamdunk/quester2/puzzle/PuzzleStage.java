@@ -233,6 +233,9 @@ public class PuzzleStage extends Stage implements SwitchListener {
 	}
 
 	public void createAttribute(int x, int y, final PuzzleAttributes attribute) {
+		if (attribute == null) {
+			return;
+		}
 		final PuzzleImage image = puzzleImages[x][y];
 		
 		// Affectation de l'attribut, et donc de l'image
