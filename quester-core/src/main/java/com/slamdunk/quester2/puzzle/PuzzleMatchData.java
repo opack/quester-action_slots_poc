@@ -108,7 +108,6 @@ public class PuzzleMatchData {
 				break;
 			case CROSS:
 				if (countHorizontals == 3 && countVerticals == 3) {
-					System.out.println("DBG PuzzleMatchEffectBuilder.build() CrossMatchEffect !");
 					return new CrossMatchEffect();
 				}
 				break;
