@@ -43,7 +43,6 @@ public class PuzzleSwitchInputProcessor extends InputAdapter {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		// Si la grille est en mouvement, le joueur ne peut pas tenter un autre switch
 		if (!puzzleStage.checkSteady()) {
-			System.out.println("DBG PuzzleSwitchInputProcessor.touchDown() pas steady");
 			return false;
 		}
 		

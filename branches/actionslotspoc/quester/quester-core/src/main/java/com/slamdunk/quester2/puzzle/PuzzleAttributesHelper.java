@@ -20,7 +20,6 @@ public class PuzzleAttributesHelper {
 	static {
 		BASE_ATTRIBUTES = new ArrayList<PuzzleAttributes>();
 		SUPER_ATTRIBUTES = new DoubleEntryArray<PuzzleAttributes, AlignmentOrientation, PuzzleAttributes>();
-//DBG		KeyListMap<PuzzleAttributes, PuzzleAttributes> supersByBaseAttribute = new KeyListMap<PuzzleAttributes, PuzzleAttributes>();
 		for (PuzzleAttributes attribute : PuzzleAttributes.values()) {
 			// Rien à faire avec EMPTY
 			if (attribute == PuzzleAttributes.EMPTY) {
